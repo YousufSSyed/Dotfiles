@@ -19,6 +19,8 @@
     delta
     dolphin-emu
     copyparty-most
+    losslesscut-bin
+    tableplus
 
     lazygit
 
@@ -26,13 +28,9 @@
     uutils-coreutils-noprefix
     coreutils-prefixed
     whisper-cpp
-    tree-sitter
-    gnumake
     fd
     fzf
     eza
-    gcc
-    cmake
     bat
     zoxide
     ripgrep
@@ -41,8 +39,6 @@
     yazi
     sd
     ffmpeg-full
-    pkg-config
-    lnav
     jujutsu
     yt-dlp
     gallery-dl
@@ -54,10 +50,8 @@
     age
     sops
     yq-go
-    jnv
     jq
     p7zip
-    whois
     git-filter-repo
     tig
     atuin
@@ -69,12 +63,20 @@
     dua
     gifski
     wordnet
-    nix-init
     immich-go
     spotdl
     libjxl
-    nh
     fish
+    sqlite
+    mpvScripts.modernz
+    mpvScripts.thumbfast
+    (mpv-unwrapped.override {
+      ffmpeg = ffmpeg-full;
+    })
+
+    # Nix tools
+    nix-init
+    nh
 
     # Language Packages
     # Misc languages
@@ -96,10 +98,19 @@
     yarn
     nodejs
 
+    # Other Dev Packages
+    tree-sitter
+    pkg-config
+    gnumake
+    gcc
+    cmake
+
     # Misc Packages
     nerd-fonts.iosevka
     dconf
   ];
+
+  security.sudo.extraConfig = "Defaults pwfeedback";
 
   nixpkgs.config.allowUnfree = true;
 

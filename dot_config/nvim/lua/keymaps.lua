@@ -5,9 +5,6 @@ vim.keymap.set({ "n", "v" }, "u", ":silent undo<cr>", { silent = true })
 vim.keymap.set({ "n", "v" }, "U", ":silent redo<cr>", { silent = true })
 vim.keymap.set({ "n", "v" }, "<C-r>", ":silent redo<cr>", { silent = true })
 
-vim.keymap.set("n", "<CR>", "o<esc>") -- Insert blank lines above & below
-vim.keymap.set("n", "<S-CR>", "O<esc>")
-
 vim.keymap.set("n", "<leader><left>", "<C-w><C-h>") -- Window hotkeys
 vim.keymap.set("n", "<leader><down>", "<C-w><C-j>")
 vim.keymap.set("n", "<leader><up>", "<C-w><C-k>")
@@ -50,15 +47,25 @@ vim.keymap.set({ "n" }, "Y", "yy", keyopts)
 vim.keymap.set("n", "<C-v>", "<cmd>set paste<cr>p<cmd>set nopaste<cr>")
 vim.keymap.set("i", "<C-v>", "<cmd>set paste<cr><c-O>p<cmd>set nopaste<cr>")
 vim.keymap.set("c", "<C-v>", "<C-r>+")
-
 vim.keymap.set({ "n" }, "<C-c>", "<cmd>silent %y+<cr>")
 vim.keymap.set({ "n" }, "<C-x>", "<cmd>silent %d+<cr>")
 vim.keymap.set({ "n" }, "<C-BS>", "<cmd>silent %d_<cr>")
-
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
 
+local function mark(cmd)
+	local count = vim.v.count > 0 and vim.v.count or ""
+	vim.api.nvim_feedkeys("mz" .. count .. cmd .. "\27`z:delmarks z\13", "n", false)
+end
+vim.keymap.set({ "n", "v", "o" }, "<leader>[z", function() mark("[sz=") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>]z", function() mark("]sz=") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>[s", function() mark("[s1z=") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>]s", function() mark("]s1z=") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>[g", function() mark("[szg") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>]g", function() mark("]szg") end, { remap = false })
+vim.keymap.set("n", "<CR>", function() mark("o") end) -- Insert blank lines above & below
+vim.keymap.set("n", "<S-CR>", function() mark("O") end)
+
 vim.cmd("packadd nvim.undotree") -- Misc Keymaps
-function mark(cmd) return "mz" .. cmd .. "`z:delmarks z<cr>" end
 vim.keymap.set("n", "<leader>u", require("undotree").open)
 vim.keymap.set({ "n", "v" }, "<leader>w", "<cmd>bprev<cr><cmd>bd!#<cr>", keyopts)
 vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
@@ -66,14 +73,10 @@ vim.keymap.set({ "n", "v" }, "<leader>r", "<cmd>:restart<cr>")
 vim.keymap.set({ "n", "v", "i" }, "<C-s>", "<cmd>w!<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
-vim.keymap.set("n", "J", mark("J")) -- Keep cursor in place when joining lines
+vim.keymap.set("n", "J", function() mark("J") end) -- Keep cursor in place when joining lines
 vim.keymap.set("n", "ycc", "Ygccp", { remap = true }) -- Comment the current line then paste it below
 vim.keymap.set({ "i" }, "<D-k>", "<c-k>", { noremap = true }) -- Digraph key
-vim.keymap.set({ "n", "v", "o" }, "<leader>z", "1z=", { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>[s", mark("[s1z="), { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>]s", mark("]s1z="), { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>[g", mark("[szg"), { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>]g", mark("]szg"), { remap = false })
+
 vim.keymap.set("n", "<Esc>", function()
 	vim.opt.cursorline = true
 	vim.cmd(":nohlsearch")

@@ -1,9 +1,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 rainbowgroup = { "Rainbow1", "Rainbow2", "Rainbow3", "Rainbow4", "Rainbow5", "Rainbow6" }
-fresh = function()
-	return not (next(vim.fn.argv()) or vim.o.filetype == "man" or vim.env.KITTY_SCROLLBACK_NVIM)
-end
+fresh = function() return not (next(vim.fn.argv()) or vim.o.filetype == "man" or vim.env.KITTY_SCROLLBACK_NVIM) end
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" -- LazyNvim Setup
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -24,7 +22,6 @@ require("lazy").setup({
 })
 
 require("keymaps")
-require("pluginconfig")
 
 local undo_dir = vim.fn.stdpath("cache") .. "/undo/"
 vim.fn.mkdir(undo_dir, "p")
@@ -86,11 +83,19 @@ if vim.g.neovide then
 	vim.g.neovide_floating_shadow = false
 	vim.g.neovide_floating_blur_amount_x = 30
 	vim.g.neovide_floating_blur_amount_y = 30
-	vim.g.neovide_opacity = 0.8
+	if require("jit").os ~= "OSX" then vim.g.neovide_opacity = 0.8 end
 	vim.g.neovide_cursor_vfx_mode = "railgun"
 	vim.g.neovide_cursor_vfx_particle_lifetime = 0.5
 	vim.g.neovide_cursor_vfx_opacity = 500
 end
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = "*.*.tmpl",
+	callback = function()
+		local ft = vim.fn.expand("%:t"):match(".+%.(.+)%.tmpl")
+		if ft then vim.bo.filetype = ft end
+	end,
+})
 
 -- vim.lsp.inlay_hint.enable(true) vim.lsp.codelens.enable(true)
 vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide", "nixd", "hyprls" })

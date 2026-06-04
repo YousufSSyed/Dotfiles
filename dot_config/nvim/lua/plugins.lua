@@ -7,7 +7,6 @@ return {
 		build = ":TSUpdate",
 		lazy = false,
 		config = function()
-			require("nvim-treesitter").install({ "all" })
 			vim.api.nvim_create_autocmd("FileType", {
 				callback = function()
 					pcall(vim.treesitter.start)
@@ -268,7 +267,7 @@ return {
 	{
 		"saghen/blink.cmp",
 		dependencies = {
-			-- "saghen/blink.lib",
+			"saghen/blink.lib",
 			"rafamadriz/friendly-snippets",
 			"xzbdmw/colorful-menu.nvim",
 			"archie-judd/blink-cmp-words",
@@ -309,6 +308,7 @@ return {
 					},
 				},
 			},
+
 			cmdline = {
 				keymap = { preset = "inherit" },
 				completion = { menu = { auto_show = true } },
@@ -317,7 +317,7 @@ return {
 				default = { "lsp", "path", "buffer" },
 				per_filetype = {
 					text = { "dictionary", "thesaurus" },
-					markdown = { "dictionary", "thesaurus" },
+					markdown = { "dictionary", "thesaurus", "lsp" },
 				},
 				providers = {
 					thesaurus = {
@@ -466,8 +466,6 @@ return {
 					require("obsidian.builtin").frontmatter.func(note)
 				end,
 			})
-			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
-			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "ObsidianNoteEnter",
 				callback = function(ev)
@@ -475,19 +473,20 @@ return {
 					vim.keymap.set("n", "gx", require("obsidian.api").smart_action, { buffer = true })
 				end,
 			})
-			vim.keymap.set(
-				{ "n" },
-				"<leader>oo",
-				function() vim.api.nvim_feedkeys(":Obsidian today ", "n", false) end,
-				keyopts
-			)
+			function obsidian(text) vim.api.nvim_feedkeys(":Obsidian today " .. text, "n", false) end
+			vim.keymap.set({ "n" }, "<leader>or", function() obsidian("-") end, keyopts)
+			vim.keymap.set({ "n" }, "<leader>od", function() obsidian("") end, keyopts)
+			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<C-p>", function()
-				local result = vim.system({
+				vim.system({
 					os.getenv("HOME") .. "/.local/share/chezmoi/Scripts/FinishNote.fish",
 					vim.api.nvim_buf_get_name(0),
-				}, { text = true }):wait()
-				if result.code ~= 0 then vim.api.nvim_buf_delete(0) end
+				}, function(result)
+					vim.schedule(function()
+						if result.code == 0 then vim.cmd(":bd") end
+					end)
+				end)
 			end, keyopts)
 		end,
 	},
@@ -642,6 +641,7 @@ return {
 			vim.keymap.set({ "n", "v" }, "j", "<cmd>HopVertical<cr>", keyopts)
 			vim.keymap.set({ "o" }, "j", "V<cmd>HopVertical<cr>", keyopts) -- Note the V<cmd>
 			vim.keymap.set({ "n", "v", "o" }, "W", "<cmd>HopWord<cr>", keyopts)
+			vim.keymap.set({ "n", "v", "o" }, "B", "<cmd>HopWord<cr>", keyopts)
 			vim.keymap.set(
 				{ "n", "v", "o" },
 				"E",
@@ -929,6 +929,7 @@ return {
 				lua = { "stylua" },
 				nix = { "nixfmt" },
 				javascript = { "biome-check" },
+				json = { "biome-check" },
 			},
 			format_on_save = {
 				-- These options will be passed to conform.format()

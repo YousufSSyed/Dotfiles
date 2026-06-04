@@ -15,18 +15,16 @@ in
     users.yousuf =
       {
         config,
-        pkgs,
-        inputs,
         ...
       }:
       {
-        imports = [ inputs.zen-browser.homeModules.twilight ];
+        # imports = [ inputs.zen-browser.homeModules.twilight ];
         home = {
           stateVersion = "26.05";
           file.".config/zen/h9ep31cd.default/chrome".source =
             config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
         };
-        programs.zen-browser = {
+        programs.firefox = {
           enable = true;
           profiles = {
             default = {
@@ -83,10 +81,15 @@ in
                 "browser.tabs.splitView.enabled" = false;
 
                 # Zen Browser specific options:
-                "zen.theme.content-element-separation" = 0; # disable border around zen window
+                "zen.theme.content-element-separation" = 0;
                 "zen.tabs.close-on-back-with-no-history" = false;
                 "zen.urlbar.replace-newtab" = false;
                 "zen.welcome-screen.seen" = true;
+                "zen.glance.enabled" = false;
+                # Disable Window Sync
+                "zen.window-sync.prefer-unsynced-windows" = true;
+                "zen.window-sync.sync-only-pinned-tabs" = true;
+                "zen.window-sync.enabled" = false;
 
                 # Temp preferences
                 "browser.settings-redesign.enabled" = true;
@@ -99,7 +102,6 @@ in
               settings."zen.welcome-screen.seen" = true;
             };
           };
-          nativeMessagingHosts = [ pkgs.firefoxpwa ];
         };
         programs.thunderbird = {
           enable = false;

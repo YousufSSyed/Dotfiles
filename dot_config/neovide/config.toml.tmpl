@@ -1,8 +1,13 @@
 title-hidden = true
 tabs = false
 
+
 [font]
+{{- if eq .chezmoi.os "linux" }}
 size = 14
+{{- else }}
+size = 18
+{{- end }}
 
 [[font.normal]]
 family = "Iosevka Custom"

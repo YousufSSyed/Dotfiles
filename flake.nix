@@ -54,32 +54,21 @@
   };
 
   outputs =
-    { self, nixpkgs, ... }@inputs:
+    { nixpkgs, ... }@inputs:
     {
-      nixosConfigurations.NixOS-Desktop = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./Nix/base.nix
-          ./Nix/nixos.nix
-          ./Nix/nixos-desktop.nix
-          ./Nix/nixos-desktop-hardware.nix
-        ];
-      };
-      nixosConfigurations.NixOS-Laptop = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./Nix/base.nix
-          ./Nix/nixos.nix
-          ./Nix/nixos-laptop.nix
-          ./Nix/nixos-laptop-hardware.nix
-        ];
+      nixosConfigurations = {
+        NixOS-Desktop = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          modules = [ ./Nix/nixos-desktop.nix ];
+        };
+        NixOS-Laptop = nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs; };
+          modules = [ ./Nix/nixos-laptop.nix ];
+        };
       };
       darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
-        modules = [
-          ./Nix/base.nix
-          ./Nix/mac-mini.nix
-        ];
+        modules = [ ./Nix/mac-mini.nix ];
       };
     };
 }

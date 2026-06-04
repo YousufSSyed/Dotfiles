@@ -1,0 +1,26 @@
+{
+	"title": "Remap Volume Keys to Option+Shift+F11/F12",
+	"rules": [
+		{
+			"description": "Roblox map semicolon to left click",
+			"manipulators": [
+				{
+					"conditions": [
+						{
+							"bundle_identifiers": ["^$"],
+							"file_paths": [
+								"^/Applications/Roblox.app",
+								"^/Applications/Roblox.app/Contents/MacOS/Roblox.app",
+								"^/Applications/Roblox.app/Contents/MacOS/Roblox.app/Contents/MacOS/Roblox"
+							],
+							"type": "frontmost_application_if"
+						}
+					],
+					"from": { "key_code": "semicolon" },
+					"to": [{ "pointing_button": "button1" }],
+					"type": "basic"
+				}
+			]
+		}
+	]
+}

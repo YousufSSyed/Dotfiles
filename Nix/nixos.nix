@@ -12,7 +12,8 @@ let
 in
 {
   imports = [
-
+    ./home.nix
+    ./base.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.sops-nix.nixosModules.sops
@@ -28,24 +29,26 @@ in
     # birdtray
     rofi
     obsidian
-    losslesscut-bin
     nvitop
     vesktop
     davinci-resolve
     kdePackages.kde-dev-utils
     plasma-panel-colorizer
-    activitywatch
+    # activitywatch
     # kdotool
     libreoffice
     qview
+    mousai
+    proton-vpn
+    proton-vpn-cli
+
+    slskd
 
     rustdesk-flutter
 
     # Command Line Tools / CLIs
     keyd
     trashy
-    btrfs-progs
-    compsize
     rofimoji
     hyprpicker
     snapper
@@ -58,9 +61,6 @@ in
     wf-recorder
     grim
     quickshell
-    (mpv-unwrapped.override {
-      ffmpeg = ffmpeg-full;
-    })
     (ffmpeg-full.override {
       withUnfree = true;
     })
@@ -86,6 +86,10 @@ in
     inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
     inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
     kdePackages.extra-cmake-modules
+
+    # System Tools
+    btrfs-progs
+    compsize
 
     # AI Tools
     code-cursor-fhs
@@ -182,6 +186,12 @@ in
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
+    };
+    nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--optimise";
+      flake = "/home/yousuf/.local/share/chezmoi";
     };
     # Hyprland config
     hyprland = {
@@ -315,56 +325,54 @@ in
     packages = [
       "com.github.tchx84.Flatseal"
       "eu.betterbird.Betterbird"
+      "re.fossplant.songrec"
       "org.vinegarhq.Sober"
-      "org.vinegarhq.Vinegar"
     ];
     overrides.global.Environment.filesystems = [
       "/home" # Expose user Git config
     ];
   };
 
-  home-manager = import ./home.nix;
-
-  # home-manager = {
-  #   sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
-  #   users.yousuf =
-  #     {
-  #       config,
-  #       pkgs,
-  #       ...
-  #     }:
-  #     {
-  #       home = {
-  #         file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
-  #         pointerCursor = {
-  #           gtk.enable = true;
-  #           package = pkgs.apple-cursor;
-  #           name = "macOS";
-  #           size = 22;
-  #           x11.enable = true;
-  #           x11.defaultCursor = "macOS";
-  #         };
-  #       };
-  #       services.darkman = {
-  #         enable = false;
-  #         lightModeScripts.gtk-theme = ''
-  #           ${pkgs.dconf}/bin/dconf write \
-  #               /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-  #         '';
-  #         darkModeScripts.gtk-theme = ''
-  #           ${pkgs.dconf}/bin/dconf write \
-  #               /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-  #         '';
-  #         settings = {
-  #           lat = 42.3;
-  #           long = -71.1;
-  #           usegeoclue = false;
-  #           dbusserver = true;
-  #           portal = true;
-  #         };
-  #       };
-  #     };
-  # };
+  home-manager = {
+    sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
+    users.yousuf =
+      {
+        config,
+        pkgs,
+        ...
+      }:
+      {
+        home = {
+          file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
+          pointerCursor = {
+            gtk.enable = true;
+            package = pkgs.apple-cursor;
+            name = "macOS";
+            size = 22;
+            x11.enable = true;
+            x11.defaultCursor = "macOS";
+          };
+        };
+        services.darkman = {
+          enable = false;
+          lightModeScripts.gtk-theme = ''
+            ${pkgs.dconf}/bin/dconf write \
+                /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+          '';
+          darkModeScripts.gtk-theme = ''
+            ${pkgs.dconf}/bin/dconf write \
+                /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+          '';
+          settings = {
+            lat = 42.3;
+            long = -71.1;
+            usegeoclue = false;
+            dbusserver = true;
+            portal = true;
+          };
+        };
+      };
+  };
 
   sops = {
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
@@ -430,14 +438,17 @@ in
     enable = true;
   };
 
-  security.polkit.extraConfig = ''
-      /* Allow local users to mount system disks */
-      polkit.addRule(function(action, subject) {
-        if ( subject.local && action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
-          return polkit.Result.YES;
-        }
-    });
-  '';
+  security = {
+    sudo-rs.enable = true;
+    polkit.extraConfig = ''
+        /* Allow local users to mount system disks */
+        polkit.addRule(function(action, subject) {
+          if ( subject.local && action.id == "org.freedesktop.udisks2.filesystem-mount-system") {
+            return polkit.Result.YES;
+          }
+      });
+    '';
+  };
 
   services = {
     # App services
@@ -447,6 +458,9 @@ in
     espanso = {
       enable = true;
       package = pkgs.espanso-wayland;
+    };
+    hardware.openrgb = {
+      enable = true;
     };
     # Desktop Services
     desktopManager.plasma6.enable = true;
@@ -458,17 +472,12 @@ in
     };
     # System services
     pipewire.enable = true;
+    # pipewire.pulse.enable = false;
     gvfs.enable = true;
     udisks2.enable = true;
     automatic-timezoned.enable = true;
     xserver = {
       enable = true;
-    };
-    nh = {
-      enable = true;
-      clean.enable = true;
-      clean.extraArgs = "--optimise";
-      flake = "/home/yousuf/.local/share/chezmoi";
     };
     # Filesystem services
     btrfs.autoScrub = {
@@ -503,5 +512,16 @@ in
   ];
 
   system.stateVersion = "26.05";
+
+  services.lidarr = {
+    enable = true;
+    user = "yousuf";
+    group = "users";
+  };
+
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
 
 }

@@ -1,33 +1,42 @@
 {
   pkgs,
-  config,
   inputs,
   ...
 }:
 
 {
 
-  imports = [ inputs.home-manager.darwinModules.home-manager ];
-  home-manager = import ./home.nix;
+  imports = [
+    ./base.nix
+    ./home.nix
+    inputs.home-manager.darwinModules.home-manager
+  ];
+
+  users.users.yousuf.home = "/Users/yousuf";
 
   environment.systemPackages = with pkgs; [
-    iina
     syncthing-macos
+    karabiner-elements
+    espanso
   ];
 
   homebrew = {
     enable = true;
     casks = [
       "affinity"
-      "betterdisplay"
       "sf-symbols"
+      "vivaldi"
+      "the-unarchiver"
+      "rustdesk"
+      "protonvpn"
+      "obsidian"
     ];
   };
 
   # System settings
   system.primaryUser = "yousuf";
   system.defaults = {
-    NSGlobalDomain."com.apple.swipescrolldirection" = false;
+    controlcenter.Sound = true;
     dock = {
       minimize-to-application = true;
       show-recents = false;
@@ -46,10 +55,15 @@
       QuitMenuItem = false;
       ShowExternalHardDrivesOnDesktop = false;
       ShowRemovableMediaOnDesktop = false;
-      ShowPathbar = true;
     };
-    controlcenter.Sound = true;
-    NSGlobalDomain.AppleShowAllFiles = true;
+    NSGlobalDomain = {
+      "com.apple.swipescrolldirection" = false;
+      ApplePressAndHoldEnabled = false;
+      AppleShowAllFiles = true;
+      InitialKeyRepeat = 15;
+      KeyRepeat = 4;
+    };
+
     CustomUserPreferences = {
       NSGlobalDomain = {
         AppleActionOnDoubleClick = "Maximize";
@@ -81,8 +95,11 @@
     };
   };
 
-  users.yousuf.file."/Library/Fonts".source =
-    config.lib.file.mkOutOfStoreSymlink "/Users/yousuf/Sync/Fonts/";
+  home-manager.users.yousuf.programs.firefox.profiles.default.settings = {
+    "layout.css.devPixelsPerPx" = 2.15;
+  };
+
+  power.sleep.display = "never";
 
   # Misc device settings
   system.stateVersion = 6;

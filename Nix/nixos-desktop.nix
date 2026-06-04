@@ -1,22 +1,31 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }:
 
 {
 
+  environment.systemPackages = with pkgs; [
+    feishin
+  ];
+
+  imports = [
+    ./nixos.nix
+    ./nixos-desktop-hardware.nix
+  ];
+
   services = {
-    syncthing.dataDir = "/home/yousuf/Sync/.Syncthing-Desktop/";
     navidrome = {
       enable = true;
+      settings.Address = "0.0.0.0";
       settings.MusicFolder = "/home/yousuf/Music";
     };
     immich = {
       enable = true;
-      accelerationDevices = null;
       host = "0.0.0.0";
-      openFirewall = true;
+      accelerationDevices = null;
     };
     linkwarden = {
       enable = true;
@@ -56,6 +65,7 @@
   nixpkgs.config.cudaSupport = true;
 
   systemd.services = {
+    navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
     flake-update = {
       description = "Update flake inputs";
       unitConfig = {
@@ -84,9 +94,9 @@
 
   hardware = {
     nvidia = {
-      powerManagement.enable = true;
-      nvidiaPersistenced = true;
-      nvidiaSettings = true;
+      # powerManagement.enable = true;
+      # nvidiaPersistenced = true;
+      # nvidiaSettings = true;
       open = true;
     };
   };

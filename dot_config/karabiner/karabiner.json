@@ -5,6 +5,39 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Remap Volume Down to ⌥+⇧+F11 and Volume Up to ⌥+⇧+F12",
+                        "manipulators": [
+                            {
+                                "from": { "consumer_key_code": "volume_decrement" },
+                                "to": [
+                                    {
+                                        "key_code": "f11",
+                                        "modifiers": ["option", "shift"]
+                                    },
+                                    {
+                                        "key_code": "f11",
+                                        "modifiers": ["option", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            },
+                            {
+                                "from": { "consumer_key_code": "volume_increment" },
+                                "to": [
+                                    {
+                                        "key_code": "f12",
+                                        "modifiers": ["option", "shift"]
+                                    },
+                                    {
+                                        "key_code": "f12",
+                                        "modifiers": ["option", "shift"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Left ctrl + hjkl to arrow keys Vim",
                         "manipulators": [
                             {
