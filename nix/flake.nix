@@ -34,11 +34,14 @@
       # inputs.hyprland.follows = "hyprland";
       # inputs.hyprland.follows = "nixpkgs";
     };
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     dolphin-overlay.url = "github:rumboon/dolphin-overlay";
     awww.url = "git+https://codeberg.org/LGFae/awww";
-    timewall.url = "github:bcyran/timewall";
     affinity-nix.url = "github:mrshmllow/affinity-nix";
   };
 

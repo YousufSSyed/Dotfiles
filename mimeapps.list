@@ -49,3 +49,4 @@ text/x-lua=neovide.desktop;
 x-scheme-handler/chrome=zen-twilight.desktop
 x-scheme-handler/http=zen-twilight.desktop
 x-scheme-handler/https=zen-twilight.desktop
+x-scheme-handler/discord=vesktop.desktop

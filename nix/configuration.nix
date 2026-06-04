@@ -30,7 +30,6 @@ in
     pkgs.obsidian
     pkgs.activitywatch
     pkgs.waybar
-    pkgs.nwg-dock-hyprland
     pkgs.qview
     pkgs.gparted
     # pkgs.ulauncher
@@ -130,9 +129,9 @@ in
     pkgs.sunwait
     pkgs.xdg-desktop-portal-hyprland
     pkgs.xdg-desktop-portal
-    pkgs.hyprpanel
     pkgs.widevine-cdm
     pkgs.dconf
+    pkgs.vesktop
 
     # Flakes
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -142,6 +141,7 @@ in
     inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.shellevents
     inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
     inputs.aw-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.aw-watcher-window-hyprland
+    inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # inputs.youtube-tui.packages.${pkgs.stdenv.hostPlatform.system}.youtube-tui
     pkgs.youtube-tui
@@ -464,7 +464,7 @@ in
           };
           file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Assets/Fonts/";
           file.".zen/${zen-profile}/chrome".source =
-            config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/Fonts/";
+            config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/userChrome";
         };
         programs.zen-browser = {
           enable = true;
@@ -493,7 +493,13 @@ in
                 "browser.urlbar.trimURLs" = false; # Show whole URLs in the URL bar.
                 "devtools.debugger.remote-enabled" = true;
                 "devtools.chrome.enabled" = true;
+                "zen.theme.content-element-separation" = 0; # disable border around zen window
               };
+            };
+            secondary = {
+              id = 1;
+              name = "Secondary";
+              path = "o9fiaukr.2nd Profile";
             };
           };
         };
