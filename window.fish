@@ -11,6 +11,7 @@ switch $argv[1]
 case 1 # Maximize
 	set width (math {$resolution[1]} - {$gaps[2]} - {$gaps[4]})
 	set position "$(math {$gaps[4]}) $(math {$gaps[1]})"
+argparse 'c/class=' 'a/appcommand=' -- $argv
 case 2	# Left half of the screen 
 	set width (math {$resolution[1]} / 2 - {$gaps[4]})
 	set position "$(math {$gaps[4]}) $(math {$gaps[1]})"
