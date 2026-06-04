@@ -400,8 +400,8 @@ return {
 	-- },
 	{
 		"obsidian-nvim/obsidian.nvim",
-		version = "*", -- recommended, use latest release instead of latest commit
-		lazy = false,
+		version = "*",
+		lazy = true,
 		ft = "markdown",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -410,32 +410,19 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		opts = {
-			daily_notes = {
-				date_format = "%Y-%m-%d",
+			legacy_commands = false,
+			workspaces = {
+				{
+					path = "/home/yousuf/Assets/Personal-Vault",
+					name = "Personal-Vault",
+				},
 			},
-			dir = "~/Assets/Personal-Vault",
 			templates = {
 				folder = "(1) Obsidian Notes & Files",
 				date_format = dateFormat,
 			},
 			ui = {
 				enable = false,
-			},
-			mappings = {
-				-- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
-				["gf"] = {
-					action = function()
-						return require("obsidian").util.gf_passthrough()
-					end,
-					opts = { noremap = false, expr = true, buffer = true },
-				},
-				-- Toggle check-boxes.
-				["<leader>ch"] = {
-					action = function()
-						return require("obsidian").util.toggle_checkbox()
-					end,
-					opts = { buffer = true },
-				},
 			},
 			---@return table
 			note_frontmatter_func = function(note)
@@ -470,23 +457,6 @@ return {
 		config = function()
 			require("markdowny").setup()
 		end,
-	},
-	{
-		"oflisback/obsidian-bridge.nvim",
-		config = function()
-			require("obsidian-bridge").setup({
-				scroll_sync = true,
-			})
-		end,
-		event = {
-			"BufReadPre *.md",
-			"BufNewFile *.md",
-		},
-		lazy = true,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
 	},
 	{
 		"echasnovski/mini.nvim",

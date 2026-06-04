@@ -6,6 +6,7 @@
   lib,
   pkgs,
   modulesPath,
+  flake-inputs,
   ...
 }:
 
@@ -47,6 +48,7 @@
 
   hardware = {
     asahi = {
+      # extractPeripheralFirmware = false;
       peripheralFirmwareDirectory = ./firmware;
       setupAsahiSound = true;
       enable = true;

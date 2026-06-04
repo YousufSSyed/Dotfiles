@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   home = {
     stateVersion = "25.11";
@@ -18,6 +18,7 @@
       pkgs.yazi
       pkgs.neovide
     ];
+    file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Assets/Fonts/";
   };
   # stylix.targets.neovim.enable = true;
   # stylix.targets.neovide.enable = true;

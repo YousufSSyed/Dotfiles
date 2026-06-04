@@ -126,7 +126,7 @@ if vim.g.neovide then
 	local function toggleAnimations(toggle)
 		if toggle then
 			vim.g.neovide_cursor_animation_length = 0.3
-			vim.g.neovide_cursor_short_animation_length = 0.15
+			vim.g.neovide_cursor_short_animation_length = 0.05
 		else
 			vim.g.neovide_cursor_animation_length = 0.0
 			vim.g.neovide_cursor_short_animation_length = 0.0

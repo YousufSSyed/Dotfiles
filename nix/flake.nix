@@ -40,13 +40,8 @@
     { self, nixpkgs, ... }@inputs:
     {
       nixosConfigurations.NixOS-MBP = nixpkgs.lib.nixosSystem {
-        specialArgs.flake-inputs = inputs;
+        specialArgs = { inherit inputs; };
         modules = [
-          {
-            nixpkgs.overlays = [
-              inputs.dolphin-overlay.overlays.default
-            ];
-          }
           inputs.apple-silicon.nixosModules.default
           # inputs.home-manager.nixosModules.home-manager
           inputs.espanso-fix.nixosModules.espanso-capdacoverride

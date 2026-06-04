@@ -2,19 +2,22 @@
   config,
   lib,
   pkgs,
-  flake-inputs,
+  inputs,
   ...
 }:
 
 {
   imports = [
-    flake-inputs.home-manager.nixosModules.home-manager
-    flake-inputs.stylix.nixosModules.stylix
+    inputs.home-manager.nixosModules.home-manager
+    inputs.stylix.nixosModules.stylix
   ];
 
   # Packages
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [ flake-inputs.rust-overlay.overlays.default ];
+  nixpkgs.overlays = [
+    inputs.rust-overlay.overlays.default
+    inputs.dolphin-overlay.overlays.default
+  ];
   environment.systemPackages = with pkgs; [
     # Apps
     # pkgs.kitty
@@ -80,6 +83,8 @@
     pkgs.jq
     pkgs.p7zip
     pkgs.whois
+    pkgs.git-filter-repo
+    pkgs.tig
 
     # Command Line Apps / CLI Apps
     pkgs.wf-recorder
@@ -109,13 +114,13 @@
     pkgs.base16-schemes
 
     # Flakes
-    flake-inputs.zen-browser.packages.${pkgs.system}.default
-    flake-inputs.hyprshell.packages.${pkgs.system}.hyprshell
-    flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
-    flake-inputs.hyprland-contrib.packages.${pkgs.system}.hdrop
-    flake-inputs.hyprland-contrib.packages.${pkgs.system}.shellevents
-    flake-inputs.swww.packages.${pkgs.system}.swww
-    # flake-inputs.youtube-tui.packages.${pkgs.system}.youtube-tui
+    inputs.zen-browser.packages.${pkgs.system}.default
+    inputs.hyprshell.packages.${pkgs.system}.hyprshell
+    inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
+    inputs.hyprland-contrib.packages.${pkgs.system}.hdrop
+    inputs.hyprland-contrib.packages.${pkgs.system}.shellevents
+    inputs.swww.packages.${pkgs.system}.swww
+    # inputs.youtube-tui.packages.${pkgs.system}.youtube-tui
     pkgs.youtube-tui
     pkgs.rust-bin.stable.latest.default
 
@@ -133,7 +138,7 @@
 
   system.autoUpgrade = {
     enable = true;
-    flake = flake-inputs.self.outPath;
+    flake = inputs.self.outPath;
     flags = [
       "--update-input"
       "nixpkgs"
@@ -303,21 +308,6 @@
   fonts = {
     enableDefaultPackages = true;
     enableGhostscriptFonts = true;
-    # packages = with pkgs; [
-    #   (pkgs.callPackage ./Fonts.nix { })
-    # ];
-    packages =
-      { pkgs }:
-      let
-        fonts = builtins.path {
-          path = /home/yousuf/Assets/Fonts;
-          sha256 = "sha256-HBcCAVIIp3Q/NKBMxfN5xcZZeYxjWVxYk2RfcKeiWaI=";
-        };
-      in
-      pkgs.runCommandLocal "fonts" { } ''
-        mkdir -p $out/share/fonts/truetype
-        cp -r ${fonts}/* $out/share/fonts/truetype/
-      '';
     fontconfig = {
       defaultFonts = {
         sansSerif = [ "SF Pro Display" ];
