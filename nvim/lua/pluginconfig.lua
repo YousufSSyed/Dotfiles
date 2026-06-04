@@ -77,8 +77,23 @@ cmp.setup.cmdline(":", {
 --vim.keymap.set("n", "S", require('substitute').eol, { noremap = true })
 --vim.keymap.set("x", "s", require('substitute').visual, { noremap = true })
 
+local autocmds = require("kitty-scrollback.autocommands")
+autocmds.set_term_enter_autocmd = function(_) end
+autocmds.set_yank_post_autocmd = function() end
+require("kitty-scrollback").setup({
+	{
+		keymaps_enabled = false,
+		paste_window = {
+			yank_register_enabled = false,
+		},
+		status_window = {
+			autoclose = false, -- <-- set this to false
+		},
+	},
+})
+
 -- LSP Config
-require("lspconfig").lua_ls.setup({
+vim.lsp.config("lua_ls", {
 	capabilities = capabilities,
 	on_attach = on_attach,
 })
@@ -108,7 +123,7 @@ vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
 -- An example nvim-lspconfig capabilities setting
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 
-require("lspconfig").markdown_oxide.setup({
+vim.lsp.config("markdown_oxide", {
 	-- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
 	-- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
 	capabilities = vim.tbl_deep_extend("force", capabilities, {
@@ -362,7 +377,6 @@ end
 vim.api.nvim_command("highlight HopUnmatched guifg=none guibg=none guisp=none ctermfg=none")
 
 require("nvim-treesitter.configs").setup({
-	ensure_installed = "maintained",
 	highlight = {
 		enable = true,
 	},
@@ -469,7 +483,7 @@ vim.api.nvim_create_autocmd("vimenter", {
 			vim.cmd.close()
 		end
 		if fresh() then
-			require("persistence").select()
+			vim.cmd(":SessionSelect")
 		end
 	end,
 	nested = true,

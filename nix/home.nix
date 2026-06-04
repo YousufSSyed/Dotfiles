@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 {
   home = {
     stateVersion = "25.11";
@@ -19,6 +24,15 @@
       pkgs.neovide
     ];
     file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Assets/Fonts/";
+  };
+
+  wayland.windowManager.hyprland = {
+    enable = true;
+    plugins = [ inputs.hypr-dynamic-cursors.packages.${pkgs.system}.hypr-dynamic-cursors ];
+    systemd.enable = false;
+    extraConfig = ''
+      ${builtins.readFile ./hyprland.conf}
+    '';
   };
   # stylix.targets.neovim.enable = true;
   # stylix.targets.neovide.enable = true;

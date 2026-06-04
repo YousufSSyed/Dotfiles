@@ -519,10 +519,10 @@ return {
 		end,
 	},
 	{
-		"folke/persistence.nvim",
+		"olimorris/persisted.nvim",
 		enabled = fresh(),
+		lazy = false,
 		event = "BufReadPre",
-		opts = {},
 	},
 	{
 		"catppuccin/nvim",
@@ -668,15 +668,11 @@ return {
 			vim.go.cmdheight = 0
 		end,
 	},
-	{
-		"nvzone/menu",
-		lazy = true,
-		dependencies = { "nvzone/volt" },
-	},
+	{ "nvzone/volt", lazy = true },
+	{ "nvzone/menu", lazy = true },
 	{
 		"nvzone/minty",
 		cmd = { "Shades", "Huefy" },
-		dependencies = { "nvzone/volt" },
 	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -922,18 +918,6 @@ return {
 			"KittyScrollbackGenerateCommandLineEditing",
 		},
 		event = { "User KittyScrollbackLaunch" },
-		config = function()
-			require("kitty-scrollback").setup({
-				{
-					paste_window = {
-						yank_register_enabled = false,
-					},
-					status_window = {
-						autoclose = false, -- <-- set this to false
-					},
-				},
-			})
-		end,
 	},
 	{ "tpope/vim-fugitive" },
 	{
