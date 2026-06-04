@@ -60,7 +60,6 @@
     socat
     age
     sops
-    git-crypt
     yq-go
     jnv
     jq
@@ -73,6 +72,7 @@
     wget
     chezmoi
     rclone
+    watchexec
 
     # Command Line Apps / CLI Apps
     dua
@@ -100,6 +100,8 @@
     nerd-fonts.iosevka
     dconf
   ];
+
+  programs.fish.enable = true;
 
   nix = {
     settings.experimental-features = [

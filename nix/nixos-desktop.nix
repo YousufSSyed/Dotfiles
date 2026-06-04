@@ -21,10 +21,7 @@ in
 
   # Packages
   nixpkgs = {
-    config = {
-      cudaSupport = true;
-      allowUnfree = true;
-    };
+    config.cudaSupport = true;
     overlays = [
       inputs.dolphin-overlay.overlays.default
     ];
@@ -45,7 +42,9 @@ in
     davinci-resolve
     kdePackages.kde-dev-utils
     plasma-panel-colorizer
+    activitywatch
     # kdotool
+    libreoffice
 
     rustdesk-flutter
 
@@ -56,6 +55,9 @@ in
     compsize
     rofimoji
     hyprpicker
+    snapper
+    wl-clipboard
+    slurp
 
     discordchatexporter-desktop
 
@@ -63,6 +65,9 @@ in
     wf-recorder
     grim
     quickshell
+    (mpv-unwrapped.override {
+      ffmpeg = ffmpeg-full;
+    })
 
     # Misc Packages
     libinput-gestures
@@ -90,6 +95,12 @@ in
     inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
     inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
     kdePackages.extra-cmake-modules
+
+    # AI Tools
+    code-cursor-fhs
+
+    # Git tools
+    github-desktop
   ];
 
   systemd = {
@@ -103,13 +114,44 @@ in
         OnBootSec = "1s";
       };
     };
-    user.services."wallpaper" = {
-      script = ''
-        /run/current-system/sw/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        User = "yousuf";
+    user.services = {
+      "mac-mounting" = {
+        serviceConfig = {
+          ExecStartPre = "/run/current-system/sw/bin/mkdir -p ";
+          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
+          ExecStop = "${pkgs.fuse}/bin/fusermount -u /home/yousuf/Mac";
+          Type = "oneshot";
+          User = "yousuf";
+          Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "dotfiles" = {
+        script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yousuf";
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "copyparty" = {
+        serviceConfig = {
+          ExecStartPre = "-${pkgs.udisks}/bin/udisksctl mount -b /dev/nvme0n1p4";
+          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A -v /run/media/yousuf/Secondary:/Secondary:A --see-dots";
+          ExecStop = "${pkgs.udisks}/bin/udisksctl unmount -b /dev/nvme0n1p4";
+          Type = "oneshot";
+          User = "yousuf";
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "wallpaper" = {
+        script = ''
+          ${pkgs.fish}/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yousuf";
+        };
       };
     };
     # Systemd services
@@ -123,7 +165,7 @@ in
           StartLimitBurst = 5;
         };
         serviceConfig = {
-          ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.config/nix";
+          ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.local/share/chezmoi";
           Restart = "on-failure";
           RestartSec = "30";
           Type = "oneshot"; # Ensure that it finishes before starting nixos-upgrade
@@ -223,13 +265,13 @@ in
     # Global Environment Variables
     bash.shellInit = ''
       	export GRIMBLAST_HIDE_CURSOR=0
-      	export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/sops/age/keys.txt"
+      	export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/misc/age-keys.txt"
       	export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
       	export MANPAGER="nvim +Man!"
       	export EDITOR="nvim"
       	export HOUR="5"
       	# awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
-      	export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
+      	# export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
     '';
   };
 
@@ -504,8 +546,8 @@ in
   };
 
   sops = {
-    age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";
-    defaultSopsFile = ./secrets.yaml;
+    age.keyFile = "/home/yousuf/Assets/misc/age-keys.txt";
+    defaultSopsFile = ./nix/secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
     secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };
@@ -521,19 +563,8 @@ in
   };
 
   nix = {
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    optimise = {
-      persistent = true;
-      automatic = true;
-    };
-    gc = {
-      options = "--delete-older-than 7d";
-      dates = "weekly";
-      automatic = true;
-    };
+    optimise.persistent = true;
+    gc.dates = "weekly";
   };
 
   fonts = {
@@ -575,8 +606,6 @@ in
       "ydotool"
       "i2c"
       "docker"
-      "storage"
-      "syncthing"
     ];
   };
 
@@ -641,6 +670,7 @@ in
     syncthing = {
       enable = true;
       user = "yousuf";
+      dataDir = "/home/yousuf/.syncthing";
     };
   };
 

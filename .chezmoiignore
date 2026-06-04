@@ -2,3 +2,9 @@
 flake.lock
 flake.nix
 nix/
+.DS_Store
+*.sync-conflict-*
+userChrome/
+fish/
+misc/
+.stfolder/

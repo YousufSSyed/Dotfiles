@@ -19,7 +19,8 @@
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
     };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:GaetanLepage/nixpkgs/triton-bin";
     dolphin-overlay.url = "github:rumboon/dolphin-overlay";
     awww.url = "git+https://codeberg.org/LGFae/awww";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
@@ -64,7 +65,7 @@
         ];
       };
       # $ darwin-rebuild build --flake .#"MacMini"
-      darwinConfigurations."Mac-Mini" = inputs.nix-darwin.lib.darwinSystem {
+      darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [
           ./nix/base.nix

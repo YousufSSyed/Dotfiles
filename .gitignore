@@ -1,2 +1,4 @@
 .stfolder
 .DS_Store
+*.sync-conflict-*
+.stfolder/
