@@ -17,6 +17,7 @@ in
     inputs.home-manager.nixosModules.home-manager
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.sops-nix.nixosModules.sops
+    inputs.nix-index-database.nixosModules.default
   ];
 
   # Packages
@@ -167,8 +168,6 @@ in
 
   programs = {
     ydotool.enable = true;
-    git.enable = true;
-    mtr.enable = true;
     firefox.enable = true;
     firefox.autoConfig = builtins.readFile (
       builtins.fetchurl {
@@ -176,10 +175,6 @@ in
         sha256 = "1mx679fbc4d9x4bnqajqx5a95y1lfasvf90pbqkh9sm3ch945p40";
       }
     );
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
     nh = {
       enable = true;
       clean.enable = true;
@@ -213,6 +208,8 @@ in
       export PYTHON_HISTORY=~/.local/share/python/history
       export PSQL_Hsitory=~/.local/share/.psql_history
       export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtkrc-2.0
+      export TRITON_CACHE_DIR=~/.local/share/triton/
+      export GIT_CONFIG_GLOBAL=~/.config/.gitconfig
     '';
   };
 
@@ -288,7 +285,7 @@ in
     loader = {
       efi.canTouchEfiVariables = true;
       systemd-boot.enable = true;
-      timeout = 0; # Disable the startup menu to select a nix config version.
+      timeout = 0;
     };
     # Silent boot
     plymouth.enable = true;

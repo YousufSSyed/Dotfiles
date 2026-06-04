@@ -24,6 +24,7 @@
     lazygit
 
     # Command Line Tools / CLIs
+    git
     uutils-coreutils-noprefix
     coreutils-prefixed
     whisper-cpp
@@ -110,7 +111,6 @@
   ];
 
   security.sudo.extraConfig = "Defaults pwfeedback";
-
   nixpkgs.config.allowUnfree = true;
 
   nix = {

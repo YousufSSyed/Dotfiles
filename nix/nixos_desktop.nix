@@ -26,7 +26,6 @@
       enable = true;
       host = "0.0.0.0";
       accelerationDevices = null;
-      mediaLocation = "/home/yousuf/Immich";
     };
     linkwarden = {
       enable = true;

@@ -10,6 +10,7 @@
     ./base.nix
     ./home.nix
     inputs.home-manager.darwinModules.home-manager
+    inputs.nix-index-database.darwinModules.nix-index
   ];
 
   users.users.yousuf.home = "/Users/yousuf";
