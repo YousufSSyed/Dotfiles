@@ -8,14 +8,13 @@
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
-    inputs.stylix.nixosModules.stylix
-    inputs.hyprland.nixosModules.default
+    # inputs.hyprland.nixosModules.default
+    inputs.sops-nix.nixosModules.sops
   ];
 
   # Packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
-    inputs.rust-overlay.overlays.default
     inputs.dolphin-overlay.overlays.default
   ];
   environment.systemPackages = [
@@ -34,7 +33,6 @@
     pkgs.font-manager
     # pkgs.dissent
     pkgs.qbittorrent
-    pkgs.swaylock
     pkgs.megabasterd
     pkgs.gimp3-with-plugins
     pkgs.github-desktop
@@ -46,6 +44,9 @@
     pkgs.lutris
     pkgs.libuuid
     pkgs.edk2
+
+    pkgs.winetricks
+    pkgs.wineWow64Packages.wayland
 
     # Command Line Tools / CLIs
     pkgs.coreutils-prefixed
@@ -66,7 +67,6 @@
     pkgs.sd
     pkgs.nsxiv
     pkgs.ffmpeg-full
-    pkgs.wlrctl
     pkgs.pkg-config
     pkgs.slurp
     pkgs.killall
@@ -127,21 +127,20 @@
     pkgs.xdg-desktop-portal-hyprland
     pkgs.xdg-desktop-portal
     pkgs.hyprpanel
-    pkgs.base16-schemes
     pkgs.widevine-cdm
 
     # Flakes
-    inputs.zen-browser.packages.${pkgs.system}.default
-    inputs.hyprshell.packages.${pkgs.system}.hyprshell
-    inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
-    inputs.hyprland-contrib.packages.${pkgs.system}.hdrop
-    inputs.hyprland-contrib.packages.${pkgs.system}.shellevents
-    inputs.awww.packages.${pkgs.system}.awww
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.hyprshell.packages.${pkgs.stdenv.hostPlatform.system}.hyprshell
+    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.grimblast
+    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.hdrop
+    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.shellevents
+    inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
+    inputs.aw-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.aw-watcher-window-hyprland
+    inputs.matugen.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-    # inputs.youtube-tui.packages.${pkgs.system}.youtube-tui
+    # inputs.youtube-tui.packages.${pkgs.stdenv.hostPlatform.system}.youtube-tui
     pkgs.youtube-tui
-    pkgs.rust-bin.stable.latest.default
-    inputs.timewall.packages.${pkgs.system}.timewall
 
     # KDE Packages
     pkgs.kdePackages.dolphin
@@ -152,6 +151,32 @@
     pkgs.linuxHeaders
     pkgs.looking-glass-client
   ];
+
+  systemd.timers."wallpaper" = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "1s";
+      OnUnitActiveSec = "1m";
+      Unit = "wallpaper.service";
+    };
+  };
+  systemd.services."wallpaper" = {
+    script = ''
+      			set -eu
+            /run/current-system/sw/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = "yousuf";
+      RemainAfterExit = true;
+      PrivateTmp = true;
+      IgnoreSIGPIPE = false;
+    };
+  };
+
+
+
+
 
   programs.virt-manager.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
@@ -194,10 +219,27 @@
 
   services.linkwarden = {
     enable = true;
-    secretFiles = {
-      NEXTAUTH_SECRET = config.sops.NEXTAUTH_SECRET.path;
+    secretFiles.NEXTAUTH_SECRET = config.sops.secrets."NEXTAUTH_SECRET".path;
+    enableRegistration = true;
+    environment = {
+      NEXTAUTH_URL = "http://localhost:3000/api/v1/auth";
     };
   };
+
+  services.invidious = {
+    enable = true;
+    port = 3001;
+  };
+
+  # services.immich = {
+  #   enable = true;
+  #   accelerationDevices = null;
+  #   mediaLocation = "/home/yousuf/Assets/Immich";
+  # };
+  # users.users.immich.extraGroups = [
+  #   "video"
+  #   "render"
+  # ];
 
   programs.nix-ld.libraries = [ config.boot.kernelPackages.nvidia_x11 ];
 
@@ -223,8 +265,6 @@
     SUBSYSTEM=="vfio", OWNER="root", GROUP="kvm"
   '';
 
-  services.desktopManager.plasma6.enable = true;
-  services.flatpak.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   hardware = {
@@ -261,12 +301,9 @@
     hyprland = {
       withUWSM = true;
       enable = true;
-      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-      portalPackage =
-        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-      plugins = [
-        inputs.hypr-dynamic-cursors.packages.${pkgs.system}.hypr-dynamic-cursors
-      ];
+      # package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      # portalPackage =
+      #   inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
     };
     hyprlock.enable = true;
     uwsm.enable = true;
@@ -343,7 +380,6 @@
     plymouth.enable = true;
     consoleLogLevel = 0;
     initrd.verbose = false;
-    blacklistedKernelModules = [ "i915" ];
     kernelModules = [
       "uinput"
       "vfio-iommu-type1"
@@ -381,11 +417,12 @@
   boot.extraModprobeConfig = "options vfio-pci ids=8086:3e98";
   systemd.packages = [ pkgs.libinput-gestures ];
 
+  services.flatpak.enable = true;
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "backup";
-    # See next snippet
     users.yousuf =
       {
         config,
@@ -394,7 +431,9 @@
         ...
       }:
       {
-        imports = [ inputs.zen-browser.homeModules.twilight ];
+        imports = [
+          inputs.zen-browser.homeModules.twilight
+        ];
         home = {
           stateVersion = "25.11";
           pointerCursor = {
@@ -443,7 +482,7 @@
     age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";
     defaultSopsFile = ./secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
-    secrets.NEXTAUTH_SECRET.neededForUsers = true;
+    secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };
 
   programs.bash.shellInit = ''
@@ -452,9 +491,6 @@
     				export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
     				export MANPAGER="nvim +Man!"
     				export EDITOR="nvim"
-    				export HYPRDYNAMICCURSORS="${
-          inputs.hypr-dynamic-cursors.packages.${pkgs.system}.hypr-dynamic-cursors
-        }/lib/libhypr-dynamic-cursors.so"
   '';
 
   networking = {
@@ -506,24 +542,22 @@
     };
   };
 
-  users.users = {
-    yousuf = {
-      isNormalUser = true;
-      home = "/home/yousuf";
-      extraGroups = [
-        "networkmanager"
-        "wheel"
-        "keyd"
-        "input"
-        "ydotool"
-        "libvirtd"
-        "kvm"
-        "qemu-libvirtd"
-        "i2c"
-        "docker"
-      ];
-      hashedPasswordFile = config.sops.secrets.YOUSUFS_PASSWORD.path;
-    };
+  users.users.yousuf = {
+    isNormalUser = true;
+    home = "/home/yousuf";
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "keyd"
+      "input"
+      "ydotool"
+      "libvirtd"
+      "kvm"
+      "qemu-libvirtd"
+      "i2c"
+      "docker"
+    ];
+    hashedPasswordFile = config.sops.secrets.YOUSUFS_PASSWORD.path;
   };
 
   virtualisation.docker = {
@@ -531,10 +565,18 @@
   };
 
   services = {
-    # getty.autologinUser = "yousuf";
     keyd.enable = true;
     atuin.enable = true;
     libinput.enable = true;
+    desktopManager.plasma6.enable = true;
+    displayManager = {
+      defaultSession = "hyprland-uwsm";
+      autoLogin.user = "yousuf";
+      sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
+    };
     xserver = {
       videoDrivers = [ "nvidia" ];
       enable = true;
@@ -542,20 +584,10 @@
     gvfs.enable = true; # Enables reading external drives
     udisks2.enable = true; # Enables reading external drives
     automatic-timezoned.enable = true;
-    pipewire = {
-      enable = true;
-    };
+    pipewire.enable = true;
     espanso = {
-      enable = true;
+      enable = false;
       package = pkgs.espanso-wayland;
-    };
-    displayManager = {
-      # autoLogin.user = "yousuf";
-      sddm = {
-        enable = true;
-        wayland.enable = true;
-      };
-      defaultSession = "hyprland-uwsm";
     };
     btrfs.autoScrub = {
       enable = true;
@@ -565,6 +597,5 @@
   };
 
   time.hardwareClockInLocalTime = true;
-
   system.stateVersion = "25.11";
 }
