@@ -20,8 +20,6 @@ in
   ];
 
   # Packages
-  nixpkgs.config.cudaSupport = true;
-
   environment.systemPackages = with pkgs; [
     # Apps
     gparted
@@ -196,10 +194,6 @@ in
     i2c.enable = true;
     bluetooth.enable = true;
     graphics.enable = true;
-    nvidia = {
-      nvidiaSettings = true;
-      open = true;
-    };
   };
 
   system.autoUpgrade = {

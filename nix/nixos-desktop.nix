@@ -7,6 +7,15 @@
 }:
 
 {
+  nixpkgs.config.cudaSupport = true;
+
+  hardware = {
+    nvidia = {
+      nvidiaSettings = true;
+      open = true;
+    };
+  };
+
   services.linkwarden = {
     enable = true;
     secretFiles.NEXTAUTH_SECRET = config.sops.secrets."NEXTAUTH_SECRET".path;
