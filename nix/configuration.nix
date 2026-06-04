@@ -8,7 +8,8 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
+    flake-inputs.home-manager.nixosModules.home-manager
+    flake-inputs.stylix.nixosModules.stylix
   ];
 
   # Packages
@@ -16,8 +17,8 @@
   nixpkgs.overlays = [ flake-inputs.rust-overlay.overlays.default ];
   environment.systemPackages = with pkgs; [
     # Apps
-    pkgs.kitty
-    pkgs.neovide
+    # pkgs.kitty
+    # pkgs.neovide
     pkgs.obsidian
     pkgs.activitywatch
     pkgs.waybar
@@ -42,7 +43,7 @@
     pkgs.eza
     pkgs.gcc
     pkgs.cmake
-    pkgs.bat
+    # pkgs.bat
     pkgs.keyd
     pkgs.zoxide
     pkgs.ripgrep
@@ -64,7 +65,6 @@
     pkgs.exiftool
     pkgs.sunpaper
     pkgs.wallutils
-    pkgs.hyprpaper
     pkgs.unzip
     pkgs.imagemagick
     pkgs.tesseract
@@ -75,6 +75,11 @@
     pkgs.git-crypt
     pkgs.btrfs-progs
     pkgs.yq-go
+    pkgs.snapper
+    pkgs.jnv
+    pkgs.jq
+    pkgs.p7zip
+    pkgs.whois
 
     # Command Line Apps / CLI Apps
     pkgs.wf-recorder
@@ -97,27 +102,22 @@
     pkgs.libinput-gestures
     pkgs.brightnessctl
     pkgs.apple-cursor
-    pkgs.timewall
     pkgs.sunwait
     pkgs.xdg-desktop-portal-hyprland
     pkgs.xdg-desktop-portal
     pkgs.hyprpanel
+    pkgs.base16-schemes
 
     # Flakes
     flake-inputs.zen-browser.packages.${pkgs.system}.default
-    flake-inputs.hyprshell.packages.aarch64-linux.hyprshell
+    flake-inputs.hyprshell.packages.${pkgs.system}.hyprshell
     flake-inputs.hyprland-contrib.packages.${pkgs.system}.grimblast
     flake-inputs.hyprland-contrib.packages.${pkgs.system}.hdrop
     flake-inputs.hyprland-contrib.packages.${pkgs.system}.shellevents
-    # flake-inputs.swww.packages.${pkgs.system}.swww
-    # pkgs.swww
+    flake-inputs.swww.packages.${pkgs.system}.swww
+    # flake-inputs.youtube-tui.packages.${pkgs.system}.youtube-tui
+    pkgs.youtube-tui
     pkgs.rust-bin.stable.latest.default
-
-    # Temp Packages
-    pkgs.jnv
-    pkgs.jq
-    pkgs.jaq
-    pkgs.yq
 
     # KDE Packages
     kdePackages.dolphin
@@ -125,8 +125,6 @@
     pkgs.haruna
     pkgs.libsForQt5.kservice
   ];
-
-  services.hypridle.enable = true;
 
   security = {
     polkit.enable = true;
@@ -145,11 +143,23 @@
     randomizedDelaySec = "45min";
   };
 
+  # App modules
   programs = {
-    hyprlock.enable = true;
     ydotool.enable = true;
-    neovim.enable = true;
-    yazi.enable = true;
+    # neovim.enable = true;
+    # fish.enable = true;
+    # yazi.enable = true;
+    git.enable = true;
+    firefox.enable = true;
+    mtr.enable = true;
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+    # Hpyrland
+    hyprland.withUWSM = true;
+    hyprland.enable = true;
+    hyprlock.enable = true;
     uwsm.enable = true;
     uwsm.waylandCompositors = {
       hyprland = {
@@ -158,17 +168,9 @@
         binPath = "/run/current-system/sw/bin/Hyprland";
       };
     };
-    hyprland.withUWSM = true;
-    hyprland.enable = true;
-    git.enable = true;
-    fish.enable = true;
-    firefox.enable = true;
-    mtr.enable = true;
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
   };
+
+  services.hypridle.enable = true;
 
   environment.etc."keyd/default.conf".text = ''
     [ids]
@@ -200,13 +202,6 @@
   '';
 
   environment = {
-    sessionVariables = rec {
-      GRIMBLAST_HIDE_CURSOR = 0;
-      SOPS_AGE_KEY_FILE = "/home/yousuf/Assets/sops/age/keys.txt";
-      SLURP_ARGS = "-B 00000000 -b 00000000 -c 80808080 -w 2";
-      MANPAGER = "nvim +Man!";
-      EDITOR = "nvim";
-    };
     # Makes keyd work
     etc = {
       "libinput/local-overrides.quirks".text = pkgs.lib.mkForce ''
@@ -235,7 +230,7 @@
       "zswap.enabled=1"
       "zswap.compressor=zstd"
       "zswap.zpool=zsmalloc"
-      "zswap.max_pool_percent=75"
+      "zswap.max_pool_percent=100"
       # Silent boot parameters
       "quiet"
       "splash"
@@ -246,21 +241,26 @@
     ];
   };
 
-  home-manager.users.yousuf =
-    { config, ... }:
-    {
-      home = {
-        stateVersion = "25.05";
-        pointerCursor = {
-          gtk.enable = true;
-          package = pkgs.apple-cursor;
-          name = "macOS";
-          size = 22;
-          x11.enable = true;
-          x11.defaultCursor = "macOS";
-        };
-      };
-    };
+  systemd.packages = [ pkgs.libinput-gestures ];
+
+  stylix = {
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
+    autoEnable = true;
+    enable = false;
+  };
+
+  programs = {
+    neovim.enable = true;
+    fish.enable = true;
+    yazi.enable = true;
+  };
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    # See next snippet
+    users.yousuf = import ./home.nix;
+  };
 
   sops = {
     age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";
@@ -270,13 +270,13 @@
   };
 
   programs.bash.shellInit = ''
-    export OBSIDIAN_REST_API_KEY="$(cat ${config.sops.secrets.OBSIDIAN_REST_API_KEY.path})"
+    		export OBSIDIAN_REST_API_KEY="$(cat ${config.sops.secrets.OBSIDIAN_REST_API_KEY.path})"
+    		export GRIMBLAST_HIDE_CURSOR=0
+    		export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/sops/age/keys.txt"
+    		export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
+    		export MANPAGER="nvim +Man!"
+    		export EDITOR="nvim"
   '';
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
 
   networking = {
     hostName = "NixOS-MBP"; # Computer Name
@@ -287,19 +287,37 @@
     };
   };
 
-  nix.optimise.automatic = true; # Nix optimizations
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
+  nix = {
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    optimise.automatic = true; # Nix optimizations
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
   };
 
   fonts = {
     enableDefaultPackages = true;
     enableGhostscriptFonts = true;
-    packages = with pkgs; [
-      (pkgs.callPackage ./Fonts.nix { })
-    ];
+    # packages = with pkgs; [
+    #   (pkgs.callPackage ./Fonts.nix { })
+    # ];
+    packages =
+      { pkgs }:
+      let
+        fonts = builtins.path {
+          path = /home/yousuf/Assets/Fonts;
+          sha256 = "sha256-HBcCAVIIp3Q/NKBMxfN5xcZZeYxjWVxYk2RfcKeiWaI=";
+        };
+      in
+      pkgs.runCommandLocal "fonts" { } ''
+        mkdir -p $out/share/fonts/truetype
+        cp -r ${fonts}/* $out/share/fonts/truetype/
+      '';
     fontconfig = {
       defaultFonts = {
         sansSerif = [ "SF Pro Display" ];
@@ -364,19 +382,12 @@
       };
       defaultSession = "hyprland-uwsm";
     };
-  };
-
-  hardware = {
-    asahi = {
+    btrfs.autoScrub = {
       enable = true;
-      peripheralFirmwareDirectory = ./firmware;
-      experimentalGPUInstallMode = "replace";
-      withRust = true;
-      setupAsahiSound = true;
+      interval = "monthly";
+      fileSystems = [ "/" ];
     };
   };
 
-  systemd.packages = [ pkgs.libinput-gestures ];
-
-  system.stateVersion = "25.05"; # Don't change this
+  system.stateVersion = "25.11";
 }
