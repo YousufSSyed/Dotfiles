@@ -1,10 +1,3 @@
-@font-face {
-    font-family: 'Material Icons';
-    font-style: normal;
-    font-weight: 400;
-    src: url(./materialicons.woff2) format('woff2');
-}
-
 :root {
     --bs1: 0 3px 10px rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.05);
     --bs1i: 0 3px 10px rgba(0,0,0,0.05) inset, 0 3px 10px rgba(0,0,0,0.05) inset;
@@ -20,149 +13,6 @@
     --tab-block-margin: 3px !important;
     --arrowpanel-border-color: transparent !important;
     --panel-border-color: rgba(0,0,0,0);
-	/* Icon Variables */
-    --AspectRatio: "aspect_ratio";
-    --AddPerson: "person_add";
-    --Badge: "verified_user";
-    --Book: "book";
-    --BookmarkAdd: "bookmark_add";
-    --Bookmarks: "bookmarks";
-    --Broken: "broken_image";
-    --Calculator: "insert_chart";
-    --Camera: "photo_camera";
-    --Caption: "closed_caption";
-    --Change: "change_history";
-    --Check: "done";
-    --Clear: "clear_all";
-    --Clock: "access_time";
-    --Close: "close";
-    --Code: "code";
-    --Compare: "compare_arrows";
-    --Copy: "content_copy";
-    --Cut: "content_cut";
-    --Desktop: "dashboard";
-    --Delete: "delete";
-    --Desktop: "desktop_windows";
-    --Document: "description";
-    --Door: "sensor_door";
-    --Download: "download";
-    --Email: "drafts";
-    --Error: "error";
-    --Extension: "extension";
-    --External: "exit_to_app";
-    --External2: "open_in_new";
-    --Eye: "remove_red_eye";
-    --EyeBlind: "visibility_off";
-    --FastForward: "fast_forward";
-    --Feedback: "feedback";
-    --File: "insert_drive_file";
-    --Filter: "filter_list";
-    --Folder: "folder";
-    --Format: "text_format";
-    --FormatClear: "format_clear";
-    --Fullscreen: "fullscreen";
-    --Gavel: "gavel";
-    --Grid: "grid_on";
-    --Group: "people";
-    --Hammer: "gavel";
-    --Highlight: "highlight_alt";
-    --Help: "help";
-    --Key: "vpn_key";
-    --Landscape: "crop_landscape";
-    --Line: "remove";
-    --Lock: "lock";
-    --Keyboard: "keyboard";
-    --Math: "functions";
-    --Menu: "menu";
-    --Message: "message";
-    --ModuleView: "view_module";
-    --NewFolder: "create_new_folder";
-    --NumberList: "format_list_numbered";
-    --Paint: "format_paint";
-    --Person: "person";
-    --Play: "play_arrow";
-    --PlayCircle: "play_circle_outline";
-    --Print: "print";
-    --Priority: "priority_high";
-    --Quote: "format_quote";
-    --Read: "chrome_reader_mode";
-    --Refresh: "refresh";
-    --Resize: "open_in_full";
-    --RestorePage: "restore_page";
-    --Save: "save";
-    --Settings: "settings";
-    --Search: "search";
-    --Security: "security";
-    --Share: "share";
-    --SharedFolder: "folder_shared";
-    --ShortText: "short_text";
-    --SmartPhone: "smartphone";
-    --SpellCheck: "spellcheck";
-    --Stack: "reorder";
-    --Star: "star";
-    --StarOutline: "star_outline";
-    --Symbol: "emoji_symbols";
-    --Tab: "tab";
-    --Table: "table_rows";
-    --Talk: "forum";
-    --Trending: "whatshot";
-    --TrendingUp: "trending_up";
-    --Toolbox: "business_center";
-    --ViewCarousel: "view_carousel";
-    --Video: "videocam";
-    --Warning: "warning";
-    --Wrench: "build";
-    --Palette: "palette";
-    --Zoom: "zoom-in";
-    /* similar icons */
-    --CenterAlign: "format_align_center";
-    --LeftAlign: "format_align_left";
-    --RightAlign: "format_align_right";
-    /**/
-    --RightIndent: "format_indent_decrease";
-    --LeftIndent: "format_indent_increase";
-    /**/
-    --SmallUpArrow: "keyboard_arrow_up";
-    --SmallDownArrow: "keyboard_arrow_down";
-    --SmallLeftArrow: "keyboard_arrow_left";
-    --SmallRightArrow: "keyboard_arrow_right";
-    --UpArrow: "arrow_upward";
-    --DownArrow: "arrow_downward";
-    --LeftArrow: "arrow_back";
-    --RightArrow: "arrow_forward";
-    --DropUpArrow: "arrow_drop_up";
-    --DropDownArrow: "arrow_drop_down";
-    --TopRightArrow: "call_made";
-    --UpDownArrows: "import_export";
-    /* content icons */
-    --Add: "add";
-    --AddPhoto: "add_photo_alternate";
-    --AddToPhotos: "add_to_photos";
-    --AddVideo: "video_call";
-    --BookStack: "library_books";
-    --Bold: "format_bold";
-    --BulletList: "format_list_bulleted";
-    --Info: "info";
-    --InfoOutline: "info_outline";
-    --Italic: "format_italic";
-    --Link: "link";
-    --LinkOff: "link_off";
-    --Paste: "content_paste";
-    --Pen: "create";
-    --PhotoList: "photo_library";
-    --Photo: "insert_photo";
-    --Subscript: "subscript";
-    --Sort: "sort";
-    --Strikethrough: "strikethrough_s";
-    --Superscript: "superscript";
-    --Tag: "label";
-    --Title: "title";
-    --Translate: "translate";
-    --Underline: "format_underlined";
-    --Upload: "publish";
-    --Undo: "undo";
-    --Redo: "redo";
-    --Window: "web_asset";
 }
 
 /* other CSS */
@@ -204,16 +54,15 @@
     background-color: var(--toolbar-field-color) !important;
     color: var(--toolbar-field-background-color) !important;
     border-radius: 2em !important;
+    margin: 2px !important;
 }
 
 #new-tab-button image, #tabs-newtab-button image {
-    height: calc(var(--tab-min-height) + 0.25px) !important;
     list-style-image: url("./SVGs/Add.svg") !important;
-    width: calc(var(--tab-min-height)) !important;
     padding: 1px !important;
 }
 
-#alltabs-button, .findbar-find-next, .findbar-find-previous, #sidebar-switcher-arrow {
+.findbar-find-next, .findbar-find-previous, #sidebar-switcher-arrow {
     list-style-image: url("./SVGs/Down.svg") !important;
 }
 
@@ -225,14 +74,6 @@
 
 .findbar-find-previous {
     transform: rotate(180deg);
-}
-
-toolbar .toolbarbutton-1#alltabs-button > .toolbarbutton-badge-stack {
-    transform: translateY(.25px);
-    height: unset !important;
-    width: unset !important;
-    padding: 5px !important;
-    margin: 1px;
 }
 
 #allTabsMenu-allTabsViewTabs > .all-tabs-item {
@@ -299,12 +140,9 @@ menupopup > menu, menupopup > menuitem, menupopup > menucaption {
 }
 
 #scrollbutton-down, #scrollbutton-up {
-    transform: translateY(0.25px) rotate(180deg) !important;
     list-style-image: url("./SVGs/Arrow.svg") !important;
-    margin: -0.5px 0 !important;
-    padding: 0 2.5px !important;
-    height: auto !important;
-    width: 32px !important;
+    transform: rotate(180deg) !important;
+    width: 30px !important;
 }
 
 :is(#scrollbutton-down, #scrollbutton-up) image {
@@ -687,7 +525,7 @@ menuseparator:before, toolbarseparator {
 }
 
 /* Common Properties */
-div[dynamicType="onboardTabToSearch"], .urlbarView-title-separator::before, .urlbarView-action, .urlbarView-row[label]::before, #editBookmarkPanelInfoArea, #editBookmarkPanel toolbarseparator, .tab-context-line, #PlacesChevron, #tabbrowser-arrowscrollbox-periphery, #passwords-icon {
+div[dynamicType="onboardTabToSearch"], .urlbarView-title-separator::before, .urlbarView-action, .urlbarView-row[label]::before, #editBookmarkPanelInfoArea, #editBookmarkPanel toolbarseparator, .tab-context-line, #PlacesChevron, #tabbrowser-arrowscrollbox-periphery, #passwords-icon, #alltabs-button {
     display: none !important;
 }
 
@@ -726,7 +564,6 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
     -webkit-text-fill-color: transparent !important;
     -webkit-background-clip: text !important;
     line-height: calc(1em - 2px) !important;
-    font-family: "Material Icons";
     background: var(--TextColor);
     font-size: calc(1em + 5px);
     margin: 0 5px 0 -3px;
@@ -735,7 +572,6 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
 
 #protections-popup-mainView .subviewbutton-nav:not(.notFound)::after, #identity-popup-mainView .subviewbutton-nav::after, .widget-overflow-list .subviewbutton-nav::after, .PanelUI-subView .subviewbutton-nav::after {
     content: url("./SVGs/Arrow.svg") !important;
-    font-family: "Material Icons" !important;
     transform: scale(0.9) !important;
 }
 
@@ -772,6 +608,7 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
 
 #bookmarks-menu-button {
     list-style-image: url("./SVGs/Bookmarks.svg") !important;
+    list-style-image: url("./SF/bookmark.svg") !important;
 }
 
 #save-to-pocket-button {
@@ -832,70 +669,74 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
     background: var(--zoom-controls-bgcolor, var(--button-bgcolor, ButtonFace));
 }
 
+#appmenuitem-translate:before {
+    content: "􀆪";
+}
+
 #appMenu-new-tab-button2::before {
-    content: var(--External2);
+    content: "􀱁";
 }
 
 #appMenu-new-window-button2::before {
-    content: var(--Window);
+    content: "􀏜";
 }
 
 #appMenu-new-private-window-button2::before {
-    content: var(--EyeBlind);
+    content: "􀋯";
 }
 
 #appMenu-history-button::before, #appMenu-library-history-button::before {
-    content: var(--Clock);
+    content: "􀐫";
 }
 
 #appMenu-downloads-button::before, #appMenu-library-downloads-button::before {
-    content: var(--Download);
+    content: "􀄈";
 }
 
 #appMenu-passwords-button::before {
-    content: var(--Key);
+    content: "􀟕";
 }
 
 #appMenu-extensions-themes-button::before {
-    content: var(--Extension);
+    content: "􀥭";
 }
 
 #appMenu-print-button2::before {
-    content: var(--Print);
+    content: "􀎚";
 }
 
 #appMenu-save-file-button2::before {
-    content: var(--Save);
+    content: "􀤂";
 }
 
 #appMenu-find-button2::before {
-    content: var(--Search);
+    content: "􀊫";
 }
 
 #appMenu-settings-button::before {
-    content: var(--Settings);
+    content: "􀍟";
 }
 
 #appMenu-more-button2::before {
-    content: var(--Toolbox);
+    content: "􀤊";
 }
 
 #appMenu-help-button2::before {
-    content: var(--Help);
+    content: "􀁜";
 }
 
 #appMenu-quit-button2::before {
-    content: var(--Door);
+    content: "􀆄";
 }
 
 #appMenu-bookmarks-button::before, #appMenu-library-bookmarks-button::before {
-    content: var(--Bookmarks);
+    content: "􀉞";
 }
 
 #appMenu-fxa-label2:before {
-    content: var(--Person);
     margin: 0 5px 0 -1px;
     font-size: 150%;
+    content: "􀉩";
 }
 
 .urlbarView-row[pinned] > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-type-icon {
@@ -1009,10 +850,6 @@ menupopup > menuitem, menupopup > menu {
     padding-block: 3px !important;
 }
 
-.menu-iconic-text {
-    font-weight: 400;
-}
-
 .browser-sidebar2 {
     background: #F0EEF1 !important;
     border: none !important;
@@ -1081,7 +918,7 @@ menupopup > menuitem:is([selected="true"]):not([disabled="false"]) {
     --panel-subview-body-padding: 5px !important;
     --arrowpanel-menuitem-padding: 4.25px 8px !important;
     --arrowpanel-menuitem-margin: 0 !important;
-    --arrowpanel-header-min-height: 15px !important;
+    --arrowpanel-header-min-height: 25px !important;
     --arrowpanel-menuitem-margin-inline: 5px !important;
     --arrowpanel-header-back-icon-padding: 4px !important;
     --urlbar-icon-border-radius: 3px !important;
@@ -1120,13 +957,10 @@ toolbar#nav-bar :is(.toolbarbutton-1 > .toolbarbutton-icon, .toolbarbutton-badge
     box-shadow: 0 1px 5px rgba(0,0,0,0.03), 0 1px 5px rgba(0,0,0,0.03) !important;
 }
 
-#urlbar[breakout] {
-    min-height: unset !important;
-    padding: 1.5px 0;
-}
-
 #urlbar[breakout]:not([breakout-extend]) {
+    min-height: unset !important;
     top: unset !important;
+    padding: 1.5px 0;
 }
 
 .urlbar-page-action, #urlbar-go-button, .search-go-button {
@@ -1212,4 +1046,9 @@ toolbar#nav-bar :is(.toolbarbutton-1 > .toolbarbutton-icon, .toolbarbutton-badge
 
 .subview-subheader, panelview .toolbarbutton-1, .widget-overflow-list .toolbarbutton-1, #identity-icon-label, .toolbarbutton-badge-stack {
     padding: 0 !important;
+}
+
+
+#urlbar[breakout][breakout-extend] {
+    top: 3px !important;
 }
