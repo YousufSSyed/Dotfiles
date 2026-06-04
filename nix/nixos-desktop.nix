@@ -438,17 +438,12 @@ in
                 # Dev tools
                 "devtools.debugger.remote-enabled" = true;
                 "devtools.chrome.enabled" = true;
-                "devtools.inspector.three-pane-enabled" = true;
+                "devtools.inspector.three-pane-enabled" = false;
 
                 # Attempt to make addons work in restricted domains
                 "extensions.webextensions.restrictedDomains" = "";
                 "extensions.quarantinedDomains.enabled" = false;
                 "privacy.resistFingerprinting.block_mozAddonManager" = true;
-
-                # Zen Browser specific options:
-                "zen.theme.content-element-separation" = 0; # disable border around zen window
-                "zen.tabs.close-on-back-with-no-history" = false;
-                "zen.urlbar.replace-newtab" = false;
 
                 # Right click menu
                 "browser.ml.linkPreview.enabled" = false;
@@ -458,6 +453,11 @@ in
                 "browser.ml.chat.enabled" = false;
                 "browser.ml.chat.menu" = false;
                 "browser.search.visualSearch.featureGate" = false;
+
+                # Zen Browser specific options:
+                "zen.theme.content-element-separation" = 0; # disable border around zen window
+                "zen.tabs.close-on-back-with-no-history" = false;
+                "zen.urlbar.replace-newtab" = false;
               };
             };
             secondary = {
@@ -568,7 +568,6 @@ in
   };
 
   services.tailscale.enable = true;
-  services.davfs2.enable = true;
 
   users.users.yousuf = {
     isNormalUser = true;
@@ -585,7 +584,6 @@ in
       "qemu-libvirtd"
       "i2c"
       "docker"
-      "davfs2"
       "storage"
     ];
   };

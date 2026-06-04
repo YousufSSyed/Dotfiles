@@ -85,6 +85,7 @@
     pastel
     wget
     chezmoi
+    rclone
 
     # Command Line Apps / CLI Apps
     dua
@@ -113,3 +114,4 @@
     dconf
   ];
 }
+

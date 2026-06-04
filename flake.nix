@@ -46,11 +46,11 @@
         home-manager.follows = "home-manager";
       };
     };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  nix-darwin = {
-    url = "github:nix-darwin/nix-darwin/master";
-    inputs.nixpkgs.follows = "nixpkgs";
-  }
 
   outputs =
     { self, nixpkgs, ... }@inputs:
@@ -64,11 +64,11 @@
         ];
       };
       # $ darwin-rebuild build --flake .#"MacMini"
-      darwinConfigurations."Mac-Mini" = nix-darwin.lib.darwinSystem {
+      darwinConfigurations."Mac-Mini" = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/packages.nix 
-          ./nix/mac-mini.nix 
+          ./nix/packages.nix
+          ./nix/mac-mini.nix
         ];
       };
     };
