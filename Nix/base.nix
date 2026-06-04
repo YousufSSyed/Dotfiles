@@ -3,9 +3,9 @@
   inputs,
   ...
 }:
-
 {
   nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ];
+
   environment.systemPackages = with pkgs; [
     # Apps
     kitty
@@ -73,6 +73,8 @@
     immich-go
     spotdl
     libjxl
+    nh
+    fish
 
     # Language Packages
     # Misc languages
@@ -98,16 +100,6 @@
     nerd-fonts.iosevka
     dconf
   ];
-
-  programs = {
-    fish.enable = true;
-    nh = {
-      enable = true;
-      clean.enable = true;
-      clean.extraArgs = "--optimise";
-      flake = "/home/yousuf/.local/share/chezmoi";
-    };
-  };
 
   nixpkgs.config.allowUnfree = true;
 

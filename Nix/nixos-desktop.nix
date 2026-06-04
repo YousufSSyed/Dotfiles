@@ -55,6 +55,30 @@
   system.autoUpgrade.dates = "0:00";
   nixpkgs.config.cudaSupport = true;
 
+  systemd.services = {
+    flake-update = {
+      description = "Update flake inputs";
+      unitConfig = {
+        StartLimitIntervalSec = 300;
+        StartLimitBurst = 5;
+      };
+      serviceConfig = {
+        ExecStartPre = "${pkgs.networkmanager}/bin/nm-online";
+        ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.local/share/chezmoi";
+        Restart = "on-failure";
+        RestartSec = "30";
+        Type = "oneshot";
+        User = "yousuf";
+      };
+      path = [
+        pkgs.nix
+        pkgs.git
+        pkgs.host
+        pkgs.networkmanager
+      ];
+    };
+  };
+
   # Nvidia Settings
   services.xserver.videoDrivers = [ "nvidia" ];
 

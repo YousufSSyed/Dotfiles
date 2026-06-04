@@ -1,12 +1,15 @@
 {
-  config,
-  lib,
   pkgs,
+  config,
   inputs,
   ...
 }:
 
 {
+
+  imports = [ inputs.home-manager.darwinModules.home-manager ];
+  home-manager = import ./home.nix;
+
   environment.systemPackages = with pkgs; [
     iina
     syncthing-macos
@@ -78,10 +81,12 @@
     };
   };
 
+  users.yousuf.file."/Library/Fonts".source =
+    config.lib.file.mkOutOfStoreSymlink "/Users/yousuf/Sync/Fonts/";
+
   # Misc device settings
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
   networking.computerName = "Mac-Mini";
   networking.hostName = "Mac-Mini";
 }
-

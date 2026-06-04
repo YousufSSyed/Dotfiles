@@ -1,19 +1,18 @@
 {
   config,
-  lib,
   pkgs,
   inputs,
   ...
 }:
 
 let
-  firefox-profile = "h9ep31cd.default";
   sans-serif-font = "SF Pro Display";
   monospace-font = "Iosevka Custom";
   emoji-font = "Apple Color Emoji";
 in
 {
   imports = [
+
     inputs.home-manager.nixosModules.home-manager
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.sops-nix.nixosModules.sops
@@ -82,7 +81,6 @@ in
     inputs.awww.packages.${stdenv.hostPlatform.system}.awww
     inputs.aw-hyprland.packages.${stdenv.hostPlatform.system}.aw-watcher-window-hyprland
     inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
-    inputs.zen-browser.packages."${stdenv.hostPlatform.system}".twilight
 
     # KDE Packages
     inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
@@ -149,25 +147,6 @@ in
       };
     };
   };
-
-  services.linkwarden = {
-    enable = true;
-    secretFiles.NEXTAUTH_SECRET = config.sops.secrets."NEXTAUTH_SECRET".path;
-    enableRegistration = true;
-    environment = {
-      NEXTAUTH_URL = "http://localhost:3000/api/v1/auth";
-    };
-  };
-
-  # services.immich = {
-  #   enable = true;
-  #   accelerationDevices = null;
-  #   mediaLocation = "/home/yousuf/Assets/Immich";
-  # };
-  # users.users.immich.extraGroups = [
-  #   "video"
-  #   "render"
-  # ];
 
   hardware = {
     i2c.enable = true;
@@ -344,84 +323,48 @@ in
     ];
   };
 
-  home-manager = {
-    extraSpecialArgs = { inherit inputs; };
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
-    backupFileExtension = "backup";
-    users.yousuf =
-      {
-        config,
-        pkgs,
-        inputs,
-        ...
-      }:
-      {
-        imports = [
-        ];
-        home = {
-          stateVersion = "25.11";
-          pointerCursor = {
-            gtk.enable = true;
-            package = pkgs.apple-cursor;
-            name = "macOS";
-            size = 22;
-            x11.enable = true;
-            x11.defaultCursor = "macOS";
-          };
-          file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
-        };
-        programs.firefox = {
-          enable = true;
-          profiles = {
-            default = {
-              id = 0;
-              name = "Default";
-              isDefault = true;
-              path = firefox-profile;
-              settings = import ./firefox.nix;
-            };
-            secondary = {
-              id = 1;
-              name = "Secondary";
-              path = "o9fiaukr.2nd Profile";
-            };
-          };
-          nativeMessagingHosts = [ pkgs.firefoxpwa ];
-        };
-        programs.thunderbird = {
-          enable = false;
-          profiles."dexxqztk.Default User" = {
-            isDefault = true;
-            # path = "dexxqztk.Default User";
-            settings = {
-              "mail.minimizeToTray.startMinimized" = true;
-              "mail.biff.show_tray_icon_always" = true;
-              "mail.minimizeToTray.supportedDesktops" = "kde,gnome,pop:gnome,xfce,mate,hyprland";
-            };
-          };
-        };
-        services.darkman = {
-          enable = false;
-          lightModeScripts.gtk-theme = ''
-            ${pkgs.dconf}/bin/dconf write \
-                /org/gnome/desktop/interface/color-scheme "'prefer-light'"
-          '';
-          darkModeScripts.gtk-theme = ''
-            ${pkgs.dconf}/bin/dconf write \
-                /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
-          '';
-          settings = {
-            lat = 42.3;
-            long = -71.1;
-            usegeoclue = false;
-            dbusserver = true;
-            portal = true;
-          };
-        };
-      };
-  };
+  home-manager = import ./home.nix;
+
+  # home-manager = {
+  #   sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
+  #   users.yousuf =
+  #     {
+  #       config,
+  #       pkgs,
+  #       ...
+  #     }:
+  #     {
+  #       home = {
+  #         file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
+  #         pointerCursor = {
+  #           gtk.enable = true;
+  #           package = pkgs.apple-cursor;
+  #           name = "macOS";
+  #           size = 22;
+  #           x11.enable = true;
+  #           x11.defaultCursor = "macOS";
+  #         };
+  #       };
+  #       services.darkman = {
+  #         enable = false;
+  #         lightModeScripts.gtk-theme = ''
+  #           ${pkgs.dconf}/bin/dconf write \
+  #               /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+  #         '';
+  #         darkModeScripts.gtk-theme = ''
+  #           ${pkgs.dconf}/bin/dconf write \
+  #               /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+  #         '';
+  #         settings = {
+  #           lat = 42.3;
+  #           long = -71.1;
+  #           usegeoclue = false;
+  #           dbusserver = true;
+  #           portal = true;
+  #         };
+  #       };
+  #     };
+  # };
 
   sops = {
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
@@ -521,6 +464,12 @@ in
     xserver = {
       enable = true;
     };
+    nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--optimise";
+      flake = "/home/yousuf/.local/share/chezmoi";
+    };
     # Filesystem services
     btrfs.autoScrub = {
       enable = true;
@@ -553,6 +502,6 @@ in
     }
   ];
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 
 }

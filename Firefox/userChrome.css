@@ -18,9 +18,9 @@
 	padding-bottom: calc(var(--zen-toolbox-padding) * 1.5);
 }
 
-#zen-browser-background, #zen-browser-background:before, #zen-browser-background:after {
-	background: transparent !important;
-}
+/* #zen-browser-background, #zen-browser-background:before, #zen-browser-background:after { */
+/* 	background: transparent !important; */
+/* } */
 
 #zen-main-app-wrapper {
 	background: rgba(0,0,0,0.6) !important;
