@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url(./materialicons.woff2) format('woff2');
+}
+
 :root {
     --bs1: 0 3px 10px rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.05);
     --bs1i: 0 3px 10px rgba(0,0,0,0.05) inset, 0 3px 10px rgba(0,0,0,0.05) inset;
@@ -13,6 +20,149 @@
     --tab-block-margin: 3px !important;
     --arrowpanel-border-color: transparent !important;
     --panel-border-color: rgba(0,0,0,0);
+	/* Icon Variables */
+    --AspectRatio: "aspect_ratio";
+    --AddPerson: "person_add";
+    --Badge: "verified_user";
+    --Book: "book";
+    --BookmarkAdd: "bookmark_add";
+    --Bookmarks: "bookmarks";
+    --Broken: "broken_image";
+    --Calculator: "insert_chart";
+    --Camera: "photo_camera";
+    --Caption: "closed_caption";
+    --Change: "change_history";
+    --Check: "done";
+    --Clear: "clear_all";
+    --Clock: "access_time";
+    --Close: "close";
+    --Code: "code";
+    --Compare: "compare_arrows";
+    --Copy: "content_copy";
+    --Cut: "content_cut";
+    --Desktop: "dashboard";
+    --Delete: "delete";
+    --Desktop: "desktop_windows";
+    --Document: "description";
+    --Door: "sensor_door";
+    --Download: "download";
+    --Email: "drafts";
+    --Error: "error";
+    --Extension: "extension";
+    --External: "exit_to_app";
+    --External2: "open_in_new";
+    --Eye: "remove_red_eye";
+    --EyeBlind: "visibility_off";
+    --FastForward: "fast_forward";
+    --Feedback: "feedback";
+    --File: "insert_drive_file";
+    --Filter: "filter_list";
+    --Folder: "folder";
+    --Format: "text_format";
+    --FormatClear: "format_clear";
+    --Fullscreen: "fullscreen";
+    --Gavel: "gavel";
+    --Grid: "grid_on";
+    --Group: "people";
+    --Hammer: "gavel";
+    --Highlight: "highlight_alt";
+    --Help: "help";
+    --Key: "vpn_key";
+    --Landscape: "crop_landscape";
+    --Line: "remove";
+    --Lock: "lock";
+    --Keyboard: "keyboard";
+    --Math: "functions";
+    --Menu: "menu";
+    --Message: "message";
+    --ModuleView: "view_module";
+    --NewFolder: "create_new_folder";
+    --NumberList: "format_list_numbered";
+    --Paint: "format_paint";
+    --Person: "person";
+    --Play: "play_arrow";
+    --PlayCircle: "play_circle_outline";
+    --Print: "print";
+    --Priority: "priority_high";
+    --Quote: "format_quote";
+    --Read: "chrome_reader_mode";
+    --Refresh: "refresh";
+    --Resize: "open_in_full";
+    --RestorePage: "restore_page";
+    --Save: "save";
+    --Settings: "settings";
+    --Search: "search";
+    --Security: "security";
+    --Share: "share";
+    --SharedFolder: "folder_shared";
+    --ShortText: "short_text";
+    --SmartPhone: "smartphone";
+    --SpellCheck: "spellcheck";
+    --Stack: "reorder";
+    --Star: "star";
+    --StarOutline: "star_outline";
+    --Symbol: "emoji_symbols";
+    --Tab: "tab";
+    --Table: "table_rows";
+    --Talk: "forum";
+    --Trending: "whatshot";
+    --TrendingUp: "trending_up";
+    --Toolbox: "business_center";
+    --ViewCarousel: "view_carousel";
+    --Video: "videocam";
+    --Warning: "warning";
+    --Wrench: "build";
+    --Palette: "palette";
+    --Zoom: "zoom-in";
+    /* similar icons */
+    --CenterAlign: "format_align_center";
+    --LeftAlign: "format_align_left";
+    --RightAlign: "format_align_right";
+    /**/
+    --RightIndent: "format_indent_decrease";
+    --LeftIndent: "format_indent_increase";
+    /**/
+    --SmallUpArrow: "keyboard_arrow_up";
+    --SmallDownArrow: "keyboard_arrow_down";
+    --SmallLeftArrow: "keyboard_arrow_left";
+    --SmallRightArrow: "keyboard_arrow_right";
+    --UpArrow: "arrow_upward";
+    --DownArrow: "arrow_downward";
+    --LeftArrow: "arrow_back";
+    --RightArrow: "arrow_forward";
+    --DropUpArrow: "arrow_drop_up";
+    --DropDownArrow: "arrow_drop_down";
+    --TopRightArrow: "call_made";
+    --UpDownArrows: "import_export";
+    /* content icons */
+    --Add: "add";
+    --AddPhoto: "add_photo_alternate";
+    --AddToPhotos: "add_to_photos";
+    --AddVideo: "video_call";
+    --BookStack: "library_books";
+    --Bold: "format_bold";
+    --BulletList: "format_list_bulleted";
+    --Info: "info";
+    --InfoOutline: "info_outline";
+    --Italic: "format_italic";
+    --Link: "link";
+    --LinkOff: "link_off";
+    --Paste: "content_paste";
+    --Pen: "create";
+    --PhotoList: "photo_library";
+    --Photo: "insert_photo";
+    --Subscript: "subscript";
+    --Sort: "sort";
+    --Strikethrough: "strikethrough_s";
+    --Superscript: "superscript";
+    --Tag: "label";
+    --Title: "title";
+    --Translate: "translate";
+    --Underline: "format_underlined";
+    --Upload: "publish";
+    --Undo: "undo";
+    --Redo: "redo";
+    --Window: "web_asset";
 }
 
 /* other CSS */
@@ -564,6 +714,7 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
     -webkit-text-fill-color: transparent !important;
     -webkit-background-clip: text !important;
     line-height: calc(1em - 2px) !important;
+    font-family: "Material Icons";
     background: var(--TextColor);
     font-size: calc(1em + 5px);
     margin: 0 5px 0 -3px;
@@ -572,6 +723,7 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
 
 #protections-popup-mainView .subviewbutton-nav:not(.notFound)::after, #identity-popup-mainView .subviewbutton-nav::after, .widget-overflow-list .subviewbutton-nav::after, .PanelUI-subView .subviewbutton-nav::after {
     content: url("./SVGs/Arrow.svg") !important;
+    font-family: "Material Icons" !important;
     transform: scale(0.9) !important;
 }
 
@@ -608,7 +760,6 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
 
 #bookmarks-menu-button {
     list-style-image: url("./SVGs/Bookmarks.svg") !important;
-    list-style-image: url("./SF/bookmark.svg") !important;
 }
 
 #save-to-pocket-button {
@@ -669,74 +820,70 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
     background: var(--zoom-controls-bgcolor, var(--button-bgcolor, ButtonFace));
 }
 
-#appmenuitem-translate:before {
-    content: "􀆪";
-}
-
 #appMenu-new-tab-button2::before {
-    content: "􀱁";
+    content: var(--External2);
 }
 
 #appMenu-new-window-button2::before {
-    content: "􀏜";
+    content: var(--Window);
 }
 
 #appMenu-new-private-window-button2::before {
-    content: "􀋯";
+    content: var(--EyeBlind);
 }
 
 #appMenu-history-button::before, #appMenu-library-history-button::before {
-    content: "􀐫";
+    content: var(--Clock);
 }
 
 #appMenu-downloads-button::before, #appMenu-library-downloads-button::before {
-    content: "􀄈";
+    content: var(--Download);
 }
 
 #appMenu-passwords-button::before {
-    content: "􀟕";
+    content: var(--Key);
 }
 
 #appMenu-extensions-themes-button::before {
-    content: "􀥭";
+    content: var(--Extension);
 }
 
 #appMenu-print-button2::before {
-    content: "􀎚";
+    content: var(--Print);
 }
 
 #appMenu-save-file-button2::before {
-    content: "􀤂";
+    content: var(--Save);
 }
 
 #appMenu-find-button2::before {
-    content: "􀊫";
+    content: var(--Search);
 }
 
 #appMenu-settings-button::before {
-    content: "􀍟";
+    content: var(--Settings);
 }
 
 #appMenu-more-button2::before {
-    content: "􀤊";
+    content: var(--Toolbox);
 }
 
 #appMenu-help-button2::before {
-    content: "􀁜";
+    content: var(--Help);
 }
 
 #appMenu-quit-button2::before {
-    content: "􀆄";
+    content: var(--Door);
 }
 
 #appMenu-bookmarks-button::before, #appMenu-library-bookmarks-button::before {
-    content: "􀉞";
+    content: var(--Bookmarks);
 }
 
 #appMenu-fxa-label2:before {
+    content: var(--Person);
     margin: 0 5px 0 -1px;
     font-size: 150%;
-    content: "􀉩";
 }
 
 .urlbarView-row[pinned] > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-type-icon {
