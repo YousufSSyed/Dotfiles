@@ -210,19 +210,7 @@ return {
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
-		opts = {
-			indent = {
-				highlight = {
-					"RainbowRed",
-					"RainbowYellow",
-					"RainbowBlue",
-					"RainbowOrange",
-					"RainbowGreen",
-					"RainbowViolet",
-					"RainbowCyan",
-				},
-			},
-		},
+		opts = { indent = { highlight = rainbowgroup } },
 	},
 	{
 		"saghen/blink.pairs",
@@ -234,21 +222,13 @@ return {
 			highlights = {
 				enabled = true,
 				cmdline = true,
+				groups = rainbowgroup,
 				unmatched_group = "BlinkPairsUnmatched",
 				matchparen = {
 					enabled = true,
 					include_surrounding = true,
 					group = "BlinkPairsMatchParen",
 					priority = 250,
-				},
-				groups = {
-					"BlinkPairsRed",
-					"BlinkPairsYellow",
-					"BlinkPairsBlue",
-					"BlinkPairsOrange",
-					"BlinkPairsGreen",
-					"BlinkPairsPurple",
-					"BlinkPairsCyan",
 				},
 			},
 		},
@@ -278,24 +258,16 @@ return {
 	},
 	{
 		"stevearc/aerial.nvim",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-tree/nvim-web-devicons",
-		},
-		opts = {
-			layout = {
-				default_direction = "float",
-				min_width = 0.8,
-			},
-		},
-		config = function()
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+		config = function(_, opts)
+			require("aerial").setup({ opts })
+			require("telescope").load_extension("aerial")
 			vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", keyopts)
 			vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", keyopts)
 		end,
 	},
 	{
 		"folke/edgy.nvim",
-		enabled = true,
 		event = "VeryLazy",
 		wo = { winbar = false },
 		opts = {
@@ -310,20 +282,17 @@ return {
 	},
 	{
 		"nvim-telescope/telescope.nvim",
-		priority = 998,
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
+		dependencies = { "nvim-lua/plenary.nvim" },
 		extensions = {
 			fzf = {
-				fuzzy = true, -- false will only do exact matching
-				override_generic_sorter = true, -- override the generic sorter
-				override_file_sorter = true, -- override the file sorter
+				fuzzy = true,
+				override_generic_sorter = true,
+				override_file_sorter = true,
 				case_mode = "smart_case",
 			},
 		},
 		config = function()
-			vim.keymap.set("n", "<leader>b", function()
+			vim.keymap.set("n", "<leader>g", function()
 				require("telescope.builtin").live_grep({
 					search_dirs = { vim.fn.expand("%:p") },
 					attach_mappings = function(prompt_bufnr, map)
@@ -348,15 +317,6 @@ return {
 		version = "*",
 		build = "make install_jsregexp",
 	},
-	-- {
-	-- 	"gbprod/substitute.nvim",
-	-- 	config = function()
-	-- 		vim.keymap.set("n", "s", require("substitute").operator)
-	-- 		vim.keymap.set("n", "ss", require("substitute").line)
-	-- 		vim.keymap.set("n", "S", require("substitute").eol)
-	-- 		vim.keymap.set("x", "s", require("substitute").visual)
-	-- 	end,
-	-- },
 	{
 		"saghen/blink.cmp",
 		dependencies = {
@@ -411,52 +371,27 @@ return {
 			},
 			sources = {
 				default = { "lsp", "path", "buffer" },
-				-- Setup completion by filetype
 				per_filetype = {
 					text = { "dictionary", "thesaurus" },
 					markdown = { "dictionary", "thesaurus" },
 				},
 				providers = {
-					-- Use the thesaurus source
 					thesaurus = {
 						name = "blink-cmp-words",
 						module = "blink-cmp-words.thesaurus",
-						-- All available options
 						opts = {
-							-- A score offset applied to returned items.
-							-- By default the highest score is 0 (item 1 has a score of -1, item 2 of -2 etc..).
 							score_offset = 0,
-
-							-- Default pointers define the lexical relations listed under each definition,
-							-- see Pointer Symbols below.
-							-- Default is as below ("antonyms", "similar to" and "also see").
 							definition_pointers = { "!", "&", "^" },
-
-							-- The pointers that are considered similar words when using the thesaurus,
-							-- see Pointer Symbols below.
-							-- Default is as below ("similar to", "also see" }
 							similarity_pointers = { "&", "^" },
-
-							-- The depth of similar words to recurse when collecting synonyms. 1 is similar words,
-							-- 2 is similar words of similar words, etc. Increasing this may slow results.
 							similarity_depth = 2,
 						},
 					},
-
-					-- Use the dictionary source
 					dictionary = {
 						name = "blink-cmp-words",
 						module = "blink-cmp-words.dictionary",
-						-- All available options
 						opts = {
-							-- The number of characters required to trigger completion.
-							-- Set this higher if completion is slow, 3 is default.
 							dictionary_search_threshold = 3,
-
-							-- See above
 							score_offset = 0,
-
-							-- See above
 							definition_pointers = { "!", "&", "^" },
 						},
 					},
@@ -596,14 +531,14 @@ return {
 				function() vim.api.nvim_feedkeys(":Obsidian today ", "n", false) end,
 				keyopts
 			)
+			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<D-p>", function()
 				local result = vim.system({
 					os.getenv("HOME") .. "/.config/nvim/FinishNote.fish",
 					vim.api.nvim_buf_get_name(0),
 				}, { text = true }):wait()
 				if result.code ~= 0 then
-					local filepath =
-						vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
+					vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
 				end
 			end, keyopts)
 		end,
@@ -674,10 +609,12 @@ return {
 	{
 		"olimorris/persisted.nvim",
 		dependencies = { "nvim-telescope/telescope.nvim" },
-		enabled = fresh(),
 		lazy = false,
-		priority = 999,
-		event = "BufReadPre",
+		enabled = fresh(),
+		config = function()
+			if vim.o.filetype == "lazy" then vim.cmd.close() end
+			vim.schedule(function() vim.cmd(":Persisted select") end)
+		end,
 	},
 	{
 		"catppuccin/nvim",
@@ -695,63 +632,34 @@ return {
 				neogit = true,
 				render_markdown = true,
 				markview = true,
-				blink_pairs = true,
 				telescope = { enabled = true },
 				mini = { enabled = true },
 				blink_cmp = { style = "bordered" },
-				gitsigns = {
-					enabled = true,
-					transparent = false,
-				},
-				indent_blankline = {
-					colored_indent_levels = true,
-					enabled = true,
-				},
+				gitsigns = { enabled = true, transparent = false },
+				indent_blankline = { colored_indent_levels = true, enabled = true },
 			},
 		},
 		config = function(_, opts)
-			require("catppuccin").setup(opts)
-			vim.cmd.colorscheme("catppuccin-nvim")
 			vim.cmd(":hi @markup.strong guifg=none")
 			vim.cmd(":hi @markup.italic guifg=none")
 			vim.cmd(":hi @markup.quote guifg=none")
-			vim.cmd(":hi @spell.markdown guifg=#d1f1ff")
+			-- vim.cmd(":hi @spell.markdown guifg=#d1f1ff")
 			vim.cmd(":hi @lsp.type.decorator.markdown guifg=#8fefe7")
 			vim.cmd(":hi @markup.link.label guifg=#8fefe7")
 			vim.cmd(":hi RenderMarkdownQuote guifg=#00608b")
+			require("catppuccin").setup(opts)
+			vim.cmd.colorscheme("catppuccin-nvim")
 		end,
 	},
 	{
 		"mikavilpas/yazi.nvim",
 		event = "VeryLazy",
-		keys = {
-			{ "<leader>y", "<cmd>Yazi<cr>" },
-		},
+		keys = { { "<leader>y", "<cmd>Yazi<cr>" } },
 		opts = {
 			open_for_directories = true,
-			keymaps = {
-				show_help = "<f1>",
-			},
-			yazi_floating_window_winblend = vim.g.neovide and 50 or 0,
-			yazi_floating_window_border = vim.g.neovide and "none" or "rounded",
+			keymaps = { show_help = "<f1>" },
+			yazi_floating_window_border = "none",
 		},
-	},
-	{
-		"jay-babu/project.nvim",
-		lazy = false,
-		enabled = false,
-		config = function()
-			require("project_nvim").setup({
-				unset_autochdir = false,
-				patterns = { os.getenv("HOME") .. "/Sync/Obsidian" },
-				exclude_dirs = { os.getenv("HOME") .. "/.local/share/chezmoi/dot_config/nvim" },
-			})
-		end,
-	},
-	{
-		"natecraddock/workspaces.nvim",
-		enabled = false,
-		auto_dir = false,
 	},
 	{
 		"xiaoshihou514/squirrel.nvim",
@@ -780,7 +688,6 @@ return {
 				vim.cmd(":norm " .. command)
 				vim.cmd(":norm 'z")
 			end
-
 			vim.keymap.set(
 				{ "n", "i" },
 				"<M-d>",
@@ -793,14 +700,12 @@ return {
 				function() process_previous_word("caw") end,
 				keyopts
 			)
-
 			-- Replace w b e f j k with hop.nvim search
-			vim.keymap.set({ "n", "v", "o" }, "e", "<cmd>HopWord<cr>", keyopts)
 			vim.keymap.set({ "n", "v", "o" }, "f", "<cmd>HopChar1<cr>", keyopts)
 			-- vim.keymap.set({ "n", "v", "o" }, "F", "<cmd>HopNodes<cr>", opts)
 			vim.keymap.set({ "n", "v" }, "j", "<cmd>HopVertical<cr>", keyopts)
 			vim.keymap.set({ "o" }, "j", "V<cmd>HopVertical<cr>", keyopts) -- Note the V<cmd>
-			-- vim.keymap.set({ "n", "v", "o" }, "B", "<cmd>HopWordCurrentLineBC<cr>", opts)
+			vim.keymap.set({ "n", "v", "o" }, "W", "<cmd>HopWord<cr>", keyopts)
 			vim.keymap.set(
 				{ "n", "v", "o" },
 				"E",
@@ -815,7 +720,6 @@ return {
 	},
 	{
 		"aaronik/treewalker.nvim",
-
 		-- optional (see options below)
 		opts = { ... },
 		config = function()
@@ -833,13 +737,14 @@ return {
 		"mfussenegger/nvim-treehopper",
 		enabled = true,
 		config = function()
-			vim.keymap.set({ "n", "v", "i" }, "F", function() require("tsht").nodes() end, keyopts)
+			vim.keymap.set({ "n", "v" }, "F", function() require("tsht").nodes() end, keyopts)
 		end,
 	},
 	{
 		"nvim-lualine/lualine.nvim",
 		-- enabled = not vim.env.KITTY_SCROLLBACK_NVIM,
 		dependencies = { "nvim-tree/nvim-web-devicons" },
+		-- enabled = false,
 		lazy = false,
 		config = function()
 			local lineTheme = require("catppuccin.utils.lualine")()
@@ -975,7 +880,6 @@ return {
 	{
 		"monaqa/dial.nvim",
 		config = function()
-			-- Dial.nvim configuration
 			local augend = require("dial.augend")
 			require("dial.config").augends:register_group({
 				default = {
@@ -1009,24 +913,15 @@ return {
 			})
 			vim.keymap.set(
 				{ "n", "v", "i" },
-				"<C-j>",
+				"<M-j>",
 				function() require("dial.map").manipulate("increment", "normal") end
 			)
 			vim.keymap.set(
 				{ "n", "v", "i" },
-				"<C-k>",
+				"<M-k>",
 				function() require("dial.map").manipulate("decrement", "normal") end
 			)
 		end,
-	},
-	{
-		"NeogitOrg/neogit",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"sindrets/diffview.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
-		config = true,
 	},
 	{ "sindrets/diffview.nvim" },
 	{
@@ -1134,10 +1029,7 @@ return {
 			require("ccc").setup({
 				highlight_mode = "virtual",
 				virtual_symbol = "󱓻 ",
-				highlighter = {
-					auto_enable = true,
-					lsp = true,
-				},
+				highlighter = { auto_enable = true, lsp = true },
 			})
 		end,
 	},

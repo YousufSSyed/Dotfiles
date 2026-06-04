@@ -30,7 +30,7 @@
       wvous-br-corner = 1;
       mineffect = "scale";
       autohide = false;
-      tilesize = 40;
+      tilesize = 55;
     };
     finder = {
       FXEnableExtensionChangeWarning = false;
@@ -81,6 +81,6 @@
   # Misc device settings
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
-  networking.computerName = "MacMini";
-  networking.hostName = "MacMini";
+  networking.computerName = "Mac-Mini";
+  networking.hostName = "Mac-Mini";
 }

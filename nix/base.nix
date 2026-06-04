@@ -48,9 +48,7 @@
     bottom
     yazi
     sd
-    (ffmpeg-full.override {
-      withUnfree = true;
-    })
+    ffmpeg-full
     pkg-config
     lnav
     jujutsu
@@ -77,6 +75,7 @@
     rclone
     watchexec
     dua
+    gifski
 
     # Language Packages
     # Misc languages

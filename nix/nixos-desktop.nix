@@ -8,19 +8,8 @@
 
 {
   nixpkgs.config.cudaSupport = true;
-
-  hardware = {
-    nvidia = {
-      nvidiaSettings = true;
-      open = true;
-    };
-  };
-
-  services = {
-    xserver = {
-      videoDrivers = [ "nvidia" ];
-    };
-  };
+  services.xserver.videoDrivers = [ "nvidia" ];
+  services.syncthing.dataDir = "/home/yousuf/Sync/.Syncthing-Desktop/";
 
   programs = {
     # Nix-ld
@@ -50,8 +39,6 @@
     };
   };
 
-  services.syncthing.dataDir = "/home/yousuf/Sync/.Syncthing-Desktop/";
-
   # services.immich = {
   #   enable = true;
   #   accelerationDevices = null;
@@ -62,4 +49,12 @@
   #   "render"
   # ];
 
+  hardware = {
+    nvidia = {
+      powerManagement.enable = true;
+      nvidiaPersistenced = true;
+      nvidiaSettings = true;
+      open = true;
+    };
+  };
 }

@@ -62,6 +62,9 @@ in
     (mpv-unwrapped.override {
       ffmpeg = ffmpeg-full;
     })
+    (ffmpeg-full.override {
+      withUnfree = true;
+    })
 
     # Misc Packages
     libinput-gestures

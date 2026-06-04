@@ -1,11 +1,11 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+rainbowgroup = { "Rainbow1", "Rainbow2", "Rainbow3", "Rainbow4", "Rainbow5", "Rainbow6" }
 fresh = function()
 	return not (next(vim.fn.argv()) or vim.o.filetype == "man" or vim.env.KITTY_SCROLLBACK_NVIM)
 end
 
--- LazyNvim Setup
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" -- LazyNvim Setup
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
@@ -33,7 +33,6 @@ vim.opt.whichwrap = "<,>,h,l,[,]"
 vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.laststatus = 0
-vim.opt.cmdheight = 0
 vim.opt.showmode = false
 vim.opt.ttyfast = true
 vim.opt.tabstop = 2
@@ -51,7 +50,7 @@ vim.opt.shell = "/run/current-system/sw/bin/fish"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.inccommand = "split"
-vim.opt.cursorline = true
+-- vim.opt.cursorline = true
 vim.opt.list = true
 vim.opt.joinspaces = false
 vim.opt.fillchars = "vert: ,horiz: ,horizup: ,horizdown: ,vertleft: ,vertright: ,verthoriz: "
@@ -67,20 +66,17 @@ vim.opt.splitkeep = "screen"
 vim.opt.updatetime = 60000
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.grepformat = "%f:%l:%c:%m"
+vim.opt.shortmess:append("I")
 -- vim.g & vim.env
 vim.g.markdown_recommended_style = 0
 vim.g.have_nerd_font = true
 vim.env.PATH = vim.env.PATH .. "/run/current-system/sw/bin/"
+
+vim.cmd("autocmd TextYankPost * call v:lua.vim.hl.on_yank()") -- briefly highlight yanked text
+vim.cmd("au FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif")
+vim.cmd("au CursorHoldI * stopinsert") -- stop insert after a certain amount of time
+vim.cmd("autocmd QuickFixCmdPost [^l]* cwindow") -- auto open quickfix list
 vim.cmd(":digr mr 772") -- Digraph command
-
-vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function() vim.hl.on_yank() end,
-})
-
-vim.cmd([[ 
-au FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
-au CursorHoldI * stopinsert 
-]])
 
 if vim.g.neovide then
 	vim.opt.winblend = 100
@@ -98,17 +94,7 @@ if vim.g.neovide then
 	vim.g.neovide_cursor_vfx_opacity = 500
 end
 
-vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide" })
+-- vim.lsp.inlay_hint.enable(true) vim.lsp.codelens.enable(true)
+vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide", "nixd", "hyprls" })
 require("vim._core.ui2").enable({ enable = true })
--- vim.lsp.inlay_hint.enable(true)
--- vim.lsp.codelens.enable(true)
-
-vim.api.nvim_create_autocmd("QuickFixCmdPost", {
-	group = vim.api.nvim_create_augroup("AutoOpenQuickfix", { clear = true }),
-	pattern = { "[^l]*" },
-	command = "cwindow",
-})
-
-vim.keymap.set({ "n", "v" }, "u", ":silent undo<cr>", { silent = true })
-vim.keymap.set({ "n", "v" }, "U", ":silent redo<cr>", { silent = true })
-vim.keymap.set({ "n", "v" }, "<C-r>", ":silent redo<cr>", { silent = true })
+vim.schedule(function() vim.opt.cmdheight = 0 end)
