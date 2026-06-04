@@ -42,8 +42,6 @@ in
     proton-vpn
     proton-vpn-cli
 
-    slskd
-
     rustdesk-flutter
 
     # Command Line Tools / CLIs
@@ -73,8 +71,6 @@ in
     widevine-cdm
     ddcutil
 
-    # extra-cmake-modules
-
     # Flakes
     inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
     inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.shellevents
@@ -90,9 +86,6 @@ in
     # System Tools
     btrfs-progs
     compsize
-
-    # AI Tools
-    code-cursor-fhs
 
     # Git tools
     github-desktop
@@ -209,14 +202,17 @@ in
     };
     # Global Environment Variables
     bash.shellInit = ''
-      	export GRIMBLAST_HIDE_CURSOR=0
-      	export SOPS_AGE_KEY_FILE="/home/yousuf/Sync/Misc/age-keys.txt"
-      	export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
-      	export MANPAGER="nvim +Man!"
-      	export EDITOR="nvim"
-      	export HOUR="5"
-      	# awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
-      	export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
+      export GRIMBLAST_HIDE_CURSOR=0
+      export SOPS_AGE_KEY_FILE="/home/yousuf/Sync/Misc/age-keys.txt"
+      export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
+      export MANPAGER="nvim +Man!"
+      export EDITOR="nvim"
+      export HOUR="5"
+      # awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
+      export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
+      export PYTHON_HISTORY=~/.local/share/python/history
+      export PSQL_Hsitory=~/.local/share/.psql_history
+      export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtkrc-2.0
     '';
   };
 

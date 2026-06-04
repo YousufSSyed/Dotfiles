@@ -23,6 +23,8 @@ in
           stateVersion = "26.05";
           file.".config/zen/h9ep31cd.default/chrome".source =
             config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
+          file."Sync/Obsidian/Immich".source =
+            config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
         };
         programs.firefox = {
           enable = true;

@@ -14,7 +14,6 @@
     qbittorrent
     megabasterd
     ruffle
-    vscode
     diff-so-fancy
     delta
     dolphin-emu
