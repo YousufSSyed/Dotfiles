@@ -3,17 +3,25 @@ application/octet-stream=neovide.desktop;
 application/vnd.adobe.flash.movie=ruffle.desktop;
 application/x-compressed-tar=org.kde.dolphin.desktop;
 application/x-shellscript=neovide.desktop;
+application/zip=org.kde.dolphin.desktop;
+image/gif=com.interversehq.qView.desktop;
 image/png=com.interversehq.qView.desktop;nsxiv-2.desktop;
+image/webp=com.interversehq.qView.desktop;
 text/html=zen.desktop;
 text/plain=neovide.desktop;
+text/x-lua=neovide.desktop;
 
 [Default Applications]
 application/octet-stream=neovide.desktop;
 application/vnd.adobe.flash.movie=ruffle.desktop;
 application/x-compressed-tar=org.kde.dolphin.desktop;
 application/x-shellscript=neovide.desktop;
+application/zip=org.kde.dolphin.desktop;
+image/gif=com.interversehq.qView.desktop;
 image/png=com.interversehq.qView.desktop;
+image/webp=com.interversehq.qView.desktop;
 text/html=zen.desktop;
 text/plain=neovide.desktop;
+text/x-lua=neovide.desktop;
 x-scheme-handler/http=zen.desktop
 x-scheme-handler/https=zen.desktop

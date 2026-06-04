@@ -401,8 +401,8 @@ return {
 	{
 		"obsidian-nvim/obsidian.nvim",
 		version = "*",
-		lazy = true,
 		ft = "markdown",
+		cmd = { "Obsidian" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"hrsh7th/nvim-cmp",
@@ -668,7 +668,16 @@ return {
 			vim.go.cmdheight = 0
 		end,
 	},
-	{ "nvchad/menu", lazy = true, dependencies = { "nvchad/volt" } },
+	{
+		"nvzone/menu",
+		lazy = true,
+		dependencies = { "nvzone/volt" },
+	},
+	{
+		"nvzone/minty",
+		cmd = { "Shades", "Huefy" },
+		dependencies = { "nvzone/volt" },
+	},
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		enabled = true,
@@ -718,7 +727,8 @@ return {
 		config = true,
 	},
 	{
-		"ColinKennedy/cursor-text-objects.nvim",
+		-- "ColinKennedy/cursor-text-objects.nvim",
+		"ColinKennedy/test-cursor-text-objects.nvim",
 		config = function()
 			local down_description = "Operate from your current cursor to the end of some text-object."
 			local up_description = "Operate from the start of some text-object to your current cursor."
@@ -923,6 +933,27 @@ return {
 					},
 				},
 			})
+		end,
+	},
+	{ "tpope/vim-fugitive" },
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- required
+			"sindrets/diffview.nvim", -- optional - Diff integration
+			-- Only one of these is needed.
+			"nvim-telescope/telescope.nvim", -- optional
+			"ibhagwan/fzf-lua", -- optional
+			"echasnovski/mini.pick", -- optional
+			"folke/snacks.nvim", -- optional
+		},
+	},
+	{
+		"smjonas/live-command.nvim",
+		-- live-command supports semantic versioning via Git tags
+		-- tag = "2.*",
+		config = function()
+			require("live-command").setup()
 		end,
 	},
 }

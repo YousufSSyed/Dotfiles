@@ -62,15 +62,14 @@ cmp.setup.cmdline(":", {
 
 -- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
 -- Set configuration for specific filetype.
---[[ cmp.setup.filetype('gitcommit', {
-  sources = cmp.config.sources({
-    { name = 'git' },
-  }, {
-    { name = 'buffer' },
-  })
-})
-require("cmp_git").setup() ]]
---
+-- cmp.setup.filetype("gitcommit", {
+-- 	sources = cmp.config.sources({
+-- 		{ name = "git" },
+-- 	}, {
+-- 		{ name = "buffer" },
+-- 	}),
+-- })
+-- require("cmp_git").setup()
 
 --substitute.nvim
 --vim.keymap.set("n", "s", require('substitute').operator, { noremap = true })
@@ -345,8 +344,8 @@ require("dial.config").augends:register_group({
 		augend.constant.alias.bool,
 	},
 })
-vim.keymap.set({ "n", "v", "i" }, "<C-j>", "<Plug>(dial-increment)")
-vim.keymap.set({ "n", "v", "i" }, "<C-k>", "<Plug>(dial-decrement)")
+vim.keymap.set({ "n", "v", "i" }, "<C-j>", "<Plug>(dial-decrement)")
+vim.keymap.set({ "n", "v", "i" }, "<C-k>", "<Plug>(dial-increment)")
 
 -- Remove Telescope frecency message notification
 -- From: https://github.com/rcarriga/nvim-notify/issues/114
@@ -362,65 +361,67 @@ end
 
 vim.api.nvim_command("highlight HopUnmatched guifg=none guibg=none guisp=none ctermfg=none")
 
--- require'nvim-treesitter.configs'.setup {
---   ensure_installed = "maintained",
---   highlight = {
---     enable = true,
---   },
---   textobjects = {
---     select = {
---       enable = true,
---       lookahead = true,
---       keymaps = {
---         ["af"] = "@function.outer",
---         ["if"] = "@function.inner",
---         ["ac"] = "@class.outer",
---         ["ic"] = "@class.inner",
---       },
---     },
---   },
--- }
+require("nvim-treesitter.configs").setup({
+	ensure_installed = "maintained",
+	highlight = {
+		enable = true,
+	},
+	textobjects = {
+		select = {
+			enable = true,
+			lookahead = true,
+			keymaps = {
+				["af"] = "@function.outer",
+				["if"] = "@function.inner",
+				["ac"] = "@class.outer",
+				["ic"] = "@class.inner",
+			},
+		},
+	},
+})
 --
--- local ts_utils = require'nvim-treesitter.ts_utils'
--- local parsers = require'nvim-treesitter.parsers'
+local ts_utils = require("nvim-treesitter.ts_utils")
+local parsers = require("nvim-treesitter.parsers")
 --
--- local function move_selection_to_bottom_of_section()
---   local bufnr = vim.api.nvim_get_current_buf()
---   local parser = parsers.get_parser(bufnr)
---   local root = parser:parse()[1]:root()
---
---   local start_line, start_col = unpack(vim.fn.getpos("'<"))
---   local end_line, end_col = unpack(vim.fn.getpos("'>"))
---   local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
---
---   local current_node = root:named_descendant_for_range(start_line - 1, 0, end_line, -1)
---   local section_end = current_node:end_()
---
---   vim.api.nvim_buf_set_lines(0, section_end, section_end, false, lines)
---   vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, {})
--- end
+local function move_selection_to_bottom_of_section()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local parser = parsers.get_parser(bufnr)
+	local root = parser:parse()[1]:root()
+	--
+	local start_line, start_col = unpack(vim.fn.getpos("'<"))
+	local end_line, end_col = unpack(vim.fn.getpos("'>"))
+	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+	--
+	local current_node = root:named_descendant_for_range(start_line - 1, 0, end_line, -1)
+	local section_end = current_node:end_()
+	--
+	vim.api.nvim_buf_set_lines(0, section_end, section_end, false, lines)
+	vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, {})
+end
 --
 
--- local ts_utils = require'nvim-treesitter.ts_utils'
--- local parsers = require'nvim-treesitter.parsers'
+local ts_utils = require("nvim-treesitter.ts_utils")
+local parsers = require("nvim-treesitter.parsers")
 --
--- local function move_selection_to_bottom_of_section()
---   local bufnr = vim.api.nvim_get_current_buf()
---   local parser = parsers.get_parser(bufnr)
---   local root = parser:parse()[1]:root()
+local function move_selection_to_bottom_of_section()
+	local bufnr = vim.api.nvim_get_current_buf()
+	local parser = parsers.get_parser(bufnr)
+	local root = parser:parse()[1]:root()
+	--
+	local start_line, start_col = unpack(vim.fn.getpos("'<"))
+	local end_line, end_col = unpack(vim.fn.getpos("'>"))
+	local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+	--
+	local current_node = root:named_descendant_for_range(start_line - 1, 0, end_line, -1)
+	local section_end = current_node:end_()
+	--
+	vim.api.nvim_buf_set_lines(0, section_end, section_end, false, lines)
+	vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, {})
+end
 --
---   local start_line, start_col = unpack(vim.fn.getpos("'<"))
---   local end_line, end_col = unpack(vim.fn.getpos("'>"))
---   local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
---
---   local current_node = root:named_descendant_for_range(start_line - 1, 0, end_line, -1)
---   local section_end = current_node:end_()
---
---   vim.api.nvim_buf_set_lines(0, section_end, section_end, false, lines)
---   vim.api.nvim_buf_set_lines(0, start_line - 1, end_line, false, {})
--- end
---
--- vim.keymap.set({"v"}, "<m-j>", function() move_selection_to_bottom_of_section() end)
+vim.keymap.set({ "v" }, "<m-j>", function()
+	move_selection_to_bottom_of_section()
+end)
 
 vim.keymap.set({ "n", "v" }, "<leader>a", ":Telescope aerial", opts)
 
@@ -457,9 +458,9 @@ for _, key in ipairs({ "j", "k" }) do
 	vim.keymap.set({ "o" }, key, "V<cmd>HopVertical<cr>", opts) -- Note the V<cmd>
 end
 
--- vim.keymap.set("n", "<leader>a", function()
--- 	vim.cmd([[vimgrep /\v#region/ % | Telescope quickfix]])
--- end, { desc = "find #region (regions) in current file" })
+vim.keymap.set("n", "<leader>a", function()
+	vim.cmd([[vimgrep /\v#region/ % | Telescope quickfix]])
+end, { desc = "find #region (regions) in current file" })
 
 vim.api.nvim_create_autocmd("vimenter", {
 	pattern = "*",

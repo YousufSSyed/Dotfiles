@@ -45,14 +45,4 @@
   # networking.interfaces.wlan0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "aarch64-linux";
-
-  hardware = {
-    asahi = {
-      # extractPeripheralFirmware = false;
-      peripheralFirmwareDirectory = ./firmware;
-      setupAsahiSound = true;
-      enable = true;
-    };
-  };
-
 }

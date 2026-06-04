@@ -29,12 +29,10 @@ vim.keymap.set({ "n" }, "<m-]>", "<cmd>tabnext<cr>", opts)
 -- Hotkeys for buffer management
 vim.keymap.set("n", "<leader>6", "<cmd>tabclose<cr>", opts)
 vim.keymap.set({ "n", "v" }, "<D-w>", "<cmd>bprev<cr><cmd>bd#<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<D-e>", "<cmd>bnext<cr><cmd>bd#<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<leader>u", "<cmd>bprev<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<leader>i", "<cmd>bnext<cr>", opts)
+vim.keymap.set({ "n", "v" }, "<leader>u", "<cmd>b#<cr>", opts)
 
 -- Change down and up to gj and gk
-vim.keymap.set({ "i" }, "<down>", "<C-o>gj", opts)
+vim.keymap.set("i", "<down>", "<C-o>gj", opts)
 vim.keymap.set("i", "<up>", "<C-o>gk", opts)
 vim.keymap.set({ "n", "v" }, "<down>", "gj", opts)
 vim.keymap.set({ "n", "v" }, "<up>", "gk", opts)

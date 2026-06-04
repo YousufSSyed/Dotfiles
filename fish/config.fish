@@ -8,5 +8,5 @@ starship init fish | source
 
 if status is-interactive
 	cd ~/Downloads/
-    atuin init fish | source
+  atuin init fish | source
 end

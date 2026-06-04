@@ -29,12 +29,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    apple-silicon.url = "github:tpwrules/nixos-apple-silicon/";
+    apple-silicon.url = "github:nix-community/nixos-apple-silicon/";
     dolphin-overlay.url = "github:rumboon/dolphin-overlay";
     swww.url = "github:LGFae/swww";
     espanso-fix.url = "github:pitkling/nixpkgs/espanso-fix-capabilities-export";
     youtube-tui.url = "github:Siriusmart/youtube-tui";
     timewall.url = "github:bcyran/timewall";
+    nixos-aarch64-widevine.url = "github:epetousis/nixos-aarch64-widevine";
+    hyprland.url = "github:gulafaran/Hyprland?ref=rendernode";
   };
 
   outputs =

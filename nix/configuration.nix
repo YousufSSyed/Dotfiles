@@ -12,11 +12,16 @@
     inputs.stylix.nixosModules.stylix
   ];
 
+  environment.sessionVariables.MOZ_GMP_PATH = [
+    "${pkgs.widevine-cdm-lacros}/gmp-widevinecdm/system-installed"
+  ];
+
   # Packages
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
     inputs.dolphin-overlay.overlays.default
+    inputs.nixos-aarch64-widevine.overlays.default
   ];
   environment.systemPackages = with pkgs; [
     # Apps
@@ -35,6 +40,8 @@
     pkgs.megabasterd
     pkgs.gimp3-with-plugins
     pkgs.github-desktop
+    pkgs.rofi-wayland
+    pkgs.ruffle
 
     # Command Line Tools / CLIs
     pkgs.coreutils-prefixed
@@ -84,6 +91,10 @@
     pkgs.whois
     pkgs.git-filter-repo
     pkgs.tig
+    pkgs.atuin
+    pkgs.rofimoji
+    pkgs.hyprpicker
+    pkgs.pastel
 
     # Command Line Apps / CLI Apps
     pkgs.wf-recorder
@@ -111,6 +122,7 @@
     pkgs.xdg-desktop-portal
     pkgs.hyprpanel
     pkgs.base16-schemes
+    pkgs.widevine-cdm
 
     # Flakes
     inputs.zen-browser.packages.${pkgs.system}.default
@@ -148,6 +160,11 @@
     randomizedDelaySec = "45min";
   };
 
+  nix.settings = {
+    substituters = [ "https://hyprland.cachix.org" ];
+    trusted-public-keys = [ "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc=" ];
+  };
+
   # App modules
   programs = {
     ydotool.enable = true;
@@ -164,6 +181,7 @@
     # Hpyrland
     hyprland.withUWSM = true;
     hyprland.enable = true;
+    hyprland.package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     hyprlock.enable = true;
     uwsm.enable = true;
     uwsm.waylandCompositors = {
@@ -244,6 +262,16 @@
       "udev.log_priority=3"
       "boot.shell_on_fail"
     ];
+  };
+
+  hardware = {
+    asahi = {
+      # extractPeripheralFirmware = false;
+      peripheralFirmwareDirectory = ./firmware;
+      setupAsahiSound = true;
+      enable = true;
+      experimentalGPUInstallMode = "replace";
+    };
   };
 
   systemd.packages = [ pkgs.libinput-gestures ];
