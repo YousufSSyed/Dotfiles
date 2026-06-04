@@ -266,6 +266,7 @@
     age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";
     defaultSopsFile = ./secrets.yaml;
     secrets.OBSIDIAN_REST_API_KEY.owner = config.users.users.yousuf.name;
+    secrets.YOUSUFS_PASSWORD.neededForUsers = true;
   };
 
   programs.bash.shellInit = ''
@@ -323,8 +324,8 @@
     };
   };
 
-  users = {
-    extraUsers.yousuf = {
+  users.users = {
+    yousuf = {
       isNormalUser = true;
       home = "/home/yousuf";
       extraGroups = [
@@ -334,6 +335,7 @@
         "input"
         "ydotool"
       ];
+      hashedPasswordFile = config.sops.secrets.YOUSUFS_PASSWORD.path;
     };
   };
 
