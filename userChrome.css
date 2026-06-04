@@ -15,9 +15,10 @@
     --tAnimation: cubic-bezier(.25,.8,.25,1);
     --TextColor: black;
     --panel-separator-color: var(--arrowpanel-color);
-    /* Overwritten Firefox Variavles */
+    /* Other Firefox Variavles */
+    --tab-min-height: 24px !important;
+    --tab-block-margin: 3px !important;
     --arrowpanel-border-color: transparent !important;
-    --panel-subview-body-padding: 5px !important;
     --panel-border-color: rgba(0,0,0,0);
 	/* Icon Variables */
     --AspectRatio: "aspect_ratio";
@@ -164,10 +165,6 @@
     --Window: "web_asset";
 }
 
-.identity-box-button, #tracking-protection-icon-box {
-    --urlbar-icon-padding: 4px !important;
-}
-
 /* other CSS */
 #navigator-toolbox {
     border-bottom: none !important;
@@ -176,32 +173,6 @@
 * {
     font-family: SF Pro Display;
     font-weight: 550;
-}
-
-#nav-bar {
-    box-shadow: none !important;
-    padding-top: 1px;
-    height: 35px;
-}
-
-#PersonalToolbar {
-    padding-bottom: 2px !important;
-}
-
-#urlbar-input {
-    margin-top: -2px !important;
-}
-
-#urlbar[open] #urlbar-input {
-    margin-top: -1px !important;
-}
-
-#urlbar[open] > #urlbar-background {
-    box-shadow: 0 1px 5px rgba(0,0,0,0.03), 0 1px 5px rgba(0,0,0,0.03) !important;
-}
-
-#urlbar-background {
-    --urlbar-toolbar-height: 34.75px !important;
 }
 
 .identity-color-toolbar .tab-background {
@@ -276,10 +247,6 @@ toolbar .toolbarbutton-1#alltabs-button > .toolbarbutton-badge-stack {
     padding-bottom: 5px !important
 }
 
-.bookmark-item menupopup {
-/*    max-height: 40vw !important; */
-}
-
 #appMenu-protonMainView .addon-banner-item, #appMenu-protonMainView .panel-banner-item {
     margin: 0 0 5px 0 !important;
 }
@@ -288,34 +255,9 @@ menupopup > menuitem > .menu-iconic-left, menupopup > menu > .menu-iconic-left {
     margin-left: -2px !important;
 }
 
-#urlbar-input-container > box {
-    margin: 1.5px 0 3.25px -0.25px !important;
-}
-
-#urlbar[breakout][breakout-extend] #urlbar-input-container > box {
-    margin: 0.5px 0 2px 0 !important;
-}
-
-#urlbar[open="true"] #urlbar-input-container > box {
-    margin: unset !important;
-}
-
 #star-button[starred], .urlbarView-row[source="bookmarks"] > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-favicon, .urlbarView-type-icon {
     fill: var(--toolbar-field-color) !important;
     stroke: none !important;
-}
-
-#personal-toolbar-empty-description, #PersonalToolbar .toolbarbutton-1, toolbarbutton.bookmark-item:not(.subviewbutton) {
-    margin: 0.5px 0px 3px 0 !important;
-    padding: 3px 4px !important;
-}
-
-.urlbarView-row:is([type="switchtab"], [type="remotetab"]) > .urlbarView-row-inner > .urlbarView-no-wrap > .urlbarView-action {
-    padding: 4px 8px;
-}
-
-#appMenu-library-bookmarks-button {
-    height: 28px !important;
 }
 
 #customizationui-widget-multiview #appMenu-libraryView, #pageActionPanel panelview, #widget-overflow panelview {
@@ -334,10 +276,6 @@ menupopup > menu, menupopup > menuitem, menupopup > menucaption {
 #appMenu-proton-update-banner {
     transition: var(--Transition) !important;
     margin: 0 0 4px 0 !important;
-}
-
-.panel-banner-item[notificationid="update-available"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-downloading"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-manual"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-other-instance"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-restart"] > .toolbarbutton-icon {
-    fill: currentColor !important;
 }
 
 .tab-background[selected="true"], :root:not([lwtheme-mozlightdark]) #TabsToolbar:not([brighttext]) #tabbrowser-tabs:not([noshadowfortests]) .tabbrowser-tab:is([visuallyselected="true"], [multiselected]) > .tab-stack > .tab-background:-moz-lwtheme, #TabsToolbar #firefox-view-button[open] > .toolbarbutton-icon, #TabsToolbar #firefox-view-button[open]:not(:focus-visible) > .toolbarbutton-icon:-moz-lwtheme, .tab-background[selected]:not([multiselected]):-moz-lwtheme {
@@ -403,16 +341,6 @@ menupopup > menu, menupopup > menuitem, menupopup > menucaption {
     margin: 0 !important;
 }
 
-.urlbar-input-box {
-    margin-left: 5px !important;
-}
-
-.urlbar-page-action {
-    transform: scale(0.85) !important;
-    margin: 0 -2px 2px !important;
-    border-radius: 4px !important;
-}
-
 #userContext-icons[class*="identity-color"] {
     background-color: var(--identity-tab-color);
     margin-inline: 2px !important;
@@ -449,10 +377,6 @@ menupopup > menu, menupopup > menuitem, menupopup > menucaption {
 
 #identity-popup-clear-sitedata-button {
     margin: 0 5px -2px !important;
-}
-
-.urlbar-page-action image {
-    transform: scale(1.2) !important;
 }
 
 #urlbar[open="true"] .urlbar-page-action image {
@@ -511,10 +435,6 @@ xul|description, xul|label {
 
 ::-moz-progress-bar {
     background: highlight !important;
-}
-
-#TabsToolbar, :root {
-    --tab-min-height: 24px !important;
 }
 
 #urlbar-zoom-button {
@@ -658,33 +578,8 @@ menuseparator:before, toolbarseparator {
     fill: var(--toolbar-field-focus-background-color) !important;
 }
 
-#urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background, #searchbar:focus-within {
-    outline: highlight solid 3px !important;
-    outline-offset: -2px !important;
-}
-
-#urlbar[breakout][breakout-extend] {
-    top: calc((var(--urlbar-toolbar-height) - var(--urlbar-height)) / 2) !important;
-    left: unset !important;
-    width: 100% !important;
-}
-
-#urlbar-input-container {
-    height: calc(var(--urlbar-toolbar-height) - 3px) !important;
-}
-
-#urlbar[breakout][breakout-extend] > #urlbar-input-container {
-    border: highlight solid 3px !important;
-    padding: 2px 2px 0 !important;
-    margin-bottom: 2px !important;
-}
-
 #sidebar-header {
     padding: 6px !important;
-}
-
-#urlbar[open="true"] .urlbar-page-action {
-    padding: 2px 6px !important;
 }
 
 #urlbar-search-mode-indicator {
@@ -702,10 +597,6 @@ menuseparator:before, toolbarseparator {
     border-radius: 50% !important;
 }
 
-#urlbar-input-container {
-    padding-left: 2px !important;
-}
-
 #reader-mode-button[readeractive="true"] {
     background-color: var(--urlbar-box-active-bgcolor);
 }
@@ -717,10 +608,6 @@ menuseparator:before, toolbarseparator {
 #urlbar .search-one-offs:not([hidden]) {
     margin: -3.5px 0px 0 9px !important;
     width: auto !important;
-}
-
-toolbar .toolbarbutton-1 > .toolbarbutton-icon[label="Extensions"] {
-    padding: 5px !important;
 }
 
 .titlebar-spacer[type="pre-tabs"] {
@@ -741,11 +628,6 @@ toolbar .toolbarbutton-1 > .toolbarbutton-icon[label="Extensions"] {
 
 .dialogOverlay[topmost="true"], #window-modal-dialog::backdrop {
     background-color: rgba(0,0,0,0.25) !important;
-}
-
-.widget-overflow-list .toolbarbutton-1, .subviewbutton {
-    padding: 4.25px 8px !important;
-    margin: 0 !important;
 }
 
 #allTabsMenu-allTabsView-tabs .all-tabs-item {
@@ -826,7 +708,7 @@ toolbarbutton, #identity-box, toolbarbutton > *, .urlbarView-row *, .search-pane
     outline: none !important;
 }
 
-#urlbar[focused="true"] > #urlbar-background, #searchbar:focus-within {
+#urlbar[focused="true"] > #urlbar-background, #searchbar:focus-within, #nav-bar {
     box-shadow: none !important;
 }
 
@@ -1179,4 +1061,155 @@ menupopup > menuitem:is([selected="true"]):not([disabled="false"]) {
 
 [data-title-default="Mozilla Firefox"] .sidebar-splitter {
     opacity: 0;
+}
+
+/* review this CSS */
+
+.panel-banner-item[notificationid="update-available"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-downloading"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-manual"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-other-instance"] > .toolbarbutton-icon, .panel-banner-item[notificationid="update-restart"] > .toolbarbutton-icon {
+    fill: currentColor !important;
+}
+
+
+
+
+
+
+
+/* Popup menu CSS */
+
+:root, .toolbar-menupopup, .panel-header {
+    --panel-subview-body-padding: 5px !important;
+    --arrowpanel-menuitem-padding: 4.25px 8px !important;
+    --arrowpanel-menuitem-margin: 0 !important;
+    --arrowpanel-header-min-height: 15px !important;
+    --arrowpanel-menuitem-margin-inline: 5px !important;
+    --arrowpanel-header-back-icon-padding: 4px !important;
+    --urlbar-icon-border-radius: 3px !important;
+}
+
+.panel-subview-footer-button {
+    margin: 0 var(--panel-subview-body-padding) var(--panel-subview-body-padding) var(--panel-subview-body-padding) !important;
+}
+
+.panel-header > .subviewbutton-back {
+    margin-left: 3px !important;
+}
+
+/* end of section */
+
+/* URL Bar CSS */
+
+:root, #urlbar[breakout], #urlbar-container[breakout], #urlbar[breakout][breakout-extend] > #urlbar-input-container {
+    --urlbar-container-height: calc(var(--urlbar-height) + 8px) !important;
+    --urlbar-toolbar-height: var(--urlbar-height);
+    --toolbarbutton-outer-padding: 1px !important;
+    --urlbar-container-padding: 2.5px !important;
+    --toolbar-start-end-padding: 5px !important;
+    --urlbar-margin-inline: 2px !important;
+    --buttonPadding: 5.5px !important;
+    --urlbar-height: 28px !important;
+}
+
+toolbar#nav-bar :is(.toolbarbutton-1 > .toolbarbutton-icon, .toolbarbutton-badge-stack > *:not(.toolbarbutton-badge)) {
+    padding: var(--buttonPadding) !important;
+    height: var(--urlbar-height) !important;
+    width: var(--urlbar-height) !important;
+}
+
+#urlbar[open] > #urlbar-background {
+    box-shadow: 0 1px 5px rgba(0,0,0,0.03), 0 1px 5px rgba(0,0,0,0.03) !important;
+}
+
+#urlbar[breakout] {
+    min-height: unset !important;
+    padding: 1.5px 0;
+}
+
+#urlbar[breakout]:not([breakout-extend]) {
+    top: unset !important;
+}
+
+.urlbar-page-action, #urlbar-go-button, .search-go-button {
+    padding: unset !important;
+    height: unset !important;
+    width: unset !important;
+}
+
+#urlbar-input-container box:not(#identity-box):has(image), :is(#page-action-buttons hbox, #urlbar-input-container > box) image {
+    height: calc(var(--urlbar-height) - var(--urlbar-container-padding) * 2) !important;
+    width: calc(var(--urlbar-height) - var(--urlbar-container-padding) * 2) !important;
+    padding: unset !important;
+}
+
+#urlbar-input-container > .chromeUI #identity-icon-box {
+    padding-inline: var(--urlbar-icon-padding) !important;
+    padding-left: calc(var(--urlbar-icon-padding) / 2) !important;
+    width: unset !important;
+}
+
+:is(#page-action-buttons hbox, #urlbar-input-container > box) image {
+    padding: 3px !important;
+}
+
+#urlbar-input-container > box:not(#identity-box):empty {
+    width: unset !important;
+}
+
+#urlbar-input-container {
+    border: none !important;
+}
+
+.urlbarView {
+    margin-inline: 5px;
+}
+
+#urlbar[breakout][breakout-extend] > #urlbar-input-container {
+    padding: 2.5px var(--urlbar-container-padding) !important;
+    border: highlight solid 3px !important;
+    margin-bottom: 2px !important;
+    height: unset !important;
+}
+
+#urlbar-input-container > box {
+    bottom: calc(var(--urlbar-container-padding) / 2);
+    position: relative;
+}
+
+#urlbar[breakout-extend] #urlbar-input-container > box {
+    bottom: unset !important;
+    position: relative;     
+}
+
+.urlbarView {
+    margin: 0 7.5px;
+    width: auto;
+}
+
+#urlbar[breakout][breakout-extend] {
+    left: unset !important;
+    width: 100% !important;
+}
+
+#nav-bar-customization-target > :is(toolbarbutton, toolbaritem):first-child {
+    margin-left: var(--toolbar-start-end-padding) !important;
+    padding: 0 !important;
+}
+
+/* End of section */
+
+/* Bookmarks bar CSS */
+
+#personal-toolbar-empty-description, toolbarbutton.bookmark-item:not(.subviewbutton) {
+    margin: 0.5px 0px 3px 0 !important;
+    padding: 2.5px 5px !important;
+}
+
+#PersonalToolbar {
+    margin-top: -1px !important;
+}
+
+/* Other CSS */
+
+.subview-subheader, panelview .toolbarbutton-1, .widget-overflow-list .toolbarbutton-1, #identity-icon-label, .toolbarbutton-badge-stack {
+    padding: 0 !important;
 }
