@@ -1,15 +1,13 @@
 {
   inputs = {
-    hyprshell = {
-      url = "github:H3rmt/hyprswitch?ref=hyprshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
+      # url = "github:0xc000022070/zen-browser-flake?rev=5c9624f3d0176727284678aebf677770dd1375b2";
+      url = "github:0xc000022070/zen-browser-flake?rev=0618a22e6fb6f13181807f0e14087192d459b2a0";
+      # url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland-contrib = {
@@ -28,21 +26,34 @@
       url = "github:bobvanderlinden/aw-watcher-window-hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # hyprland.url = "github:hyprwm/Hyprland";
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
-      # inputs.hyprland.follows = "hyprland";
-      # inputs.hyprland.follows = "nixpkgs";
     };
-    quickshell = {
-      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     dolphin-overlay.url = "github:rumboon/dolphin-overlay";
     awww.url = "git+https://codeberg.org/LGFae/awww";
     affinity-nix.url = "github:mrshmllow/affinity-nix";
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    hyprfloat.url = "github:yz778/hyprfloat";
+
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
+    kwin-effects-forceblur = {
+      # url = "github:LightWayUp/kwin-effects-forceblur";
+      url = "github:Kayzels/kwin-effects-forceblur/wallpaper-fix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    kwin-effects-better-blur-dx = {
+      url = "github:xarblu/kwin-effects-better-blur-dx";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    kwin-effects-glass = {
+      url = "github:4v3ngR/kwin-effects-glass";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -54,8 +65,7 @@
           ./configuration.nix
           ./hardware-configuration.nix
           {
-            home-manager.extraSpecialArgs = { inherit inputs; };
-            # environment.systemPackages = [ inputs.affinity-nix.packages.x86_64-linux.v3 ];
+            environment.systemPackages = [ inputs.affinity-nix.packages.x86_64-linux.v3 ];
           }
         ];
       };

@@ -12,148 +12,189 @@ in
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
-    # inputs.hyprland.nixosModules.default
+    inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.sops-nix.nixosModules.sops
   ];
 
   # Packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [
-    inputs.dolphin-overlay.overlays.default
-  ];
-  environment.systemPackages = [
-    # Apps
-    pkgs.kitty
-    pkgs.neovide
-    pkgs.neovim
-    pkgs.fish
-    pkgs.obsidian
-    pkgs.activitywatch
-    pkgs.waybar
-    pkgs.qview
-    pkgs.gparted
-    # pkgs.ulauncher
-    pkgs.font-manager
-    # pkgs.dissent
-    pkgs.qbittorrent
-    pkgs.megabasterd
-    pkgs.gimp3-with-plugins
-    pkgs.github-desktop
-    pkgs.rofi
-    pkgs.ruffle
-    pkgs.hyprshade
-    pkgs.virt-manager
-    pkgs.vivaldi
-    pkgs.lutris
-    pkgs.libuuid
-    pkgs.edk2
+  nixpkgs = {
+    config = {
+      cudaSupport = true;
+      allowUnfree = true;
+    };
+    overlays = [
+      inputs.dolphin-overlay.overlays.default
+    ];
+  };
 
-    pkgs.winetricks
-    pkgs.wineWow64Packages.wayland
+  environment.systemPackages = with pkgs; [
+    # Apps
+    kitty
+    neovide
+    neovim
+    fish
+    obsidian
+    activitywatch
+    qview
+    gparted
+    # ulauncher
+    font-manager
+    qbittorrent
+    megabasterd
+    gimp3-with-plugins
+    rofi
+    ruffle
+    virt-manager
+    vivaldi
+    lutris
+    libuuid
+    inkscape-with-extensions
+    birdtray
+    losslesscut-bin
+    whisper-cpp
+    nvitop
+    vesktop
+    blender
+    (mpv-unwrapped.override {
+      ffmpeg = ffmpeg-full;
+    })
+    davinci-resolve
+    vscode
+    nvitop
+    diff-so-fancy
+    delta
+    kdePackages.kde-dev-utils
+
+    freetype
+    plasma-panel-colorizer
+
+    # kdotool
+
+    # winetricks
+    # wineWow64Packages.wayland
+
+    edk2
+    libxcb
+
+    # AI Tools
+    code-cursor-fhs
+
+    # Git tools
+    github-desktop
+    lazygit
 
     # Command Line Tools / CLIs
-    pkgs.coreutils-prefixed
-    pkgs.uutils-coreutils-noprefix
-    pkgs.gnumake
-    pkgs.fd
-    pkgs.fzf
-    pkgs.eza
-    pkgs.gcc
-    pkgs.cmake
-    pkgs.bat
-    pkgs.keyd
-    pkgs.zoxide
-    pkgs.ripgrep
-    pkgs.starship
-    pkgs.bottom
-    pkgs.yazi
-    pkgs.sd
-    pkgs.nsxiv
-    pkgs.ffmpeg-full
-    pkgs.pkg-config
-    pkgs.slurp
-    pkgs.killall
-    pkgs.lnav
-    pkgs.wl-clipboard
-    pkgs.jujutsu
-    pkgs.yt-dlp
-    pkgs.gallery-dl
-    pkgs.exiftool
-    pkgs.sunpaper
-    pkgs.wallutils
-    pkgs.unzip
-    pkgs.imagemagick
-    pkgs.tesseract
-    pkgs.socat
-    pkgs.trashy
-    pkgs.age
-    pkgs.sops
-    pkgs.git-crypt
-    pkgs.btrfs-progs
-    pkgs.yq-go
-    pkgs.snapper
-    pkgs.jnv
-    pkgs.jq
-    pkgs.p7zip
-    pkgs.whois
-    pkgs.git-filter-repo
-    pkgs.tig
-    pkgs.atuin
-    pkgs.rofimoji
-    pkgs.hyprpicker
-    pkgs.pastel
-    pkgs.pciutils
-    pkgs.brightnessctl
-    pkgs.uv
+    uutils-coreutils-noprefix
+    coreutils-prefixed
+    gnumake
+    fd
+    fzf
+    eza
+    gcc
+    cmake
+    bat
+    keyd
+    zoxide
+    ripgrep
+    starship
+    bottom
+    yazi
+    sd
+    (ffmpeg-full.override {
+      withUnfree = true;
+    })
+    pkg-config
+    slurp
+    lnav
+    wl-clipboard
+    jujutsu
+    yt-dlp
+    gallery-dl
+    exiftool
+    unzip
+    imagemagick
+    tesseract
+    socat
+    trashy
+    age
+    sops
+    git-crypt
+    btrfs-progs
+    yq-go
+    snapper
+    jnv
+    jq
+    p7zip
+    whois
+    git-filter-repo
+    tig
+    atuin
+    rofimoji
+    hyprpicker
+    pastel
+    pciutils
+    brightnessctl
+    wget
 
     # Command Line Apps / CLI Apps
-    pkgs.wf-recorder
-    pkgs.grim
-    pkgs.dua
+    wf-recorder
+    grim
+    dua
+    quickshell
 
-    # LSPs, Linters, and languages
-    pkgs.go
-    pkgs.stylua
-    pkgs.lua-language-server
-    pkgs.gopls
-    pkgs.rust-analyzer
-    pkgs.markdown-oxide
-    pkgs.nixfmt-rfc-style
-    pkgs.nixd
-    pkgs.hyprls
+    # LSPs, Linters, and language Related Packages
+    # Misc languages
+    rust-analyzer
+    markdown-oxide
+    nixfmt
+    nixd
+    hyprls
+    uv
+    python315
+    # Golang
+    go
+    gopls
+    # Lua
+    stylua
+    lua-language-server
+    # JS
+    biome
+    yarn
+    nodejs
 
     # Misc Packages
-    pkgs.nerd-fonts.iosevka # Installed for nerd icons
-    pkgs.libinput-gestures
-    pkgs.apple-cursor
-    pkgs.sunwait
-    pkgs.xdg-desktop-portal-hyprland
-    pkgs.xdg-desktop-portal
-    pkgs.widevine-cdm
-    pkgs.dconf
-    pkgs.vesktop
+    nerd-fonts.iosevka # Installed for nerd icons
+    libinput-gestures
+    apple-cursor
+    xdg-desktop-portal-hyprland
+    xdg-desktop-portal
+    widevine-cdm
+    dconf
+    swtpm
+    # extra-cmake-modules
 
     # Flakes
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-    inputs.hyprshell.packages.${pkgs.stdenv.hostPlatform.system}.hyprshell
-    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.grimblast
-    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.hdrop
-    inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.shellevents
-    inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
-    inputs.aw-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.aw-watcher-window-hyprland
-    inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default
-
-    # inputs.youtube-tui.packages.${pkgs.stdenv.hostPlatform.system}.youtube-tui
-    pkgs.youtube-tui
+    inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
+    inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.shellevents
+    inputs.awww.packages.${stdenv.hostPlatform.system}.awww
+    inputs.aw-hyprland.packages.${stdenv.hostPlatform.system}.aw-watcher-window-hyprland
+    inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
 
     # KDE Packages
-    pkgs.kdePackages.dolphin
-    pkgs.kdePackages.qtsvg
-    pkgs.haruna
-    pkgs.libsForQt5.kservice
+    kdePackages.dolphin
+    kdePackages.qtsvg
+    libsForQt5.kservice
+    kdePackages.plasma-systemmonitor
+    # inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
+    inputs.kwin-effects-forceblur.packages.${stdenv.hostPlatform.system}.default
+    # inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
+    kdePackages.extra-cmake-modules
 
-    pkgs.linuxHeaders
-    pkgs.looking-glass-client
+    linuxHeaders
+    looking-glass-client
+
+    libimobiledevice
+    ifuse # optional, to mount using 'ifuse'
   ];
 
   systemd.user.timers."wallpaper" = {
@@ -175,7 +216,6 @@ in
   };
 
   ## Update flake inputs daily
-
   systemd.services = {
     flake-update = {
       preStart = "/run/current-system/sw/bin/nm-online";
@@ -185,7 +225,7 @@ in
         StartLimitBurst = 5;
       };
       serviceConfig = {
-        ExecStart = "${pkgs.nix}/bin/nix flake update --flake ${inputs.self.outPath}";
+        ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.config/nix";
         Restart = "on-failure";
         RestartSec = "30";
         Type = "oneshot"; # Ensure that it finishes before starting nixos-upgrade
@@ -248,11 +288,6 @@ in
     };
   };
 
-  services.invidious = {
-    enable = true;
-    port = 3001;
-  };
-
   # services.immich = {
   #   enable = true;
   #   accelerationDevices = null;
@@ -263,9 +298,10 @@ in
   #   "render"
   # ];
 
-  programs.nix-ld.libraries = [ config.boot.kernelPackages.nvidia_x11 ];
+  programs.nix-ld.libraries = [
+    config.boot.kernelPackages.nvidia_x11
+  ];
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
   # boot.extraModulePackages = [ config.boot.kernelPackages.kvmfr ];
   # boot.initrd.kernelModules = [
   #   "kvmfr"
@@ -310,6 +346,12 @@ in
     git.enable = true;
     mtr.enable = true;
     firefox.enable = true;
+    firefox.autoConfig = builtins.readFile (
+      builtins.fetchurl {
+        url = "https://raw.githubusercontent.com/MrOtherGuy/fx-autoconfig/master/program/config.js";
+        sha256 = "1mx679fbc4d9x4bnqajqx5a95y1lfasvf90pbqkh9sm3ch945p40";
+      }
+    );
     nix-ld.enable = true;
     gnupg.agent = {
       enable = true;
@@ -319,9 +361,6 @@ in
     hyprland = {
       withUWSM = true;
       enable = true;
-      # package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-      # portalPackage =
-      #   inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
     };
     hyprlock.enable = true;
     uwsm.enable = true;
@@ -329,29 +368,32 @@ in
       hyprland = {
         prettyName = "Hyprland";
         comment = "Hyprland compositor managed by UWSM";
-        binPath = "/run/current-system/sw/bin/Hyprland";
+        binPath = "/run/current-system/sw/bin/start-hyprland";
       };
     };
   };
 
-  # nix.settings = {
-  #   substituters = [
-  #     "https://hyprland.cachix.org"
-  #     "https://cache.garnix.io"
-  #   ];
-  #   trusted-substituters = [
-  #     "https://hyprland.cachix.org"
-  #     "https://cache.garnix.io"
-  #   ];
-  #   trusted-public-keys = [
-  #     "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-  #     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-  #   ];
-  #   trusted-users = [
-  #     "@wheel"
-  #     "yousuf"
-  #   ];
-  # };
+  nix.settings = {
+    substituters = [
+      "https://hyprland.cachix.org"
+      "https://cache.garnix.io"
+      "https://cache.nixos-cuda.org"
+    ];
+    trusted-substituters = [
+      "https://hyprland.cachix.org"
+      "https://cache.garnix.io"
+      "https://cache.nixos-cuda.org"
+    ];
+    trusted-public-keys = [
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+    ];
+    trusted-users = [
+      "@wheel"
+      "yousuf"
+    ];
+  };
 
   services.hypridle.enable = true;
 
@@ -405,23 +447,22 @@ in
       "vfio"
       "vfio_virqfd"
       # "mdev"
-      # "kvmgt"
       # "vfio-mdev"
 
       "ddcci-driver"
     ];
     kernelParams = [
-      "intel_iommu=on"
-      "vfio-pci.ids=8086:3e98"
-      # "i915.enable_gvt=1"
-      # "i915.enable_guc=0"
+      "vfio-pci.ids=1002:13c0"
+      # "vfio-pci.ids=1002:1640,1c5c:1327"
       "iommu=pt"
+      "video=efifb:off"
 
       # Zswap
       "zswap.enabled=1"
       "zswap.compressor=zstd"
       "zswap.zpool=zsmalloc"
-      "zswap.max_pool_percent=100"
+      "zswap.max_pool_percent=200"
+      "zswap.shrinker_enabled=1"
       # Silent boot parameters
       "quiet"
       "splash"
@@ -432,14 +473,39 @@ in
     ];
   };
 
-  boot.extraModprobeConfig = "options vfio-pci ids=8086:3e98";
+  # boot.extraModprobeConfig = "options vfio-pci ids=1002:1640,1c5c:1327";
+  boot.extraModprobeConfig = "options vfio-pci ids=1002:13c0";
   systemd.packages = [ pkgs.libinput-gestures ];
+  # boot.blacklistedKernelModules = [ "amdgpu" ];
 
-  services.flatpak.enable = true;
+  services.flatpak = {
+    enable = true;
+    update.auto = {
+      enable = true;
+      onCalendar = "daily";
+    };
+    packages = [
+      "com.github.tchx84.Flatseal"
+      "eu.betterbird.Betterbird"
+      "org.vinegarhq.Sober"
+      "org.vinegarhq.Vinegar"
+    ];
+    overrides = {
+      global = {
+        Environment = {
+          filesystems = [
+            "/home" # Expose user Git config
+          ];
+        };
+      };
+    };
+  };
 
   home-manager = {
+    extraSpecialArgs = { inherit inputs; };
     useGlobalPkgs = true;
     useUserPackages = true;
+    sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
     backupFileExtension = "backup";
     users.yousuf =
       {
@@ -450,7 +516,8 @@ in
       }:
       {
         imports = [
-          inputs.zen-browser.homeModules.twilight
+          inputs.zen-browser.homeModules.beta
+          # inputs.zen-browser.homeModules.twilight
         ];
         home = {
           stateVersion = "25.11";
@@ -466,6 +533,33 @@ in
           file.".zen/${zen-profile}/chrome".source =
             config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/userChrome";
         };
+        # xdg.desktopEntries = {
+        #   neovide = {
+        #     name = "Neovide";
+        #     exec = "neovide";
+        #     icon = "/home/yousuf/Assets/Icons/5caff61e599cf84c05a7b9744fafe47b_Neovim_1024x1024x32.png";
+        #   };
+        #   zen = {
+        #     name = "Zen Browser (Beta)";
+        #     exec = "zen-twilight --name zen-beta %U";
+        #     icon = "/home/yousuf/Assets/Icons/24ecc308297f3cd5d09791c67609837a_Firefox_1024x1024x32.png";
+        #   };
+        #   kitty = {
+        #     name = "kitty";
+        #     exec = "kitty";
+        #     icon = "/home/yousuf/Assets/Icons/06bbe8009cf7de155c6fa1e832778ff9_Ghostty_1024x1024x32.png";
+        #   };
+        #   obsidian = {
+        #     name = "Obsidian";
+        #     exec = "obsidian %u";
+        #     icon = "/home/yousuf/Assets/Icons/391eacacb0418bb1536a56c8be8f003a_1761532027448_1024x1024x32.png";
+        #   };
+        #   dolphin = {
+        #     name = "dolphin";
+        #     exec = "dolphin %u";
+        #     icon = "/home/yousuf/Assets/Icons/584b5505aefd428082f1ab3d9f8fa609_Files_1024x1024x32.png";
+        #   };
+        # };
         programs.zen-browser = {
           enable = true;
           profiles = {
@@ -494,6 +588,13 @@ in
                 "devtools.debugger.remote-enabled" = true;
                 "devtools.chrome.enabled" = true;
                 "zen.theme.content-element-separation" = 0; # disable border around zen window
+                "zen.tabs.close-on-back-with-no-history" = false;
+                "zen.urlbar.replace-newtab" = false;
+                # Attempt to make addons work in restricted domains
+                "extensions.webextensions.restrictedDomains" = ""; # Don't restrict any domains from addons
+                "extensions.quarantinedDomains.enabled" = false;
+                "privacy.resistFingerprinting.block_mozAddonManager" = true;
+                "accessibility.typeaheadfind.manual" = false; # Disable pressing "/" key for quick find
               };
             };
             secondary = {
@@ -502,6 +603,27 @@ in
               path = "o9fiaukr.2nd Profile";
             };
           };
+          nativeMessagingHosts = [ pkgs.firefoxpwa ];
+        };
+        programs.thunderbird = {
+          enable = true;
+          profiles."dexxqztk.Default User" = {
+            isDefault = true;
+            # path = "dexxqztk.Default User";
+            settings = {
+              "mail.minimizeToTray.startMinimized" = true;
+              "mail.biff.show_tray_icon_always" = true;
+              "mail.minimizeToTray.supportedDesktops" = "kde,gnome,pop:gnome,xfce,mate,hyprland";
+            };
+          };
+        };
+        programs.mpv = {
+          enable = true;
+          package = (
+            pkgs.mpv-unwrapped.override {
+              ffmpeg = pkgs.ffmpeg-full;
+            }
+          );
         };
         services.darkman = {
           enable = true;
@@ -514,6 +636,8 @@ in
                 /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
           '';
           settings = {
+            lat = 42.3;
+            long = -71.1;
             usegeoclue = true;
             dbusserver = true;
             portal = true;
@@ -525,6 +649,7 @@ in
   services.avahi.enable = true;
   services.geoclue2.enable = true;
   services.geoclue2.submitData = true;
+  services.geoclue2.enableWifi = false;
   services.geoclue2.enableDemoAgent = lib.mkForce true;
 
   sops = {
@@ -535,16 +660,18 @@ in
   };
 
   programs.bash.shellInit = ''
-    				export GRIMBLAST_HIDE_CURSOR=0
-    				export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/sops/age/keys.txt"
-    				export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
-    				export MANPAGER="nvim +Man!"
-    				export EDITOR="nvim"
+    		export GRIMBLAST_HIDE_CURSOR=0
+    		export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/sops/age/keys.txt"
+    		export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
+    		export MANPAGER="nvim +Man!"
+    		export EDITOR="nvim"
+    		export ELECTRON_OZONE_PLATFORM_HINT=auto
   '';
 
   networking = {
-    hostName = "NixOS-Desktop"; # Computer Name
+    hostName = "NixOS-Desktop";
     networkmanager.enable = true;
+    networkmanager.wifi.backend = "iwd";
     wireless.iwd = {
       enable = true;
       settings.General.EnableNetworkConfiguration = true;
@@ -614,29 +741,33 @@ in
   };
 
   services = {
+    # App services
     keyd.enable = true;
     atuin.enable = true;
     libinput.enable = true;
+    espanso = {
+      enable = true;
+      package = pkgs.espanso-wayland;
+    };
+    # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
-      defaultSession = "hyprland-uwsm";
+      # defaultSession = "hyprland-uwsm";
+      defaultSession = "plasma";
       autoLogin.user = "yousuf";
       sddm = {
         enable = true;
         wayland.enable = true;
       };
     };
-    xserver = {
-      videoDrivers = [ "nvidia" ];
-      enable = true;
-    };
+    # System services
+    pipewire.enable = true;
     gvfs.enable = true; # Enables reading external drives
     udisks2.enable = true; # Enables reading external drives
     automatic-timezoned.enable = true;
-    pipewire.enable = true;
-    espanso = {
-      enable = false;
-      package = pkgs.espanso-wayland;
+    xserver = {
+      videoDrivers = [ "nvidia" ];
+      enable = true;
     };
     btrfs.autoScrub = {
       enable = true;
@@ -644,6 +775,19 @@ in
       fileSystems = [ "/" ];
     };
   };
+
+  usbmuxd = {
+    # Used
+    enable = true;
+    package = pkgs.usbmuxd2;
+  };
+
+  swapDevices = [
+    {
+      device = "/swap/swapfile";
+      size = 16 * 1024;
+    }
+  ];
 
   time.hardwareClockInLocalTime = true;
   system.stateVersion = "25.11";
