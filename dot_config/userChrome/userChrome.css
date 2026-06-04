@@ -1,0 +1,40 @@
+* {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+}
+
+:root {
+	--tab-min-height: 30px !important;
+	--arrowpanel-menuitem-padding: 2px 8px !important;
+}
+
+.zen-current-workspace-indicator, .pinned-tabs-container-separator,  
+.workspace-arrowscrollbox:before {
+	display: none !important;
+}
+
+#titlebar {
+  padding-top: calc(var(--zen-toolbox-padding) * 1.5);
+	padding-bottom: calc(var(--zen-toolbox-padding) * 1.5);
+}
+
+#zen-browser-background, #zen-browser-background:before, #zen-browser-background:after {
+	background: transparent !important;
+}
+
+#zen-main-app-wrapper {
+	background: rgba(0,0,0,0.6) !important;
+}
+
+#sidebar-box {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+#zen-appcontent-navbar-wrapper {
+  display: none !important;
+}
+
+[label="Tab Count Icon"] .toolbarbutton-icon {
+  width: 24px !important;
+}

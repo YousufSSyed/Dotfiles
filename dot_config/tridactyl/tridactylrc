@@ -1,0 +1,67 @@
+sanitize tridactyllocal tridactylsync
+alias refresh source ~/.config/tridactyl/tridactylrc
+
+unbind <C-f>
+unbind <C-b>
+unbind --mode=ex <Space>
+unbind d
+unbind yc
+unbind <C-a>
+
+set smoothscroll true
+bind j scrollline 10
+bind k scrollline -10
+
+" bindurl ^https://wafflegame.net* F hint -qhb -c [class*="draggable"]
+
+" Misc bindings
+bind h tabprev
+bind l tabnext
+bind H back
+bind L forward
+bind d hint
+bind f hint -b
+bind F hint -qb
+" bind --mode=hint f hint.reset; mode normal
+bind T fillcmdline undo
+bind <m-T> refresh 
+bind t fillcmdline taball
+bind yt tabduplicate
+bind --mode=ignore <Escape> mode normal
+bind i mode ignore
+bind --mode=ex <ArrowUp> ex.prev_completion
+bind --mode=ex <ArrowDown> ex.next_completion
+bind --mode=visual s composite js document.getSelection().toString() | tabopen -b search
+
+colorscheme theme
+
+" Remove all styling from hints
+set hintstyles.bg none
+set hintstyles.fg none
+set hintstyles.outline none
+set tabsort mru
+
+set newtab about:blank
+
+" Copy a selected link in markdown format
+bind ym composite hint a -JF e=>`[${e.textContent.trim()}](${e.href})` | yank
+
+" Open all URLS in clipboard, separated by newlines
+bind yc jsb navigator.clipboard.readText().then(text => { let urls = text.split('\n') .map(url => url.trim()) .filter(url => url.length > 0); urls.forEach(url => { browser.tabs.create({ url: url, active: false, discarded: true }); }); });
+
+" Copy URLs of all selected tabs
+bind yl jsb browser.tabs.query({ highlighted: true, currentWindow: true }, (tabs) => { navigator.clipboard.writeText(tabs.map(tab => tab.url).join('\n')); });
+
+" Copy all selected tabs in markdown
+bind yL jsb browser.tabs.query({ highlighted: true, currentWindow: true }, (tabs) => { navigator.clipboard.writeText(tabs.map(tab => `[${tab.title}](${tab.url})`).join('\n')); });
+
+bind yd jsb browser.tabs.query({ highlighted: true, currentWindow: true }, (tabs) => { navigator.clipboard.writeText(tabs.map(tab => tab.url).join(' ')); });
+
+# )
+bind --mode=visual ) js function expandSelectionToPeriod() { 	const selection = window.getSelection(); 	const range = selection.getRangeAt(0); 	const endContainer = range.endContainer; 	const endOffset = range.endOffset; 	const textNode = endContainer; 	const text = textNode.textContent.substring(endOffset); 	const periodIndex = text.search(/\.(?!\S)/);  	if (periodIndex !== -1) { 		range.setEnd(textNode, endOffset + periodIndex + 1); 	} else { 		let found = false; 		let currentAncestor = 			textNode.nodeType === Node.TEXT_NODE ? textNode.parentElement : textNode;  		while (currentAncestor && !found) { 			const walker = document.createTreeWalker( 				currentAncestor, 				NodeFilter.SHOW_TEXT, 				null, 			); 			walker.currentNode = textNode;  			while (walker.nextNode()) { 				const node = walker.currentNode; 				const index = node.textContent.search(/\.(?!\S)/); 				if (index !== -1) { 					range.setEnd(node, index + 1); 					found = true; 					break; 				} 			} 			if (!found) currentAncestor = currentAncestor.parentElement; 		} 		if (!found) return; 	}  	selection.removeAllRanges(); 	selection.addRange(range); } expandSelectionToPeriod();
+
+# (
+bind --mode=visual ( js function removeSentence() { 	const selection = window.getSelection(); 	const range = selection.getRangeAt(0); 	const periods = [...range.toString().matchAll(/\.(?!\S)/g)].map( 		(match) => match.index, 	);  	if (periods.length >= 2) { 		const secondToLastPeriodPos = periods[periods.length - 2]; 		const walker = document.createTreeWalker( 			range.commonAncestorContainer, 			NodeFilter.SHOW_TEXT, 			null, 		);  		walker.currentNode = range.startContainer; 		let endRange = walker.currentNode.textContent.length - range.startOffset; 		while (endRange < secondToLastPeriodPos + 1) { 			walker.nextNode(); 			endRange += walker.currentNode.textContent.length; 		}  		range.setEnd( 			walker.currentNode, 			walker.currentNode.textContent.length - 				(endRange - secondToLastPeriodPos) + 				1, 		);  		selection.removeAllRanges(); 		selection.addRange(range); 	} else { 		selection.removeAllRanges(); 	} } removeSentence();
+
+
+bind --mode=visual } js function expandSelection() {   const sel = window.getSelection();   if (!sel.rangeCount) return;    const range = sel.getRangeAt(0);      function getNextTextNode(startNode, startOffset) {     const walker = document.createTreeWalker(       document.body,       NodeFilter.SHOW_TEXT,       {         acceptNode: (node) => {           return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;         }       },       false     );          walker.currentNode = startNode.nodeType === Node.TEXT_NODE ? startNode : startNode.firstChild || startNode;          if (startNode.nodeType === Node.TEXT_NODE && startOffset < startNode.textContent.length) {       return { node: startNode, isCurrentNode: true };     }          let next = walker.nextNode();          if (next === startNode) {       next = walker.nextNode();     }          return next ? { node: next, isCurrentNode: false } : null;   }      function findNextBreak(textNode) {     const walker = document.createTreeWalker(       document.body,       NodeFilter.SHOW_TEXT,       {         acceptNode: (node) => {           return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;         }       },       false     );          walker.currentNode = textNode;          let previousNode = textNode;     let currentNode = walker.nextNode();          while (currentNode) {       const between = getTextBetweenNodes(previousNode, currentNode);       if (between && (between.includes('\n\n') || between.length > 10)) {         return previousNode;       }                     if (!shareBlockAncestor(previousNode, currentNode)) {         return previousNode;       }              previousNode = currentNode;       currentNode = walker.nextNode();     }          return previousNode;    }      function getTextBetweenNodes(node1, node2) {     const range = document.createRange();     range.setStartAfter(node1);     range.setEndBefore(node2);     return range.toString();   }      function shareBlockAncestor(node1, node2) {     const blockElements = ['P', 'DIV', 'LI', 'TD', 'TH', 'BLOCKQUOTE', 'ARTICLE', 'SECTION', 'HEADER', 'FOOTER', 'ASIDE', 'NAV'];          function getBlockParent(node) {       let current = node.parentElement;       while (current && current !== document.body) {         if (blockElements.includes(current.tagName)) {           return current;         }         current = current.parentElement;       }       return document.body;     }          return getBlockParent(node1) === getBlockParent(node2);   }      const endNode = range.endContainer;   const endOffset = range.endOffset;      const nextText = getNextTextNode(endNode, endOffset);      if (!nextText) {     return;    }      const newRange = range.cloneRange();      if (nextText.isCurrentNode) {          newRange.setEnd(nextText.node, nextText.node.textContent.length);   } else {          const breakNode = findNextBreak(nextText.node);     newRange.setEnd(breakNode, breakNode.textContent.length);   }      sel.removeAllRanges();   sel.addRange(newRange); } expandSelection();

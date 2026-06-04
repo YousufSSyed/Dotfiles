@@ -1,0 +1,4 @@
+.sops.yaml
+flake.lock
+flake.nix
+nix/

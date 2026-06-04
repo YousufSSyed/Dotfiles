@@ -1,0 +1,27 @@
+:root {
+--tridactyl-hint-active-fg: unset !important;
+}
+
+:root #cmdline_iframe {
+    position: fixed !important;
+    bottom: unset;
+    top: 10% !important;
+    left: 10% !important;
+		width: 80% !important;
+		max-height: 80% !important;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23) !important;
+}
+
+:root.TridactylOwnNamespace {
+	background: transparent !important;
+}
+
+.TridactylOwnNamespace body {
+	--tridactyl-cmplt-font-size: 18px;
+	--tridactyl-cmdl-font-size: 18px;
+	top: unset !important;
+}
+
+#command-line-holder {
+	font-size: 18px;
+}
