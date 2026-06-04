@@ -34,6 +34,7 @@
     swww.url = "github:LGFae/swww";
     espanso-fix.url = "github:pitkling/nixpkgs/espanso-fix-capabilities-export";
     youtube-tui.url = "github:Siriusmart/youtube-tui";
+    timewall.url = "github:bcyran/timewall";
   };
 
   outputs =

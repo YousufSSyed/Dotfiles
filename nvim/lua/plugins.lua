@@ -586,7 +586,7 @@ return {
 	},
 	{
 		"nvim-lualine/lualine.nvim",
-		enabled = not vim.env.KITTY_SCROLLBACK_NVIM,
+		-- enabled = not vim.env.KITTY_SCROLLBACK_NVIM,
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			local lineTheme = require("catppuccin.utils.lualine")()

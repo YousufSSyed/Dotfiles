@@ -27,13 +27,12 @@
     pkgs.waybar
     pkgs.nwg-dock-hyprland
     pkgs.qview
-    pkgs.ulauncher
+    # pkgs.ulauncher
     pkgs.font-manager
     pkgs.dissent
     pkgs.qbittorrent
     pkgs.swaylock
     pkgs.megabasterd
-    pkgs.ulauncher
     pkgs.gimp3-with-plugins
     pkgs.github-desktop
 
@@ -123,6 +122,7 @@
     # inputs.youtube-tui.packages.${pkgs.system}.youtube-tui
     pkgs.youtube-tui
     pkgs.rust-bin.stable.latest.default
+    inputs.timewall.packages.${pkgs.system}.timewall
 
     # KDE Packages
     kdePackages.dolphin
@@ -350,6 +350,7 @@
   services = {
     getty.autologinUser = "yousuf";
     keyd.enable = true;
+    atuin.enable = true;
     libinput.enable = true;
     xserver.enable = true;
     gvfs.enable = true; # Enables reading external drives
