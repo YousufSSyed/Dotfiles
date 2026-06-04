@@ -1,65 +1,3 @@
--- cmp.nvim config
-cmp = require("cmp")
-cmp.setup({
-	snippet = {
-		-- REQUIRED - you must specify a snippet engine
-		expand = function(args)
-			require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
-		end,
-	},
-	window = {
-		-- completion = cmp.config.window.bordered(),
-		-- documentation = cmp.config.window.bordered(),
-	},
-	-- cmp keymappings
-	mapping = cmp.mapping.preset.cmdline({
-		["<Down>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			else
-				fallback()
-			end
-		end, { "i", "c" }),
-		["<Up>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			else
-				fallback()
-			end
-		end, { "i", "c" }),
-	}),
-	sources = cmp.config.sources({
-		{
-			name = "lazydev",
-			group_index = 0, -- set group index to 0 to skip loading LuaLS completions
-		},
-		{ name = "natdat" },
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" },
-		{ name = "buffer" },
-		{ name = "fish" },
-	}),
-})
-
--- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({ "/", "?" }, {
-	mapping = cmp.mapping.preset.cmdline(),
-	sources = {
-		{ name = "buffer" },
-	},
-})
-
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline(":", {
-	mapping = cmp.mapping.preset.cmdline(),
-	sources = cmp.config.sources({
-		{ name = "path" },
-	}, {
-		{ name = "cmdline" },
-	}),
-	matching = { disallow_symbol_nonprefix_matching = false },
-})
-
 --substitute.nvim
 --vim.keymap.set("n", "s", require('substitute').operator, { noremap = true })
 --vim.keymap.set("n", "ss", require('substitute').line, { noremap = true })
@@ -81,51 +19,33 @@ require("kitty-scrollback").setup({
 	},
 })
 
-require("gitsigns").setup()
-
-require("markdown-toggle").setup({
-	use_default_keymaps = true,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-	desc = "markdown-toggle.nvim keymaps",
-	pattern = { "markdown", "markdown.mdx" },
-	callback = function(args)
-		local opts = { silent = true, noremap = true, buffer = args.buf }
-		local toggle = require("markdown-toggle")
-		-- Keymap configurations will be added here for each feature
-
-		opts.expr = true -- required for dot-repeat in Normal mode
-		vim.keymap.set({ "n", "v" }, "<D-l>", toggle.list_dot, opts)
-		vim.keymap.set("n", "<D-k>", toggle.checkbox_dot, opts)
-
-		opts.expr = false -- required for Visual mode
-		vim.keymap.set("x", "<C-l>", toggle.list, opts)
-		vim.keymap.set("x", "<S-l>", toggle.checkbox, opts)
-	end,
-})
+vim.keymap.set({ "n", "v" }, "<leader>`", function()
+	local s_pos = vim.fn.getpos("v")
+	local e_pos = vim.fn.getpos(".") -- Note: getregion handles the order of positions and visual mode types automatically
+	vim.snippet.expand("````${1:lang}\n" .. table.concat(vim.fn.getregion(s_pos, e_pos)) .. "\n````")
+end)
 
 -- Luasnip config
 local ls = require("luasnip")
 local s = ls.snippet
 local t = ls.text_node
 local i = ls.insert_node
+ls.setup({ store_selection_keys = "<tab>" })
 local fmt = require("luasnip.extras.fmt").fmt
 -- Snippets
+
 local mdCodeBlock = s(
 	{ trig = "````", name = "Codeblock" },
 	fmt(
 		[[
-````{}
-{}
-````
+    ````{}
+		$TM_SELECTED_TEXT
+    ````
     ]],
-		{
-			i(1),
-			i(2),
-		}
+		{ i(1) }
 	)
 )
+
 local customSpan = s({ trig = "sspan", name = "Custom Span" }, fmt('<span style="{}">{}</span>', { i(1), i(2) }))
 local mdBold = s({ name = "MDBold" }, fmt("**{}**", { i(1) }))
 local tagParagraph = s({ name = "TagParagraph" }, fmt("#{} #{}.", { i(1), i(1) }))
@@ -133,7 +53,7 @@ local InsertCallout = s(
 	{ name = "InsertCallout" },
 	fmt(
 		[[[!{}]
-! ]],
+> ]],
 		{ i(1) }
 	)
 )
@@ -149,9 +69,10 @@ vim.keymap.set({ "i", "s" }, "<m-j>", function()
 	ls.jump(-1)
 end, { silent = true })
 
-vim.keymap.set({ "n" }, "<leader>`", function()
-	require("luasnip").snip_expand(mdCodeBlock)
-end)
+-- vim.keymap.set({ "n" }, "<leader>`", function()
+-- 	require("luasnip").snip_expand(mdCodeBlock)
+-- end)
+
 vim.keymap.set({ "i" }, "<D-t>", function()
 	require("luasnip").snip_expand(tagParagraph)
 end)
@@ -160,14 +81,16 @@ vim.keymap.set({ "i" }, "<D-b>", function()
 	require("luasnip").snip_expand(mdBold)
 end)
 
+vim.keymap.set({ "n" }, "<leader>c", function()
+	require("luasnip").snip_expand(InsertCallout)
+end)
+
 vim.keymap.set({ "n" }, "<D-b>", "saiwb", { remap = false })
 vim.keymap.set({ "v" }, "<D-b>", "sab", { remap = false })
 vim.keymap.set({ "n" }, "<D-i>", "saiwi", { remap = false })
 vim.keymap.set({ "v" }, "<D-i>", "sai", { remap = false })
 
 require("mini.cursorword").setup()
-require("mini.pick").setup()
-
 require("mini.surround").setup({
 	custom_surroundings = {
 		b = {
@@ -217,11 +140,7 @@ end, opts)
 vim.keymap.set({ "v", "n" }, "<leader>n", "<cmd>Noice dismiss<cr>", opts)
 vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", opts)
 
-require("lspsaga").setup({
-	ui = {
-		kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
-	},
-})
+require("lspsaga").setup({ ui = { kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind() } })
 
 -- Dial.nvim configuration
 local augend = require("dial.augend")
@@ -264,7 +183,7 @@ vim.keymap.set({ "n", "i" }, "<M-c>", function()
 	process_previous_word("caw")
 end, { remap = true, silent = true })
 
-vim.keymap.set({ "n", "v", "o" }, "<D-t>", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", opts)
+-- vim.keymap.set({ "n", "v", "o" }, "<D-t>", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", opts)
 
 -- Replace w b e f j k with hop.nvim search
 vim.keymap.set({ "n", "v", "o" }, "W", "<cmd>HopWordCurrentLineAC<cr>", opts)
@@ -373,7 +292,7 @@ require("conform").setup({
 	},
 	format_on_save = {
 		-- These options will be passed to conform.format()
-		timeout_ms = 500,
+		-- timeout_ms = 500,
 		lsp_format = "fallback",
 	},
 })

@@ -68,7 +68,6 @@ vim.keymap.set("n", "<D-v>", "<cmd>set paste<cr>p<cmd>set nopaste<cr>")
 vim.keymap.set("i", "<D-v>", "<cmd>set paste<cr><c-O>p<cmd>set nopaste<cr>")
 vim.keymap.set("c", "<D-v>", "<C-r>+")
 
--- CMD-C to copy whole file
 vim.keymap.set({ "n" }, "<D-c>", "<cmd>silent %y+<cr>")
 vim.keymap.set({ "n" }, "<D-x>", "<cmd>silent %d+<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
@@ -135,7 +134,7 @@ local function changeTask(character)
 	vim.cmd(firstline .. "," .. lastline .. "s/\\(^\\s*- \\[\\).\\]/\\1" .. character .. "\\]")
 end
 
-vim.keymap.set("n", "<leader>t", function()
+vim.keymap.set({ "n", "v" }, "<leader>t", function()
 	require("toggle-checkbox").toggle()
 end, opts)
 vim.keymap.set({ "n", "v" }, "<leader>x", function()
@@ -200,6 +199,6 @@ end, opts)
 --- Create callout
 vim.keymap.set({ "v", "n" }, "<M-z>", function()
 	quote(true)
-end, opts)
+end)
 
 vim.keymap.set({ "n", "v" }, "<leader>p", "<cmd>MkdnCreateLinkFromClipboard<cr>")

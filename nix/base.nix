@@ -10,6 +10,7 @@
 }:
 
 {
+  nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ];
   environment.systemPackages = with pkgs; [
     # Apps
     kitty
@@ -29,7 +30,7 @@
 
     lazygit
 
-    ttfautohint
+    wordnet
 
     # Command Line Tools / CLIs
     uutils-coreutils-noprefix
@@ -79,6 +80,7 @@
 
     # Language Packages
     # Misc languages
+    pkgs.rust-bin.stable.latest.default
     rust-analyzer
     markdown-oxide
     nixfmt

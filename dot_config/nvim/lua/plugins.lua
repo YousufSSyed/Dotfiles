@@ -1,15 +1,6 @@
 return {
-	{
-		"okuuva/auto-save.nvim",
-		enabled = true,
-		lazy = false,
-		opts = { debounce_delay = 2000 },
-	},
-	{
-		"neovim/nvim-lspconfig",
-		lazy = false,
-		enabled = true,
-	},
+	{ "neovim/nvim-lspconfig" },
+	{ "okuuva/auto-save.nvim" },
 	{
 		"OXY2DEV/helpview.nvim",
 		lazy = false,
@@ -29,56 +20,9 @@ return {
 		end,
 	},
 	{
-		"folke/noice.nvim",
-		event = "VeryLazy",
-		opts = {},
-		dependencies = {
-			"MunifTanjim/nui.nvim",
-			"rcarriga/nvim-notify",
-		},
-		config = function()
-			require("noice").setup({
-				cmdline = {
-					format = {
-						cmdline = { title = "" },
-						search_down = { title = "" },
-						search_up = { title = "" },
-						filter = { title = "" },
-						lua = { title = "" },
-						help = { title = "" },
-						input = { title = "" },
-					},
-					border = {
-						style = "none",
-						padding = { 0, 0 },
-					},
-				},
-				messages = {
-					-- NOTE: If you enable messages, then the cmdline is enabled automatically.
-					-- This is a current Neovim limitation.
-					enabled = false, -- enables the Noice messages UI
-				},
-				commands = {
-					errors = {
-						-- options for the message history that you get with `:Noice`
-						view = "",
-						opts = { enter = true, format = "details" },
-						filter = { error = true },
-						filter_opts = { reverse = true },
-					},
-				},
-			})
-		end,
-	},
-	{
 		"nvimdev/lspsaga.nvim",
-		enabled = true,
 		config = function()
-			require("lspsaga").setup({
-				symbol_in_winbar = {
-					enable = false,
-				},
-			})
+			require("lspsaga").setup({ symbol_in_winbar = { enable = false } })
 		end,
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter", -- optional
@@ -86,8 +30,50 @@ return {
 		},
 	},
 	{
-		"HiPhish/rainbow-delimiters.nvim",
-		lazy = false,
+		"lukas-reineke/indent-blankline.nvim",
+		main = "ibl",
+		opts = {
+			indent = {
+				highlight = {
+					"RainbowRed",
+					"RainbowYellow",
+					"RainbowBlue",
+					"RainbowOrange",
+					"RainbowGreen",
+					"RainbowViolet",
+					"RainbowCyan",
+				},
+			},
+		},
+	},
+	{
+		"saghen/blink.pairs",
+		enabled = true,
+		version = "*",
+		build = "nix run .#build-plugin",
+		opts = {
+			mappings = { enabled = false },
+			highlights = {
+				enabled = true,
+				cmdline = true,
+				unmatched_group = "BlinkPairsUnmatched",
+				matchparen = {
+					enabled = true,
+					include_surrounding = true,
+					group = "BlinkPairsMatchParen",
+					priority = 250,
+				},
+				groups = {
+					"BlinkPairsRed",
+					"BlinkPairsYellow",
+					"BlinkPairsBlue",
+					"BlinkPairsOrange",
+					"BlinkPairsGreen",
+					"BlinkPairsPurple",
+					"BlinkPairsCyan",
+				},
+			},
+		},
 	},
 	{ "lewis6991/gitsigns.nvim" },
 	{
@@ -110,15 +96,9 @@ return {
 			"TextCaseOpenTelescopeQuickChange",
 			"TextCaseStartReplacingCommand",
 		},
-		-- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
-		-- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
-		-- available after the first executing of it or after a keymap of text-case.nvim has been used.
 		lazy = false,
 	},
-	{
-		"nvim-pack/nvim-spectre",
-		lazy = false,
-	},
+	{ "nvim-pack/nvim-spectre" },
 	{
 		"stevearc/aerial.nvim",
 		opts = {},
@@ -140,6 +120,7 @@ return {
 		"folke/edgy.nvim",
 		enabled = true,
 		event = "VeryLazy",
+		wo = { winbar = false },
 		opts = {
 			bottom = {
 				{
@@ -151,9 +132,6 @@ return {
 				},
 			},
 		},
-		wo = {
-			winbar = false,
-		},
 	},
 	{
 		"nvim-telescope/telescope.nvim",
@@ -163,8 +141,7 @@ return {
 				fuzzy = true, -- false will only do exact matching
 				override_generic_sorter = true, -- override the generic sorter
 				override_file_sorter = true, -- override the file sorter
-				case_mode = "smart_case", -- or "ignore_case" or "respect_case"
-				-- the default case_mode is "smart_case"
+				case_mode = "smart_case",
 			},
 		},
 	},
@@ -174,47 +151,111 @@ return {
 	},
 	{
 		"L3MON4D3/LuaSnip",
-		lazy = false,
-		-- follow latest release.
-		version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
-		-- install jsregexp (optional!).
+		version = "*",
 		build = "make install_jsregexp",
 	},
 	{
 		"gbprod/substitute.nvim",
 		enabled = false,
 	},
+	{
+		"saghen/blink.cmp",
+		dependencies = {
+			"rafamadriz/friendly-snippets",
+			"xzbdmw/colorful-menu.nvim",
+			"archie-judd/blink-cmp-words",
+			"onsails/lspkind.nvim",
+		},
+		opts_extend = { "sources.default" },
+		build = "nix run .#build-plugin",
+		opts = {
+			keymap = { preset = "default" },
+			appearance = { nerd_font_variant = "normal" },
+			signature = { enabled = true },
+			completion = {
+				documentation = { auto_show = true, auto_show_delay_ms = 0 },
+				trigger = { show_on_backspace_in_keyword = true },
+				keyword = { range = "full" },
+				menu = {
+					draw = {
+						-- We don't need label_description now because label and label_description are already
+						-- combined together in label by colorful-menu.nvim.
+						columns = { { "kind_icon" }, { "label", gap = 1 } },
+						components = {
+							kind_icon = {
+								text = function(ctx)
+									return require("lspkind").symbol_map[ctx.kind] or ""
+								end,
+							},
+							label = {
+								text = function(ctx)
+									return require("colorful-menu").blink_components_text(ctx)
+								end,
+								highlight = function(ctx)
+									return require("colorful-menu").blink_components_highlight(ctx)
+								end,
+							},
+						},
+					},
+				},
+			},
+			cmdline = {
+				keymap = { preset = "inherit" },
+				completion = { menu = { auto_show = true } },
+			},
+			sources = {
+				default = { "lsp", "path", "buffer" },
+				-- Setup completion by filetype
+				per_filetype = {
+					text = { "dictionary", "thesaurus" },
+					markdown = { "dictionary", "thesaurus" },
+				},
+				providers = {
+					thesaurus = {
+						module = "blink-cmp-words.thesaurus",
+						opts = {
+							definition_pointers = { "!", "&", "^" },
+							similarity_pointers = { "&", "^" },
+							similarity_depth = 2,
+						},
+					},
+					dictionary = {
+						module = "blink-cmp-words.dictionary",
+						opts = {
+							dictionary_search_threshold = 3,
+							definition_pointers = { "!", "&", "^" },
+						},
+					},
+				},
+			},
+		},
+	},
 
-	-- cmp plugins
-	{
-		"hrsh7th/nvim-cmp",
-		lazy = false,
-	},
-	{
-		"hrsh7th/cmp-nvim-lsp",
-		lazy = false,
-	},
-	{ "saadparwaiz1/cmp_luasnip" },
-	{ "hrsh7th/cmp-cmdline" },
-	{ "hrsh7th/cmp-buffer" },
 	-- Plugins for markdown
 	{
 		"jakewvincent/mkdnflow.nvim",
-		config = function()
-			require("mkdnflow").setup({
-				mappings = {
-					MkdnFoldSection = false,
-					MkdnUnfoldSection = false,
-					MkdnCreateLinkFromClipboard = false,
-					MkdnTableNewRowBelow = { "n", "<leader>mr" },
-					MkdnTableNewRowAbove = { "n", "<leader>mR" },
-					MkdnTableNewColAfter = { "n", "<leader>mc" },
-					MkdnTableNewColBefore = { "n", "<leader>mC" },
-					MkdnTableNextCell = { "i", "<D-tab>" },
-					MkdnEnter = false,
+		enabled = true,
+		opts = {
+			mappings = {
+				MkdnFoldSection = false,
+				MkdnUnfoldSection = false,
+				MkdnCreateLinkFromClipboard = false,
+				MkdnTableNewRowBelow = { "n", "<leader>mr" },
+				MkdnTableNewRowAbove = { "n", "<leader>mR" },
+				MkdnTableNewColAfter = { "n", "<leader>mc" },
+				MkdnTableNewColBefore = { "n", "<leader>mC" },
+				MkdnTableNextCell = { "i", "<D-tab>" },
+				MkdnEnter = false,
+			},
+			modules = { conceal = false },
+			to_do = {
+				statuses = {
+					not_started = { marker = " " },
+					in_progress = { marker = "/" },
+					complete = { marker = "x" },
 				},
-			})
-		end,
+			},
+		},
 	},
 	{
 		"OXY2DEV/markview.nvim",
@@ -231,33 +272,32 @@ return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
+		enabled = true,
 		lazy = false,
 		opts = {
 			render_modes = { "n", "c", "t", "i" },
-			link = {
-				enabled = true,
-			},
+			bullet = { icons = { "-" } },
+			link = { enabled = true },
+			code = { left_pad = 1 },
+			pipe_table = { preset = "heavy" },
+			anti_conceal = { enabled = true, disabled_modes = { "n" } },
+			-- Markdown styling
 			heading = {
 				icons = { "􀀺  # ", "􀀼  ## ", "􀀾  ### ", "􀁀  #### ", "􀁂  ##### ", "􀁄  ###### " },
 				signs = { "" },
 				backgrounds = {},
 				position = "inline",
 			},
-			bullet = {
-				icons = { "-" },
-			},
 			checkbox = {
-				unchecked = { icon = "􀂒 " },
+				unchecked = { icon = "􀂒 ", highlight = "rainbow5" },
 				checked = { icon = "􀃲 ", highlight = "rainbow4" },
 				custom = {
 					cancelled = {
-						-- highlight = "RenderMarkdownCancelled",
 						highlight = "rainbow1",
 						rendered = "􀃞 ",
 						raw = "[-]",
 					},
 					incomplete = {
-						-- highlight = "RenderMarkdownIncomplete",
 						highlight = "rainbow2",
 						rendered = "􀃮 ",
 						raw = "[/]",
@@ -265,12 +305,9 @@ return {
 				},
 			},
 			quote = { icon = "▎", repeat_linebreak = true },
-			anti_conceal = { enabled = true },
 			-- callout = {
 			-- 	tip = { raw = '[!TIP]', rendered = '󰌶', highlight = 'RenderMarkdownSuccess', border = true },
-			-- },
-			--
-			-- 
+			-- }, 
 		},
 	},
 	{
@@ -278,15 +315,14 @@ return {
 		ft = "markdown",
 		lazy = false,
 		opts = {
+			ui = { enable = false },
 			legacy_commands = false,
+			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd" },
 			workspaces = {
 				{
 					path = "/home/yousuf/Assets/Obsidian",
 					name = "Obsidian",
 				},
-			},
-			ui = {
-				enable = false,
 			},
 			frontmatter = {
 				func = function(note)
@@ -302,9 +338,6 @@ return {
 					return out
 				end,
 			},
-			daily_notes = {
-				date_format = "YYYY-MM-DD MMMM Do YYYY dddd",
-			},
 			config = function()
 				vim.api.create_autocmd("User", {
 					pattern = "ObsidianNoteWritePost",
@@ -318,36 +351,38 @@ return {
 	},
 	{
 		"roodolv/markdown-toggle.nvim",
+		enabled = false,
 		config = function()
-			require("markdown-toggle").setup()
+			require("markdown-toggle").setup({ use_default_keymaps = true })
+			vim.api.nvim_create_autocmd("FileType", {
+				desc = "markdown-toggle.nvim keymaps",
+				pattern = { "markdown", "markdown.mdx" },
+				callback = function(args)
+					local opts = { silent = true, noremap = true, buffer = args.buf }
+					local toggle = require("markdown-toggle")
+					-- Keymap configurations will be added here for each feature
+
+					opts.expr = true -- required for dot-repeat in Normal mode
+					vim.keymap.set({ "n", "v" }, "<D-l>", toggle.list_dot, opts)
+					vim.keymap.set("n", "<D-k>", toggle.checkbox_dot, opts)
+
+					opts.expr = false -- required for Visual mode
+					vim.keymap.set("x", "<C-l>", toggle.list, opts)
+					vim.keymap.set("x", "<S-l>", toggle.checkbox, opts)
+				end,
+			})
 		end,
 	},
 	{
 		"antonk52/markdowny.nvim",
+		enabled = false,
 		config = function()
 			require("markdowny").setup()
 		end,
 	},
-	{
-		"echasnovski/mini.nvim",
-		lazy = false,
-		version = "*",
-	},
 	{ "opdavies/toggle-checkbox.nvim" },
-	{
-		"chrisgrieser/nvim-rip-substitute",
-		cmd = "RipSubstitute",
-		keys = {
-			{
-				"<leader>fs",
-				function()
-					require("rip-substitute").sub()
-				end,
-				mode = { "n", "x" },
-				desc = " rip substitute",
-			},
-		},
-	},
+	{ "echasnovski/mini.nvim" },
+	{ "chrisgrieser/nvim-rip-substitute" },
 	{
 		"chrisgrieser/nvim-various-textobjs",
 		event = "UIEnter",
@@ -381,34 +416,31 @@ return {
 					hop = true,
 					treesitter_context = true,
 					neogit = true,
-					noice = true,
 					render_markdown = false,
+					blink_pairs = true,
+					telescope = { enabled = true },
+					mini = { enabled = true },
+					blink_cmp = {
+						style = "bordered",
+					},
 					gitsigns = {
 						enabled = true,
 						transparent = false,
 					},
 					indent_blankline = {
-						enabled = true,
-						scope_color = "",
 						colored_indent_levels = true,
-					},
-					mini = {
 						enabled = true,
-						indentscope_color = "",
 					},
 				},
 			})
 			vim.cmd.colorscheme("catppuccin-mocha")
 			vim.cmd(":hi @markup.strong guifg=none")
 			vim.cmd(":hi @markup.italic guifg=none")
+			vim.cmd(":hi @markup.quote guifg=none")
+			vim.cmd(":hi @spell.markdown guifg=#d1f1ff")
 			vim.cmd(":hi @lsp.type.decorator.markdown guifg=#8fefe7")
 			vim.cmd(":hi @markup.link.label guifg=#8fefe7")
-			vim.cmd(":hi @markup.quote guifg=none")
 			vim.cmd(":hi RenderMarkdownQuote guifg=#00608b")
-			vim.cmd(":hi @markup.list.unchecked guifg=none")
-			vim.cmd(":hi @markup.list.checked guifg=#02ad96")
-			vim.cmd(":hi RenderMarkdownCancelled guifg=#ff5252")
-			vim.cmd(":hi RenderMarkdownIncomplete guifg=#ff9354")
 		end,
 	},
 	{
@@ -427,21 +459,14 @@ return {
 		},
 	},
 	{
-		"nvim-telescope/telescope-ui-select.nvim",
-	},
-	{
 		"jay-babu/project.nvim",
-		-- "ahmedkhalf/project.nvim",
 		lazy = false,
 		enabled = false,
 		config = function()
 			require("project_nvim").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
 				unset_autochdir = false,
-				patterns = { "^/Users/yousuf/Desktop/Obsidian" },
-				exclude_dirs = { "^/Users/yousuf/.config/nvim" },
+				patterns = { os.getenv("HOME") .. "/Assets/Obsidian" },
+				exclude_dirs = { os.getenv("HOME") .. "/.local/share/chezmoi/dot_config/nvim" },
 			})
 		end,
 	},
@@ -455,13 +480,9 @@ return {
 		config = function()
 			require("telescope").load_extension("frecency")
 		end,
-		opts = {
-			db_version = "v2",
-		},
+		opts = { db_version = "v2" },
 	},
-	{
-		"tpope/vim-eunuch",
-	},
+	{ "tpope/vim-eunuch" },
 	{
 		"smoka7/hop.nvim",
 		opts = {
@@ -476,9 +497,41 @@ return {
 		config = function()
 			local lineTheme = require("catppuccin.utils.lualine")()
 			local C = require("catppuccin.palettes").get_palette(flavour)
-			lineTheme.normal.a = { bg = "None", fg = nil, gui = nil }
-			-- lineTheme.normal.a = { bg = "#001240", fg = C.blue, gui = nil }
-			-- lineTheme.insert.a = { bg = "#003400", fg = C.green, gui = nil }
+			lineTheme = {
+				normal = {
+					c = { bg = transparent_bg, fg = C.text },
+				},
+				insert = {
+					a = { bg = nil, fg = C.green },
+					b = { bg = transparent_bg, fg = C.text },
+					z = { bg = transparent_bg, fg = C.text },
+				},
+				terminal = {
+					a = { bg = nil, fg = C.green },
+					b = { bg = transparent_bg, fg = C.text },
+					z = { bg = transparent_bg, fg = C.text },
+				},
+				command = {
+					a = { bg = nil, fg = C.peach },
+					b = { bg = transparent_bg, fg = C.text },
+					z = { bg = transparent_bg, fg = C.text },
+				},
+				visual = {
+					a = { bg = nil, fg = C.mauve },
+					b = { bg = transparent_bg, fg = C.text },
+					z = { bg = transparent_bg, fg = C.text },
+				},
+				replace = {
+					a = { bg = nil, fg = C.red },
+					b = { bg = transparent_bg, fg = C.text },
+					z = { bg = transparent_bg, fg = C.text },
+				},
+				inactive = {
+					a = { bg = transparent_bg, fg = C.blue },
+					b = { bg = transparent_bg, fg = C.surface1 },
+					c = { bg = transparent_bg, fg = C.overlay0 },
+				},
+			}
 			local mode_map = {
 				["n"] = "􀉅 ",
 				["no"] = "􀅶  ",
@@ -532,7 +585,11 @@ return {
 							return mode_map[vim.api.nvim_get_mode().mode] or "__"
 						end,
 					},
-					lualine_b = { "branch", "diff", "diagnostics" },
+					lualine_b = {
+						"branch",
+						"diff",
+						"diagnostics",
+					},
 					lualine_c = { "%=", "filename", "filetype" },
 					lualine_y = {
 						function()
@@ -553,31 +610,6 @@ return {
 			vim.go.cmdheight = 0
 		end,
 	},
-	{ "nvzone/volt", lazy = true },
-	{
-		"nvzone/minty",
-		cmd = { "Shades", "Huefy" },
-	},
-	{
-		"lukas-reineke/indent-blankline.nvim",
-		enabled = true,
-		main = "ibl",
-		config = function()
-			require("ibl").setup({
-				indent = {
-					highlight = {
-						"RainbowRed",
-						"RainbowYellow",
-						"RainbowBlue",
-						"RainbowOrange",
-						"RainbowGreen",
-						"RainbowViolet",
-						"RainbowCyan",
-					},
-				},
-			})
-		end,
-	},
 	{
 		"folke/flash.nvim",
 		enabled = true,
@@ -594,25 +626,19 @@ return {
 			-- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
 		},
 	},
-	{
-		"monaqa/dial.nvim",
-	},
+	{ "monaqa/dial.nvim" },
 	{
 		"NeogitOrg/neogit",
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- required
 			"sindrets/diffview.nvim", -- optional - Diff integration
-
 			-- Only one of these is needed.
 			"nvim-telescope/telescope.nvim", -- optional
-			"ibhagwan/fzf-lua", -- optional
-			"echasnovski/mini.pick", -- optional
 		},
 		config = true,
 	},
 	{
-		-- "ColinKennedy/cursor-text-objects.nvim",
-		"ColinKennedy/test-cursor-text-objects.nvim",
+		"ColinKennedy/cursor-text-objects.nvim",
 		config = function()
 			local down_description = "Operate from your current cursor to the end of some text-object."
 			local up_description = "Operate from the start of some text-object to your current cursor."
@@ -678,20 +704,13 @@ return {
 				navigate = {
 					cancel_snipe = "q",
 				},
-				open_win_override = {
-					title = "",
-				},
+				open_win_override = { title = "" },
 			},
-			---sort by path
-			---@param buffers snipe.Buffer[]
-			---@return snipe.Buffer[]
-			-- sort = "default",
 			sort = function(buffers)
 				local buffers_with_dir = vim.tbl_map(function(buf)
 					buf.dirname = vim.fs.dirname(buf.name)
 					return buf
 				end, buffers)
-
 				table.sort(buffers_with_dir, function(a, b)
 					if a.dirname == b.dirname then
 						return a.name < b.name
@@ -699,7 +718,6 @@ return {
 						return a.dirname < b.dirname
 					end
 				end)
-
 				return buffers_with_dir
 			end,
 		},
@@ -707,16 +725,10 @@ return {
 	{
 		"MagicDuck/grug-far.nvim",
 		config = function()
-			require("grug-far").setup({
-				-- options, see Configuration section below
-				-- there are no required options atm
-				-- engine = 'ripgrep' is default, but 'astgrep' can be specified
-			})
+			require("grug-far").setup({})
 		end,
 	},
-	{
-		"stevearc/conform.nvim",
-	},
+	{ "stevearc/conform.nvim" },
 	{
 		"aidancz/paramo.nvim",
 		enabled = false,
@@ -743,29 +755,15 @@ return {
 	{
 		"folke/trouble.nvim",
 		opts = {}, -- for default options, refer to the configuration section for custom setup.
-		cmd = "Trouble",
-		keys = {
-			{
-				"<D-t>",
-				"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
-				desc = "Buffer Diagnostics (Trouble)",
-			},
-		},
-	},
-	{
-		"catgoose/nvim-colorizer.lua",
 		enabled = false,
-		config = function()
-			require("colorizer").setup({
-				user_default_options = {
-					css = true,
-					css_fn = true,
-					mode = "virtualtext",
-					virtualtext_inline = true,
-					virtualtext = "󱓻",
-				},
-			})
-		end,
+		cmd = "Trouble",
+		-- keys = {
+		-- 	{
+		-- 		"<D-t>",
+		-- 		"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+		-- 		desc = "Buffer Diagnostics (Trouble)",
+		-- 	},
+		-- },
 	},
 	{
 		"uga-rosa/ccc.nvim",
@@ -796,27 +794,14 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- required
 			"sindrets/diffview.nvim", -- optional - Diff integration
-			-- Only one of these is needed.
 			"nvim-telescope/telescope.nvim", -- optional
-			"ibhagwan/fzf-lua", -- optional
-			"echasnovski/mini.pick", -- optional
-			"folke/snacks.nvim", -- optional
 		},
 	},
 	{
-		"smjonas/live-command.nvim",
-		-- live-command supports semantic versioning via Git tags
-		-- tag = "2.*",
+		"tridactyl/vim-tridactyl",
 		config = function()
-			require("live-command").setup()
+			vim.filetype.add({ pattern = { [".*tridactylrc"] = "vim" } })
 		end,
 	},
-	{
-		"tridactyl/vim-tridactyl",
-	},
-	{
-		"aaronik/treewalker.nvim",
-		-- optional (see options below)
-		opts = { ... },
-	},
+	{ "aaronik/treewalker.nvim" },
 }
