@@ -1,10 +1,10 @@
 .sops.yaml
 flake.lock
 flake.nix
-nix/
+Nix/
 .DS_Store
 *.sync-conflict-*
-userChrome/
-fish/
+Firefox/
+Fish/
 .stfolder/
 Scripts/

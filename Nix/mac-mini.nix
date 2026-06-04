@@ -17,6 +17,7 @@
     casks = [
       "affinity"
       "betterdisplay"
+      "sf-symbols"
     ];
   };
 
@@ -70,7 +71,6 @@
         KeepAlive = true;
         RunAtLoad = true;
         StandardOutPath = "/var/log/watchexec.log";
-        StandardErrorPath = "/var/log/watchexec.error.log";
         EnvironmentVariables = {
           HOME = "/Users/yousuf";
         };
@@ -84,3 +84,4 @@
   networking.computerName = "Mac-Mini";
   networking.hostName = "Mac-Mini";
 }
+

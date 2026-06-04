@@ -107,6 +107,7 @@ in
         OnBootSec = "1s";
       };
     };
+    # Systemd services
     user.services = {
       "mac-mounting" = {
         serviceConfig = {
@@ -147,31 +148,6 @@ in
         };
       };
     };
-    # Systemd services
-    # Update flake inputs daily
-    services = {
-      flake-update = {
-        preStart = "/run/current-system/sw/bin/nm-online";
-        unitConfig = {
-          Description = "Update flake inputs";
-          StartLimitIntervalSec = 300;
-          StartLimitBurst = 5;
-        };
-        serviceConfig = {
-          ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.local/share/chezmoi";
-          Restart = "on-failure";
-          RestartSec = "30";
-          Type = "oneshot"; # Ensure that it finishes before starting nixos-upgrade
-          User = "yousuf";
-        };
-        before = [ "nixos-upgrade.service" ];
-        path = [
-          pkgs.nix
-          pkgs.git
-          pkgs.host
-        ];
-      };
-    };
   };
 
   services.linkwarden = {
@@ -200,12 +176,18 @@ in
   };
 
   system.autoUpgrade = {
+    # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
     enable = true;
-    flake = "path:///home/yousuf/.config/nix";
-    flags = [ "-L" ];
-    dates = "0:00";
-    randomizedDelaySec = "45min";
+    flags = [ "--print-build-logs" ];
+    flake = "path:///home/yousuf/.local/share/chezmoi";
   };
+
+  systemd.services.nixos-upgrade = {
+    after = [ "flake-update.service" ];
+    requires = [ "flake-update.service" ];
+  };
+
+  nix.channel.enable = false;
 
   programs = {
     ydotool.enable = true;
@@ -389,36 +371,7 @@ in
             x11.defaultCursor = "macOS";
           };
           file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
-          # file.".mozilla/firefox/${firefox-profile}/chrome".source =
-          #   config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/userChrome";
         };
-        # xdg.desktopEntries = {
-        #   neovide = {
-        #     name = "Neovide";
-        #     exec = "neovide";
-        #     icon = "/home/yousuf/Assets/Icons/5caff61e599cf84c05a7b9744fafe47b_Neovim_1024x1024x32.png";
-        #   };
-        #   zen = {
-        #     name = "Zen Browser (Beta)";
-        #     exec = "zen-twilight --name zen-beta %U";
-        #     icon = "/home/yousuf/Assets/Icons/24ecc308297f3cd5d09791c67609837a_Firefox_1024x1024x32.png";
-        #   };
-        #   kitty = {
-        #     name = "kitty";
-        #     exec = "kitty";
-        #     icon = "/home/yousuf/Assets/Icons/06bbe8009cf7de155c6fa1e832778ff9_Ghostty_1024x1024x32.png";
-        #   };
-        #   obsidian = {
-        #     name = "Obsidian";
-        #     exec = "obsidian %u";
-        #     icon = "/home/yousuf/Assets/Icons/391eacacb0418bb1536a56c8be8f003a_1761532027448_1024x1024x32.png";
-        #   };
-        #   dolphin = {
-        #     name = "dolphin";
-        #     exec = "dolphin %u";
-        #     icon = "/home/yousuf/Assets/Icons/584b5505aefd428082f1ab3d9f8fa609_Files_1024x1024x32.png";
-        #   };
-        # };
         programs.firefox = {
           enable = true;
           profiles = {
@@ -427,59 +380,7 @@ in
               name = "Default";
               isDefault = true;
               path = firefox-profile;
-              # Firefox settings in about:config
-              settings = {
-                # Misc Settings
-                "xpinstall.signatures.required" = false; # Don't require signatures on addons to install them. Allows sideloading addons.
-                "accessibility.typeaheadfind.manual" = false; # Disable pressing "/" key for quick find
-                "toolkit.legacyUserProfile.Customizations.stylesheets" = true;
-                "font.name-list.emoji" = emoji-font;
-                "ui.key.menuAccessKey" = 0; # Disable Alt + B from opening Menu bar
-                "apz.allow_double_tap_zooming" = false; # Don't double tap the trackpad to zoom in the page;
-                "dom.forms.autocomplete.formautofill" = false;
-                "intl.date_time.pattern_override.time_short" = "h:mm a";
-                "network.http.max-connections" = 1500;
-                "network.http.max-persistent-connections-per-server" = 64;
-                "browser.gesture.swipe.up" = "";
-                "browser.gesture.swipe.down" = "";
-                "browser.gesture.swipe.left" = "";
-                "browser.gesture.swipe.right" = "";
-                "browser.startup.homepage" = "chrome://browser/content/blanktab.html";
-                "browser.bookmarks.showMobileBookmarks" = true;
-                "browser.aboutConfig.showWarning" = false;
-                "browser.urlbar.showSearchTerms.featureGate" = true; # Show the search query in the URL bar instead of the URL (only for the default search engine).
-                "browser.urlbar.trimURLs" = false; # Show whole URLs in the URL bar.
-                "browser.tabs.closeWindowWithLastTab" = true;
-                "browser.tabs.loadBookmarksInTabs" = true; # Open bookmarks in new tabs instead of in the current one.
-                # Open new tab next to current one instead of at the rightmost.
-                "browser.tabs.insertAfterCurrent" = true;
-                "browser.tabs.insertRelatedAfterCurrent" = true;
-                "browser.quitShortcut.disabled" = true;
-
-                # Dev tools
-                "devtools.debugger.remote-enabled" = true;
-                "devtools.chrome.enabled" = true;
-                "devtools.inspector.three-pane-enabled" = false;
-
-                # Attempt to make addons work in restricted domains
-                "extensions.webextensions.restrictedDomains" = "";
-                "extensions.quarantinedDomains.enabled" = false;
-                "privacy.resistFingerprinting.block_mozAddonManager" = true;
-
-                # Right click menu
-                "browser.ml.linkPreview.enabled" = false;
-                "devtools.accessibility.enabled" = false;
-                "extensions.formautofill.creditCards.enabled" = false;
-                "privacy.query_stripping.strip_on_share.enabled" = false;
-                "browser.ml.chat.enabled" = false;
-                "browser.ml.chat.menu" = false;
-                "browser.search.visualSearch.featureGate" = false;
-
-                # Zen Browser specific options:
-                "zen.theme.content-element-separation" = 0; # disable border around zen window
-                "zen.tabs.close-on-back-with-no-history" = false;
-                "zen.urlbar.replace-newtab" = false;
-              };
+              settings = import ./firefox.nix;
             };
             secondary = {
               id = 1;
@@ -537,11 +438,6 @@ in
       enable = true;
       settings.General.EnableNetworkConfiguration = true;
     };
-  };
-
-  nix = {
-    optimise.persistent = true;
-    gc.dates = "weekly";
   };
 
   fonts = {
@@ -658,4 +554,5 @@ in
   ];
 
   system.stateVersion = "25.11";
+
 }

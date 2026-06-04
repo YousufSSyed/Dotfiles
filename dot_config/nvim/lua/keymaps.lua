@@ -5,14 +5,16 @@ vim.keymap.set({ "n", "v" }, "u", ":silent undo<cr>", { silent = true })
 vim.keymap.set({ "n", "v" }, "U", ":silent redo<cr>", { silent = true })
 vim.keymap.set({ "n", "v" }, "<C-r>", ":silent redo<cr>", { silent = true })
 
--- vim.keymap.set("n", "<CR>", "o<esc>") -- Insert blank lines above & below
+vim.keymap.set("n", "<CR>", "o<esc>") -- Insert blank lines above & below
 vim.keymap.set("n", "<S-CR>", "O<esc>")
 
 vim.keymap.set("n", "<leader><left>", "<C-w><C-h>") -- Window hotkeys
 vim.keymap.set("n", "<leader><down>", "<C-w><C-j>")
 vim.keymap.set("n", "<leader><up>", "<C-w><C-k>")
 vim.keymap.set("n", "<leader><right>", "<C-w><C-l>")
+vim.keymap.set("n", "<leader>h", "<cmd>vsplit<cr><C-w><C-h>")
 vim.keymap.set("n", "<leader>j", "<cmd>split<cr>")
+vim.keymap.set("n", "<leader>k", "<cmd>split<cr><C-w><C-k>")
 vim.keymap.set("n", "<leader>l", "<cmd>vsplit<cr>")
 
 vim.keymap.set({ "n", "v" }, "G", "G$", { silent = true }) -- Remap G and gg
@@ -41,33 +43,37 @@ vim.keymap.set({ "n", "v" }, "c", '"_c', { noremap = true })
 vim.keymap.set({ "n", "v" }, "x", "d", { noremap = true })
 vim.keymap.set({ "n", "v" }, "xx", "^d$", { noremap = true })
 vim.keymap.set({ "n", "v" }, "X", "dd", { noremap = true })
-vim.keymap.set({ "n", "v" }, "<D-x>", "x", { noremap = true })
 vim.keymap.set({ "n" }, "yy", "^y$", keyopts)
 vim.keymap.set({ "n" }, "Y", "yy", keyopts)
 
 -- Set CMD-V to paste
-vim.keymap.set("n", "<D-v>", "<cmd>set paste<cr>p<cmd>set nopaste<cr>")
-vim.keymap.set("i", "<D-v>", "<cmd>set paste<cr><c-O>p<cmd>set nopaste<cr>")
-vim.keymap.set("c", "<D-v>", "<C-r>+")
+vim.keymap.set("n", "<C-v>", "<cmd>set paste<cr>p<cmd>set nopaste<cr>")
+vim.keymap.set("i", "<C-v>", "<cmd>set paste<cr><c-O>p<cmd>set nopaste<cr>")
+vim.keymap.set("c", "<C-v>", "<C-r>+")
 
-vim.keymap.set({ "n" }, "<D-c>", "<cmd>silent %y+<cr>")
-vim.keymap.set({ "n" }, "<D-x>", "<cmd>silent %d+<cr>")
-vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
+vim.keymap.set({ "n" }, "<C-c>", "<cmd>silent %y+<cr>")
+vim.keymap.set({ "n" }, "<C-x>", "<cmd>silent %d+<cr>")
+vim.keymap.set({ "n" }, "<C-BS>", "<cmd>silent %d_<cr>")
 
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
 
 vim.cmd("packadd nvim.undotree") -- Misc Keymaps
+function mark(cmd) return "mz" .. cmd .. "`z:delmarks z<cr>" end
 vim.keymap.set("n", "<leader>u", require("undotree").open)
-vim.keymap.set({ "n", "v" }, "<leader>w", "<cmd>bprev<cr><cmd>bd#<cr>", keyopts)
+vim.keymap.set({ "n", "v" }, "<leader>w", "<cmd>bprev<cr><cmd>bd!#<cr>", keyopts)
 vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
 vim.keymap.set({ "n", "v" }, "<leader>r", "<cmd>:restart<cr>")
-vim.keymap.set({ "n", "v", "i" }, "<D-s>", "<cmd>w!<cr>")
+vim.keymap.set({ "n", "v", "i" }, "<C-s>", "<cmd>w!<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
-vim.keymap.set("n", "J", "mzJ`z:delmarks z<cr>") -- Keep cursor in place when joining lines
+vim.keymap.set("n", "J", mark("J")) -- Keep cursor in place when joining lines
 vim.keymap.set("n", "ycc", "Ygccp", { remap = true }) -- Comment the current line then paste it below
 vim.keymap.set({ "i" }, "<D-k>", "<c-k>", { noremap = true }) -- Digraph key
-vim.keymap.set({ "n", "v", "o" }, "<C-g>u<Esc>[s1z=gi<C-g>u", "1z=", { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>z", "1z=", { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>[s", mark("[s1z="), { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>]s", mark("]s1z="), { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>[g", mark("[szg"), { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>]g", mark("]szg"), { remap = false })
 vim.keymap.set("n", "<Esc>", function()
 	vim.opt.cursorline = true
 	vim.cmd(":nohlsearch")
@@ -94,4 +100,9 @@ vim.keymap.set({ "v", "n" }, "<D-n>", function()
 		end
 		filenumber = filenumber + 1
 	end
+end)
+
+vim.keymap.set({ "v", "n" }, "<C-t>", function()
+	local output = vim.fn.system("ls")
+	print(output)
 end)

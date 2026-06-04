@@ -1,6 +1,6 @@
 return {
 	{ "neovim/nvim-lspconfig" },
-	{ "okuuva/auto-save.nvim" },
+	{ "okuuva/auto-save.nvim", lazy = false, opts = {} },
 	{ "OXY2DEV/helpview.nvim", lazy = false },
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -35,10 +35,7 @@ return {
 		},
 		config = function()
 			local function sel(query, group)
-				require("nvim-treesitter-textobjects.select").select_textobject(
-					query,
-					group or "textobjects"
-				)
+				require("nvim-treesitter-textobjects.select").select_textobject(query, group or "textobjects")
 			end
 			vim.keymap.set({ "x", "o" }, "af", function() sel("@function.outer") end)
 			vim.keymap.set({ "x", "o" }, "if", function() sel("@function.inner") end)
@@ -60,22 +57,12 @@ return {
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]m",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start(
-						"@function.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects") end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]]",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start(
-						"@class.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_start("@class.outer", "textobjects") end
 			)
 			-- You can also pass a list to group multiple queries.
 			vim.keymap.set(
@@ -92,60 +79,37 @@ return {
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]s",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start(
-						"@local.scope",
-						"locals"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_start("@local.scope", "locals") end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]z",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_start("@fold", "folds")
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_start("@fold", "folds") end
 			)
 
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]M",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_end(
-						"@function.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_end("@function.outer", "textobjects") end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"][",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next_end(
-						"@class.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next_end("@class.outer", "textobjects") end
 			)
 
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"[m",
 				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_start(
-						"@function.outer",
-						"textobjects"
-					)
+					require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
 				end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"[[",
 				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_start(
-						"@class.outer",
-						"textobjects"
-					)
+					require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
 				end
 			)
 
@@ -153,21 +117,13 @@ return {
 				{ "n", "x", "o" },
 				"[M",
 				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_end(
-						"@function.outer",
-						"textobjects"
-					)
+					require("nvim-treesitter-textobjects.move").goto_previous_end("@function.outer", "textobjects")
 				end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"[]",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_previous_end(
-						"@class.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_previous_end("@class.outer", "textobjects") end
 			)
 
 			-- Go to either the start or the end, whichever is closer.
@@ -175,21 +131,13 @@ return {
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"]d",
-				function()
-					require("nvim-treesitter-textobjects.move").goto_next(
-						"@conditional.outer",
-						"textobjects"
-					)
-				end
+				function() require("nvim-treesitter-textobjects.move").goto_next("@conditional.outer", "textobjects") end
 			)
 			vim.keymap.set(
 				{ "n", "x", "o" },
 				"[d",
 				function()
-					require("nvim-treesitter-textobjects.move").goto_previous(
-						"@conditional.outer",
-						"textobjects"
-					)
+					require("nvim-treesitter-textobjects.move").goto_previous("@conditional.outer", "textobjects")
 				end
 			)
 		end,
@@ -349,14 +297,10 @@ return {
 						columns = { { "kind_icon" }, { "label", gap = 1 } },
 						components = {
 							kind_icon = {
-								text = function(ctx)
-									return require("lspkind").symbol_map[ctx.kind] or ""
-								end,
+								text = function(ctx) return require("lspkind").symbol_map[ctx.kind] or "" end,
 							},
 							label = {
-								text = function(ctx)
-									return require("colorful-menu").blink_components_text(ctx)
-								end,
+								text = function(ctx) return require("colorful-menu").blink_components_text(ctx) end,
 								highlight = function(ctx)
 									return require("colorful-menu").blink_components_highlight(ctx)
 								end,
@@ -413,7 +357,7 @@ return {
 				MkdnTableNewRowAbove = { "n", "<leader>mR" },
 				MkdnTableNewColAfter = { "n", "<leader>mc" },
 				MkdnTableNewColBefore = { "n", "<leader>mC" },
-				MkdnTableNextCell = { "i", "<D-tab>" },
+				MkdnTableNextCell = { "i", "<C-tab>" },
 				MkdnEnter = false,
 			},
 			modules = { conceal = false },
@@ -503,8 +447,7 @@ return {
 					local out = require("obsidian.builtin").frontmatter(note)
 					if not out["Date Created"] or out["Date Created"] == vim.NIL then
 						local time = vim.uv.fs_stat(note.path.filename)
-						out["Date Created"] =
-							os.date("%Y-%m-%d %H:%M", time and time.birthtime.sec or nil)
+						out["Date Created"] = os.date("%Y-%m-%d %H:%M", time and time.birthtime.sec or nil)
 					end
 					out["Date Modified"] = out["Date Created"] and os.date("%Y-%m-%d %H:%M") or nil
 					out["id"] = nil
@@ -525,6 +468,13 @@ return {
 			})
 			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "ObsidianNoteEnter",
+				callback = function(ev)
+					vim.keymap.del("n", "<CR>", { buffer = true })
+					vim.keymap.set("n", "gx", require("obsidian.api").smart_action, { buffer = true })
+				end,
+			})
 			vim.keymap.set(
 				{ "n" },
 				"<leader>oo",
@@ -532,14 +482,12 @@ return {
 				keyopts
 			)
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
-			vim.keymap.set({ "n" }, "<D-p>", function()
+			vim.keymap.set({ "n" }, "<C-p>", function()
 				local result = vim.system({
-					os.getenv("HOME") .. "/.config/nvim/FinishNote.fish",
+					os.getenv("HOME") .. "/.local/share/chezmoi/Scripts/FinishNote.fish",
 					vim.api.nvim_buf_get_name(0),
 				}, { text = true }):wait()
-				if result.code ~= 0 then
-					vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
-				end
+				if result.code ~= 0 then vim.api.nvim_buf_delete(0) end
 			end, keyopts)
 		end,
 	},
@@ -556,8 +504,8 @@ return {
 					local toggle = require("markdown-toggle")
 					-- Keymap configurations will be added here for each feature
 					opts.expr = true -- required for dot-repeat in Normal mode
-					vim.keymap.set({ "n", "v" }, "<D-l>", toggle.list_dot, opts)
-					vim.keymap.set("n", "<D-k>", toggle.checkbox_dot, opts)
+					vim.keymap.set({ "n", "v" }, "<C-l>", toggle.list_dot, opts)
+					vim.keymap.set("n", "<C-k>", toggle.checkbox_dot, opts)
 					opts.expr = false -- required for Visual mode
 					vim.keymap.set("x", "<C-l>", toggle.list, opts)
 					vim.keymap.set("x", "<S-l>", toggle.checkbox, opts)
@@ -597,9 +545,7 @@ return {
 	},
 	{
 		"chrisgrieser/nvim-rip-substitute",
-		config = function()
-			vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", keyopts)
-		end,
+		config = function() vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", keyopts) end,
 	},
 	{
 		"chrisgrieser/nvim-various-textobjs",
@@ -688,18 +634,8 @@ return {
 				vim.cmd(":norm " .. command)
 				vim.cmd(":norm 'z")
 			end
-			vim.keymap.set(
-				{ "n", "i" },
-				"<M-d>",
-				function() process_previous_word("daw") end,
-				keyopts
-			)
-			vim.keymap.set(
-				{ "n", "i" },
-				"<M-c>",
-				function() process_previous_word("caw") end,
-				keyopts
-			)
+			vim.keymap.set({ "n", "i" }, "<M-d>", function() process_previous_word("daw") end, keyopts)
+			vim.keymap.set({ "n", "i" }, "<M-c>", function() process_previous_word("caw") end, keyopts)
 			-- Replace w b e f j k with hop.nvim search
 			vim.keymap.set({ "n", "v", "o" }, "f", "<cmd>HopChar1<cr>", keyopts)
 			-- vim.keymap.set({ "n", "v", "o" }, "F", "<cmd>HopNodes<cr>", opts)
@@ -1017,7 +953,7 @@ return {
 		cmd = "Trouble",
 		-- keys = {
 		-- 	{
-		-- 		"<D-t>",
+		-- 		"<C-t>",
 		-- 		"<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
 		-- 		desc = "Buffer Diagnostics (Trouble)",
 		-- 	},

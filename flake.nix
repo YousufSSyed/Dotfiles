@@ -59,26 +59,26 @@
       nixosConfigurations.NixOS-Desktop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/base.nix
-          ./nix/nixos.nix
-          ./nix/nixos-desktop.nix
-          ./nix/nixos-desktop-hardware.nix
+          ./Nix/base.nix
+          ./Nix/nixos.nix
+          ./Nix/nixos-desktop.nix
+          ./Nix/nixos-desktop-hardware.nix
         ];
       };
       nixosConfigurations.NixOS-Laptop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/base.nix
-          ./nix/nixos.nix
-          ./nix/nixos-laptop.nix
-          ./nix/nixos-laptop-hardware.nix
+          ./Nix/base.nix
+          ./Nix/nixos.nix
+          ./Nix/nixos-laptop.nix
+          ./Nix/nixos-laptop-hardware.nix
         ];
       };
       darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/base.nix
-          ./nix/mac-mini.nix
+          ./Nix/base.nix
+          ./Nix/mac-mini.nix
         ];
       };
     };

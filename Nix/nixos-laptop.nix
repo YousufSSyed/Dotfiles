@@ -14,4 +14,6 @@
   services.geoclue2.enableDemoAgent = lib.mkForce true;
 
   services.syncthing.dataDir = "/home/yousuf/Sync/.Syncthing-Laptop/";
+
+  system.autoUpgrade.dates = "1:00";
 }

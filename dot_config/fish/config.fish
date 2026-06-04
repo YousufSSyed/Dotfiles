@@ -1,1 +1,1 @@
-source ~/.local/share/chezmoi/fish/config.fish
+source ~/.local/share/chezmoi/Fish/config.fish

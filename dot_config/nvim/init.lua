@@ -50,7 +50,6 @@ vim.opt.shell = "/run/current-system/sw/bin/fish"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.inccommand = "split"
--- vim.opt.cursorline = true
 vim.opt.list = true
 vim.opt.joinspaces = false
 vim.opt.fillchars = "vert: ,horiz: ,horizup: ,horizdown: ,vertleft: ,vertright: ,verthoriz: "
@@ -67,8 +66,7 @@ vim.opt.updatetime = 60000
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.grepformat = "%f:%l:%c:%m"
 vim.opt.shortmess:append("I")
--- vim.g & vim.env
-vim.g.markdown_recommended_style = 0
+vim.g.markdown_recommended_style = 0 -- vim.g & vim.env
 vim.g.have_nerd_font = true
 vim.env.PATH = vim.env.PATH .. "/run/current-system/sw/bin/"
 
