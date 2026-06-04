@@ -233,22 +233,6 @@ in
         binPath = "/run/current-system/sw/bin/start-hyprland";
       };
     };
-    # Nix-ld
-    nix-ld = {
-      enable = true;
-      libraries = with pkgs; [
-        config.boot.kernelPackages.nvidia_x11
-        # ComfyUI packages
-        libxcb
-        libX11
-        libXext
-        libXrender
-        libGL
-        libGLU
-        glib
-        stdenv.cc.cc.lib
-      ];
-    };
     # Global Environment Variables
     bash.shellInit = ''
       	export GRIMBLAST_HIDE_CURSOR=0
