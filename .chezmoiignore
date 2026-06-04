@@ -6,5 +6,5 @@ nix/
 *.sync-conflict-*
 userChrome/
 fish/
-misc/
 .stfolder/
+Scripts/

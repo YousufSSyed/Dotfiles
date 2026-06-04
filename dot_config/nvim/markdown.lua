@@ -9,15 +9,27 @@ local function changeTask(character)
 end
 
 vim.api.nvim_buf_set_keymap(0, "n", "<leader>t", ":lua require('toggle-checkbox').toggle()<CR>")
-vim.api.nvim_buf_set_keymap(0, { "n", "v" }, "<leader>x", function()
-	changeTask("x")
-end, { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, { "n", "v" }, "<leader>-", function()
-	changeTask("-")
-end, { noremap = true, silent = true })
-vim.api.nvim_buf_set_keymap(0, { "n", "v" }, "<leader>/", function()
-	changeTask("\\/")
-end, { noremap = true, silent = true })
+vim.api.nvim_buf_set_keymap(
+	0,
+	{ "n", "v" },
+	"<leader>x",
+	function() changeTask("x") end,
+	{ noremap = true, silent = true }
+)
+vim.api.nvim_buf_set_keymap(
+	0,
+	{ "n", "v" },
+	"<leader>-",
+	function() changeTask("-") end,
+	{ noremap = true, silent = true }
+)
+vim.api.nvim_buf_set_keymap(
+	0,
+	{ "n", "v" },
+	"<leader>/",
+	function() changeTask("\\/") end,
+	{ noremap = true, silent = true }
+)
 
 -- Quote Hotkeys
 local function quote(callout)
@@ -52,14 +64,10 @@ local function unquote()
 	vim.fn.winrestview(r)
 end
 
-vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-b>", function()
-	quote(false)
-end, opts)
-vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-q>", unquote, opts)
+vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-b>", function() quote(false) end, keyopts)
+vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-q>", unquote, keyopts)
 --- Create callout
-vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-z>", function()
-	quote(true)
-end, opts)
+vim.api.nvim_buf_set_keymap(0, { "v", "n" }, "<M-z>", function() quote(true) end, keyopts)
 
 -- <leader>p to put links in selection, taken from https://linkarzu.com/posts/neovim/markdown-setup-2024/
 vim.api.nvim_buf_set_keymap(0, "v", "<leader>p", function()
@@ -74,9 +82,7 @@ vim.api.nvim_buf_set_keymap(0, "v", "<leader>p", function()
 end, { desc = "[P]Convert to link" })
 
 -- CTRL Markdown keymaps
-vim.api.nvim_buf_set_keymap(0, { "i", "n" }, "<D-b>", function()
-	vim.cmd(":i sab")
-end)
+vim.api.nvim_buf_set_keymap(0, { "i", "n" }, "<D-b>", function() vim.cmd(":i sab") end)
 vim.api.nvim_buf_set_keymap(0, { "i", "n" }, "<D-i>", function()
 	vim.cmd(":i **")
 	vim.cmd(":i **")

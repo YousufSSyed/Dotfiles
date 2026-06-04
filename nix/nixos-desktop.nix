@@ -50,6 +50,8 @@
     };
   };
 
+  services.syncthing.dataDir = "/home/yousuf/Sync/.Syncthing-Desktop/";
+
   # services.immich = {
   #   enable = true;
   #   accelerationDevices = null;

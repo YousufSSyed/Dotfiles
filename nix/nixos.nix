@@ -136,7 +136,7 @@ in
       };
       "wallpaper" = {
         script = ''
-          ${pkgs.fish}/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
+          ${pkgs.fish}/bin/fish /home/yousuf/Sync/Scripts/wallpaper.fish
         '';
         serviceConfig = {
           Type = "oneshot";
@@ -236,7 +236,7 @@ in
     # Global Environment Variables
     bash.shellInit = ''
       	export GRIMBLAST_HIDE_CURSOR=0
-      	export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/Misc/age-keys.txt"
+      	export SOPS_AGE_KEY_FILE="/home/yousuf/Sync/Misc/age-keys.txt"
       	export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
       	export MANPAGER="nvim +Man!"
       	export EDITOR="nvim"
@@ -385,7 +385,7 @@ in
             x11.enable = true;
             x11.defaultCursor = "macOS";
           };
-          file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Assets/Fonts/";
+          file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
           # file.".mozilla/firefox/${firefox-profile}/chrome".source =
           #   config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/userChrome";
         };
@@ -520,7 +520,7 @@ in
   };
 
   sops = {
-    age.keyFile = "/home/yousuf/Assets/Misc/age-keys.txt";
+    age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
     defaultSopsFile = ./secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
     secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
@@ -644,7 +644,6 @@ in
     syncthing = {
       enable = true;
       user = "yousuf";
-      dataDir = "/home/yousuf/.syncthing";
     };
   };
 

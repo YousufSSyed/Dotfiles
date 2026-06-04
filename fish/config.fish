@@ -1,5 +1,5 @@
-set -Ux STARSHIP_CONFIG ~/.local/share/chezmoi/misc/starship.toml
-set -Ux RIPGREP_CONFIG_PATH ~/.local/share/chezmoi/misc/.ripgreprc
+set -Ux STARSHIP_CONFIG ~/.local/share/chezmoi/Scripts/starship.toml
+set -Ux RIPGREP_CONFIG_PATH ~/.local/share/chezmoi/Scripts/.ripgreprc
 set -gx FZF_DEFAULT_COMMAND "fd -H ."
 
 if status is-interactive

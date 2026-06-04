@@ -1,4 +1,4 @@
-opts = { noremap = true, silent = true }
+keyopts = { noremap = true, silent = true }
 
 vim.keymap.set({ "n", "v" }, "<C-d>", "5<C-d>")
 vim.keymap.set({ "n", "v" }, "<C-u>", "5<C-u>")
@@ -31,23 +31,23 @@ vim.keymap.set("n", "<C-tab>", ">>", { noremap = true })
 vim.keymap.set("n", "<S-tab>", "<<", { noremap = true })
 
 -- leader [ ] for tab switching
-vim.keymap.set({ "n" }, "<m-[>", "<cmd>tabprevious<cr>", opts)
-vim.keymap.set({ "n" }, "<m-]>", "<cmd>tabnext<cr>", opts)
+vim.keymap.set({ "n" }, "<m-[>", "<cmd>tabprevious<cr>", keyopts)
+vim.keymap.set({ "n" }, "<m-]>", "<cmd>tabnext<cr>", keyopts)
 
 -- Hotkeys for buffer management
-vim.keymap.set("n", "<leader>6", "<cmd>tabclose<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<D-w>", "<cmd>bprev<cr><cmd>bd#<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<leader>i", "<cmd>b#<cr>", opts)
+vim.keymap.set("n", "<leader>6", "<cmd>tabclose<cr>", keyopts)
+vim.keymap.set({ "n", "v" }, "<D-w>", "<cmd>bprev<cr><cmd>bd#<cr>", keyopts)
+vim.keymap.set({ "n", "v" }, "<leader>i", "<cmd>b#<cr>", keyopts)
 
 -- Move lines up and down
 vim.keymap.set({ "n", "v" }, "<M-k>", "X<up>P", { remap = true })
 vim.keymap.set({ "n", "v" }, "<M-j>", "Xp", { remap = true })
 
 -- Change down and up to gj and gk
-vim.keymap.set("i", "<down>", "<C-o>gj", opts)
-vim.keymap.set("i", "<up>", "<C-o>gk", opts)
-vim.keymap.set({ "n", "v" }, "<down>", "gj", opts)
-vim.keymap.set({ "n", "v" }, "<up>", "gk", opts)
+vim.keymap.set("i", "<down>", "<C-o>gj", keyopts)
+vim.keymap.set("i", "<up>", "<C-o>gk", keyopts)
+vim.keymap.set({ "n", "v" }, "<down>", "gj", keyopts)
+vim.keymap.set({ "n", "v" }, "<up>", "gk", keyopts)
 
 -- Change some deleting and yanking motions
 vim.keymap.set({ "n", "v" }, "d", '"_d', { noremap = true })
@@ -58,8 +58,8 @@ vim.keymap.set({ "n", "v" }, "x", "d", { noremap = true })
 vim.keymap.set({ "n", "v" }, "xx", "^d$", { noremap = true })
 vim.keymap.set({ "n", "v" }, "X", "dd", { noremap = true })
 vim.keymap.set({ "n", "v" }, "<D-x>", "x", { noremap = true })
-vim.keymap.set({ "n" }, "yy", "^y$", opts)
-vim.keymap.set({ "n" }, "Y", "yy", opts)
+vim.keymap.set({ "n" }, "yy", "^y$", keyopts)
+vim.keymap.set({ "n" }, "Y", "yy", keyopts)
 
 -- Set CMD-V to paste
 vim.keymap.set("n", "<D-v>", "<cmd>set paste<cr>p<cmd>set nopaste<cr>")
@@ -73,7 +73,7 @@ vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
 
 vim.keymap.set({ "v", "n" }, "<D-n>", function()
-	local directory = os.getenv("HOME") .. "/Assets/Scratchpad/"
+	local directory = os.getenv("HOME") .. "/Sync/Scratchpad/"
 	local filename
 	while true do
 		vim.ui.input({ prompt = "New file name: " }, function(i) filename = i end)
@@ -135,10 +135,15 @@ local function changeTask(character)
 	vim.cmd(firstline .. "," .. lastline .. "s/\\(^\\s*- \\[\\).\\]/\\1" .. character .. "\\]")
 end
 
-vim.keymap.set({ "n", "v" }, "<leader>t", function() require("toggle-checkbox").toggle() end, opts)
-vim.keymap.set({ "n", "v" }, "<leader>x", function() changeTask("x") end, opts)
-vim.keymap.set({ "n", "v" }, "<leader>-", function() changeTask("-") end, opts)
-vim.keymap.set({ "n", "v" }, "<leader>/", function() changeTask("\\/") end, opts)
+vim.keymap.set(
+	{ "n", "v" },
+	"<leader>t",
+	function() require("toggle-checkbox").toggle() end,
+	keyopts
+)
+vim.keymap.set({ "n", "v" }, "<leader>x", function() changeTask("x") end, keyopts)
+vim.keymap.set({ "n", "v" }, "<leader>-", function() changeTask("-") end, keyopts)
+vim.keymap.set({ "n", "v" }, "<leader>/", function() changeTask("\\/") end, keyopts)
 
 -- Quote Hotkeys
 local function quote(callout)
@@ -174,8 +179,8 @@ local function unquote()
 	vim.fn.winrestview(r)
 end
 
-vim.keymap.set({ "v", "n" }, "<M-b>", function() quote(false) end, opts)
-vim.keymap.set({ "v", "n" }, "<M-q>", function() unquote() end, opts)
+vim.keymap.set({ "v", "n" }, "<M-b>", function() quote(false) end, keyopts)
+vim.keymap.set({ "v", "n" }, "<M-q>", function() unquote() end, keyopts)
 
 --- Create callout
 vim.keymap.set({ "v", "n" }, "<M-z>", function() quote(true) end)

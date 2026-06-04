@@ -289,8 +289,8 @@ return {
 			},
 		},
 		config = function()
-			vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", opts)
-			vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", opts)
+			vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", keyopts)
+			vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", keyopts)
 		end,
 	},
 	{
@@ -360,13 +360,20 @@ return {
 	{
 		"saghen/blink.cmp",
 		dependencies = {
+			-- "saghen/blink.lib",
 			"rafamadriz/friendly-snippets",
 			"xzbdmw/colorful-menu.nvim",
 			"archie-judd/blink-cmp-words",
 			"onsails/lspkind.nvim",
 		},
 		opts_extend = { "sources.default" },
+		-- build = function()
+		-- 	-- build the fuzzy matcher, wait up to 60 seconds
+		-- 	-- you can use `gb` in `:Lazy` to rebuild the plugin as needed
+		-- 	require("blink.cmp").build():wait(60000)
+		-- end,
 		build = "nix run .#build-plugin",
+		version = "1.*",
 		opts = {
 			keymap = { preset = "default", ["<S-CR>"] = { "accept" } },
 			appearance = { nerd_font_variant = "normal" },
@@ -482,7 +489,8 @@ return {
 					complete = { marker = "x" },
 				},
 			},
-			config = function()
+			config = function(_, opts)
+				require("mkdnflow").setup(opts)
 				vim.keymap.set({ "n", "v" }, "<leader>p", "<cmd>MkdnCreateLinkFromClipboard<cr>")
 			end,
 		},
@@ -554,7 +562,7 @@ return {
 			ui = { enable = false },
 			legacy_commands = false,
 			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd" },
-			workspaces = { { path = "/home/yousuf/Assets/Obsidian", name = "Obsidian" } },
+			workspaces = { { path = os.getenv("HOME") .. "/Sync/Obsidian", name = "Obsidian" } },
 			frontmatter = {
 				func = function(note)
 					local out = require("obsidian.builtin").frontmatter(note)
@@ -573,31 +581,31 @@ return {
 		},
 		config = function(_, opts)
 			require("obsidian").setup(opts)
-			vim.api.create_autocmd("User", {
+			vim.api.nvim_create_autocmd("User", {
 				pattern = "ObsidianNoteWritePost",
 				callback = function(ev)
 					local note = require("obsidian.note").from_buffer(ev.buf)
 					require("obsidian.builtin").frontmatter.func(note)
 				end,
 			})
-			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", opts)
-			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", opts)
+			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
+			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.keymap.set(
 				{ "n" },
 				"<leader>oo",
 				function() vim.api.nvim_feedkeys(":Obsidian today ", "n", false) end,
-				opts
+				keyopts
 			)
 			vim.keymap.set({ "n" }, "<D-p>", function()
 				local result = vim.system({
-					"/home/yousuf/.config/nvim/FinishNote.fish",
+					os.getenv("HOME") .. "/.config/nvim/FinishNote.fish",
 					vim.api.nvim_buf_get_name(0),
 				}, { text = true }):wait()
 				if result.code ~= 0 then
 					local filepath =
 						vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
 				end
-			end, opts)
+			end, keyopts)
 		end,
 	},
 	{
@@ -654,7 +662,9 @@ return {
 	},
 	{
 		"chrisgrieser/nvim-rip-substitute",
-		config = function() vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", opts) end,
+		config = function()
+			vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", keyopts)
+		end,
 	},
 	{
 		"chrisgrieser/nvim-various-textobjs",
@@ -733,7 +743,7 @@ return {
 		config = function()
 			require("project_nvim").setup({
 				unset_autochdir = false,
-				patterns = { os.getenv("HOME") .. "/Assets/Obsidian" },
+				patterns = { os.getenv("HOME") .. "/Sync/Obsidian" },
 				exclude_dirs = { os.getenv("HOME") .. "/.local/share/chezmoi/dot_config/nvim" },
 			})
 		end,
@@ -752,7 +762,7 @@ return {
 		"nvim-telescope/telescope-frecency.nvim",
 		config = function()
 			require("telescope").load_extension("frecency")
-			vim.keymap.set({ "n" }, "<leader>f", "<cmd>Telescope frecency<cr>", opts)
+			vim.keymap.set({ "n" }, "<leader>f", "<cmd>Telescope frecency<cr>", keyopts)
 		end,
 		opts = { db_version = "v2" },
 	},
@@ -771,15 +781,25 @@ return {
 				vim.cmd(":norm 'z")
 			end
 
-			vim.keymap.set({ "n", "i" }, "<M-d>", function() process_previous_word("daw") end, opts)
-			vim.keymap.set({ "n", "i" }, "<M-c>", function() process_previous_word("caw") end, opts)
+			vim.keymap.set(
+				{ "n", "i" },
+				"<M-d>",
+				function() process_previous_word("daw") end,
+				keyopts
+			)
+			vim.keymap.set(
+				{ "n", "i" },
+				"<M-c>",
+				function() process_previous_word("caw") end,
+				keyopts
+			)
 
 			-- Replace w b e f j k with hop.nvim search
-			vim.keymap.set({ "n", "v", "o" }, "e", "<cmd>HopWord<cr>", opts)
-			vim.keymap.set({ "n", "v", "o" }, "f", "<cmd>HopChar1<cr>", opts)
+			vim.keymap.set({ "n", "v", "o" }, "e", "<cmd>HopWord<cr>", keyopts)
+			vim.keymap.set({ "n", "v", "o" }, "f", "<cmd>HopChar1<cr>", keyopts)
 			-- vim.keymap.set({ "n", "v", "o" }, "F", "<cmd>HopNodes<cr>", opts)
-			vim.keymap.set({ "n", "v" }, "j", "<cmd>HopVertical<cr>", opts)
-			vim.keymap.set({ "o" }, "j", "V<cmd>HopVertical<cr>", opts) -- Note the V<cmd>
+			vim.keymap.set({ "n", "v" }, "j", "<cmd>HopVertical<cr>", keyopts)
+			vim.keymap.set({ "o" }, "j", "V<cmd>HopVertical<cr>", keyopts) -- Note the V<cmd>
 			-- vim.keymap.set({ "n", "v", "o" }, "B", "<cmd>HopWordCurrentLineBC<cr>", opts)
 			vim.keymap.set(
 				{ "n", "v", "o" },
@@ -789,7 +809,7 @@ return {
 						hint_position = require("hop.hint").HintPosition.END,
 					})
 				end,
-				opts
+				keyopts
 			)
 		end,
 	},
@@ -813,7 +833,7 @@ return {
 		"mfussenegger/nvim-treehopper",
 		enabled = true,
 		config = function()
-			vim.keymap.set({ "n", "v", "i" }, "F", function() require("tsht").nodes() end, opts)
+			vim.keymap.set({ "n", "v", "i" }, "F", function() require("tsht").nodes() end, keyopts)
 		end,
 	},
 	{
@@ -1042,7 +1062,7 @@ return {
 				ordering_metric = "directory",
 				ui = { floating = { minimal_menu = "full" } },
 			})
-			vim.keymap.set({ "n" }, "<leader>;", "<cmd>BentoToggle<cr>", opts)
+			vim.keymap.set({ "n" }, "<leader>;", "<cmd>BentoToggle<cr>", keyopts)
 		end,
 	},
 	{
