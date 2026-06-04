@@ -16,6 +16,31 @@
     };
   };
 
+  services = {
+    xserver = {
+      videoDrivers = [ "nvidia" ];
+    };
+  };
+
+  programs = {
+    # Nix-ld
+    nix-ld = {
+      enable = true;
+      libraries = with pkgs; [
+        config.boot.kernelPackages.nvidia_x11
+        # ComfyUI packages
+        libxcb
+        libX11
+        libXext
+        libXrender
+        libGL
+        libGLU
+        glib
+        stdenv.cc.cc.lib
+      ];
+    };
+  };
+
   services.linkwarden = {
     enable = true;
     secretFiles.NEXTAUTH_SECRET = config.sops.secrets."NEXTAUTH_SECRET".path;

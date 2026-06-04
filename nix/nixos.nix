@@ -637,7 +637,6 @@ in
     automatic-timezoned.enable = true;
     xserver = {
       enable = true;
-      videoDrivers = [ "nvidia" ];
     };
     # Filesystem services
     btrfs.autoScrub = {
