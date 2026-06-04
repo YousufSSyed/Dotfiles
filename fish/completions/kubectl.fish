@@ -1,0 +1,5 @@
+XSym
+0079
+3fd3a5833c9b051902680377bf052b76
+/Applications/OrbStack.app/Contents/MacOS/../Resources/completions/kubectl.fish
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

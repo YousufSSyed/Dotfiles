@@ -1,0 +1,9 @@
+title-hidden = true
+tabs = false
+
+[font]
+size = 14
+
+[[font.normal]]
+family = "Iosevka Custom"
+style = "W500"

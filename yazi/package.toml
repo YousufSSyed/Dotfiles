@@ -1,0 +1,27 @@
+[[plugin.deps]]
+use = "dedukun/bookmarks"
+rev = "fbb7c00"
+hash = "1d231a808d3344546380df33daf43e91"
+
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "ce2e890"
+hash = "23915860e59348bf4166778bb0e606f7"
+
+[[plugin.deps]]
+use = "h-hg/yamb"
+rev = "22af003"
+hash = "7cc42012a7c2099f80064d228feb8d44"
+
+[[plugin.deps]]
+use = "lpnh/fg"
+rev = "5b6bdee"
+hash = "a0e91093c60ddeb1ee68df4ed7cf317a"
+
+[[plugin.deps]]
+use = "NoponyAsked/sxiv"
+rev = "ed2d5c8"
+hash = "80b626862f7ccfdeed9504051320934d"
+
+[flavor]
+deps = []

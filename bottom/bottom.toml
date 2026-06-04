@@ -1,0 +1,11 @@
+[flags]
+tree = true
+disable_advanced_kill = true
+
+[processes]
+# columns = ["cpu%", "mem%", "pid", "name", "read", "write", "tread", "twrite", "state", "user", "time", "gmem%", "gpu%"]
+columns = ["name", "cpu%", "mem%", "write", "state", "user", "time", "pid"]
+
+[[row]]
+  [[row.child]]
+	type="processes"

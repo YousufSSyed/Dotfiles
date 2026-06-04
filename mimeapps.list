@@ -1,0 +1,17 @@
+[Added Associations]
+application/octet-stream=neovide.desktop;
+application/vnd.adobe.flash.movie=ruffle.desktop;
+application/x-shellscript=neovide.desktop;
+image/png=com.interversehq.qView.desktop;nsxiv-2.desktop;
+text/html=zen.desktop;
+text/plain=neovide.desktop;
+
+[Default Applications]
+application/octet-stream=neovide.desktop;
+application/vnd.adobe.flash.movie=ruffle.desktop;
+application/x-shellscript=neovide.desktop;
+image/png=com.interversehq.qView.desktop;
+text/html=zen.desktop;
+text/plain=neovide.desktop;
+x-scheme-handler/http=zen.desktop
+x-scheme-handler/https=zen.desktop

@@ -1,0 +1,48 @@
+[manager]
+append_keymap = [
+	{ on = [ "g", "q" ], run = 'quit' },
+ 	{ on = "<D-Backspace>", run = 'remove --force' },
+	{ on = ["g", "d"], run = "shell 'open .' --confirm" },
+]
+
+[[manager.prepend_keymap]]
+on = "<D-i>"
+run = "shell 'termvisage .'  --block --confirm"
+
+[[manager.prepend_keymap]]
+on = "<c-m>"
+run = "shell 'mv $@ $(z \t)' --interactive"
+
+[[manager.prepend_keymap]]
+on = [ "f", "d"]
+run = "shell 'ya pub dds-cd --str $(fd -H . ~ | fzf)' --block --confirm"
+desc = "Search for a directory with fzf"
+
+[[manager.prepend_keymap]]
+on = [ "b", "c "]
+run = "plugin bookmarks save"
+desc = "Save current position as a bookmark"
+
+[[manager.prepend_keymap]]
+on = [ "'" ]
+run = "plugin bookmarks jump"
+desc = "Jump to a bookmark"
+
+[[manager.prepend_keymap]]
+on = [ "b", "d" ]
+run = "plugin bookmarks delete"
+desc = "Delete a bookmark"
+
+[[manager.prepend_keymap]]
+on = [ "b", "D" ]
+run = "plugin bookmarks delete_all"
+desc = "Delete all bookmarks"
+
+[[manager.prepend_keymap]]
+on = "<D-a>"
+run = "select_all"
+
+[[manager.prepend_keymap]]
+on   = ["c", "i"]
+run  = "plugin sxiv"
+desc = "Preview images in sxiv"

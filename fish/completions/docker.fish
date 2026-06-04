@@ -1,0 +1,5 @@
+XSym
+0078
+280a68985911d33b19ed41d389df585f
+/Applications/OrbStack.app/Contents/MacOS/../Resources/completions/docker.fish
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 

@@ -1,0 +1,130 @@
+format = """
+$time\
+[](fg:#FF0000 bg:#4CAF50)\
+$directory\
+[](fg:#4CAF50 bg:#FCA683)\
+$git_branch\
+$git_status\
+[](fg:#FCA683 bg:#FF8A80)\
+$c\
+$elixir\
+$elm\
+$golang\
+$gradle\
+$haskell\
+$java\
+$julia\
+$nodejs\
+$nim\
+$rust\
+$scala\
+[](fg:#FF8A80 bg:#40C4FF)\
+$docker_context\
+[](fg:#40C4FF bg:#000000)\
+$status\
+[ ](fg:#000000)\
+"""
+add_newline = false
+
+[directory]
+style = "bg:#4CAF50"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncate_to_repo = false
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+# Keep in mind that the order matters. For example:
+# "Important Documents" = " 󰈙 "
+# will not be replaced, because "Documents" was already substituted before.
+# So either put "Important Documents" before "Documents" or use the substituted version:
+# "Important 󰈙 " = " 󰈙 "
+
+[c]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[docker_context]
+symbol = " "
+style = "bg:#06969A"
+format = '[ $symbol $context ]($style) $path'
+
+[elixir]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[elm]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[git_branch]
+symbol = ""
+style = "bg:#FCA17D"
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = "bg:#FCA17D"
+format = '[$all_status$ahead_behin]($style)'
+
+[golang]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[gradle]
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[haskell]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[java]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[julia]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[nim]
+symbol = "󰆥 "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[rust]
+symbol = ""
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[scala]
+symbol = " "
+style = "bg:#FF8A80"
+format = '[ $symbol ($version) ]($style)'
+
+[time]
+disabled = false
+time_format = "%-I:%M %p" # Hour:Minute Format
+style = "bg:#039BE5"
+format = '[ $time ]($style)'
+
+[status]
+style = "bg:#000000"
+format = '[ $symbol$status ]($style)'
+disabled = false
+map_symbol = true
+pipestatus = true
