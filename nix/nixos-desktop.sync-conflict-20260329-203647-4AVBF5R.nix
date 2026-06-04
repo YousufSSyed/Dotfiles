@@ -21,10 +21,7 @@ in
 
   # Packages
   nixpkgs = {
-    config = {
-      cudaSupport = true;
-      allowUnfree = true;
-    };
+    config.cudaSupport = true;
     overlays = [
       inputs.dolphin-overlay.overlays.default
     ];
@@ -45,9 +42,9 @@ in
     davinci-resolve
     kdePackages.kde-dev-utils
     plasma-panel-colorizer
+    activitywatch
     # kdotool
-
-    rustdesk-flutter
+    libreoffice
 
     # Command Line Tools / CLIs
     keyd
@@ -56,6 +53,9 @@ in
     compsize
     rofimoji
     hyprpicker
+    snapper
+    wl-clipboard
+    slurp
 
     discordchatexporter-desktop
 
@@ -63,6 +63,9 @@ in
     wf-recorder
     grim
     quickshell
+    (mpv-unwrapped.override {
+      ffmpeg = ffmpeg-full;
+    })
 
     # Misc Packages
     libinput-gestures
@@ -90,6 +93,12 @@ in
     inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
     inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
     kdePackages.extra-cmake-modules
+
+    # AI Tools
+    code-cursor-fhs
+
+    # Git tools
+    github-desktop
   ];
 
   systemd = {
@@ -440,12 +449,17 @@ in
                 # Dev tools
                 "devtools.debugger.remote-enabled" = true;
                 "devtools.chrome.enabled" = true;
-                "devtools.inspector.three-pane-enabled" = false;
+                "devtools.inspector.three-pane-enabled" = true;
 
                 # Attempt to make addons work in restricted domains
                 "extensions.webextensions.restrictedDomains" = "";
                 "extensions.quarantinedDomains.enabled" = false;
                 "privacy.resistFingerprinting.block_mozAddonManager" = true;
+
+                # Zen Browser specific options:
+                "zen.theme.content-element-separation" = 0; # disable border around zen window
+                "zen.tabs.close-on-back-with-no-history" = false;
+                "zen.urlbar.replace-newtab" = false;
 
                 # Right click menu
                 "browser.ml.linkPreview.enabled" = false;
@@ -455,11 +469,6 @@ in
                 "browser.ml.chat.enabled" = false;
                 "browser.ml.chat.menu" = false;
                 "browser.search.visualSearch.featureGate" = false;
-
-                # Zen Browser specific options:
-                "zen.theme.content-element-separation" = 0; # disable border around zen window
-                "zen.tabs.close-on-back-with-no-history" = false;
-                "zen.urlbar.replace-newtab" = false;
               };
             };
             secondary = {
@@ -483,7 +492,7 @@ in
           };
         };
         services.darkman = {
-          enable = false;
+          enable = true;
           lightModeScripts.gtk-theme = ''
             ${pkgs.dconf}/bin/dconf write \
                 /org/gnome/desktop/interface/color-scheme "'prefer-light'"
@@ -495,13 +504,19 @@ in
           settings = {
             lat = 42.3;
             long = -71.1;
-            usegeoclue = false;
+            usegeoclue = true;
             dbusserver = true;
             portal = true;
           };
         };
       };
   };
+
+  services.avahi.enable = true;
+  services.geoclue2.enable = true;
+  services.geoclue2.submitData = true;
+  services.geoclue2.enableWifi = false;
+  services.geoclue2.enableDemoAgent = lib.mkForce true;
 
   sops = {
     age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";
@@ -517,22 +532,6 @@ in
     wireless.iwd = {
       enable = true;
       settings.General.EnableNetworkConfiguration = true;
-    };
-  };
-
-  nix = {
-    settings.experimental-features = [
-      "nix-command"
-      "flakes"
-    ];
-    optimise = {
-      persistent = true;
-      automatic = true;
-    };
-    gc = {
-      options = "--delete-older-than 7d";
-      dates = "weekly";
-      automatic = true;
     };
   };
 
@@ -563,6 +562,8 @@ in
     };
   };
 
+  services.tailscale.enable = true;
+
   users.users.yousuf = {
     isNormalUser = true;
     home = "/home/yousuf";
@@ -573,10 +574,12 @@ in
       "keyd"
       "input"
       "ydotool"
+      "libvirtd"
+      "kvm"
+      "qemu-libvirtd"
       "i2c"
       "docker"
       "storage"
-      "syncthing"
     ];
   };
 
@@ -636,12 +639,6 @@ in
         ];
       };
     };
-    # Network hosted services
-    tailscale.enable = true;
-    syncthing = {
-      enable = true;
-      user = "yousuf";
-    };
   };
 
   swapDevices = [
@@ -650,6 +647,11 @@ in
       size = 32 * 1024;
     }
   ];
+
+  nix = {
+    optimise.persistent = true;
+    gc.dates = "weekly";
+  };
 
   system.stateVersion = "25.11";
 }

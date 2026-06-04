@@ -58,7 +58,7 @@
       nixosConfigurations.NixOS-Desktop = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/packages.nix
+          ./nix/base.nix
           ./nix/nixos-desktop.nix
           ./nix/nixos-desktop-hardware.nix
         ];
@@ -67,7 +67,7 @@
       darwinConfigurations."Mac-Mini" = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [
-          ./nix/packages.nix
+          ./nix/base.nix
           ./nix/mac-mini.nix
         ];
       };

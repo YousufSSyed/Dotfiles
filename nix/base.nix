@@ -16,27 +16,17 @@
     neovide
     neovim
     fish
-    activitywatch
-    qview
+    # qview
     qbittorrent
     megabasterd
     ruffle
     whisper-cpp
-    (mpv-unwrapped.override {
-      ffmpeg = ffmpeg-full;
-    })
     vscode
     diff-so-fancy
     delta
-
     dolphin-emu
-    libreoffice
+    copyparty-most
 
-    # AI Tools
-    code-cursor-fhs
-
-    # Git tools
-    github-desktop
     lazygit
 
     # Command Line Tools / CLIs
@@ -59,9 +49,7 @@
       withUnfree = true;
     })
     pkg-config
-    slurp
     lnav
-    wl-clipboard
     jujutsu
     yt-dlp
     gallery-dl
@@ -74,7 +62,6 @@
     sops
     git-crypt
     yq-go
-    snapper
     jnv
     jq
     p7zip
@@ -113,5 +100,18 @@
     nerd-fonts.iosevka
     dconf
   ];
-}
 
+  nix = {
+    settings.experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+    optimise.automatic = true;
+    gc = {
+      options = "--delete-older-than 7d";
+      automatic = true;
+    };
+  };
+
+  nixpkgs.config.allowUnfree = true;
+}
