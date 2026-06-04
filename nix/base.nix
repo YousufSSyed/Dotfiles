@@ -15,8 +15,8 @@
     kitty
     neovide
     neovim
+    tree-sitter
     fish
-    # qview
     qbittorrent
     megabasterd
     ruffle
@@ -28,6 +28,8 @@
     copyparty-most
 
     lazygit
+
+    ttfautohint
 
     # Command Line Tools / CLIs
     uutils-coreutils-noprefix
@@ -73,11 +75,9 @@
     chezmoi
     rclone
     watchexec
-
-    # Command Line Apps / CLI Apps
     dua
 
-    # LSPs, Linters, and language Related Packages
+    # Language Packages
     # Misc languages
     rust-analyzer
     markdown-oxide

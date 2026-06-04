@@ -20,12 +20,7 @@ in
   ];
 
   # Packages
-  nixpkgs = {
-    config.cudaSupport = true;
-    overlays = [
-      inputs.dolphin-overlay.overlays.default
-    ];
-  };
+  nixpkgs.config.cudaSupport = true;
 
   environment.systemPackages = with pkgs; [
     # Apps
@@ -45,6 +40,7 @@ in
     activitywatch
     # kdotool
     libreoffice
+    qview
 
     rustdesk-flutter
 
@@ -88,10 +84,6 @@ in
     inputs.zen-browser.packages."${stdenv.hostPlatform.system}".twilight
 
     # KDE Packages
-    kdePackages.dolphin
-    kdePackages.qtsvg
-    libsForQt5.kservice
-    kdePackages.plasma-systemmonitor
     inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
     inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
     kdePackages.extra-cmake-modules
@@ -117,9 +109,9 @@ in
     user.services = {
       "mac-mounting" = {
         serviceConfig = {
-          ExecStartPre = "/run/current-system/sw/bin/mkdir -p ";
+          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
           ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
-          ExecStop = "${pkgs.fuse}/bin/fusermount -u /home/yousuf/Mac";
+          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
           Type = "oneshot";
           User = "yousuf";
           Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
@@ -202,6 +194,7 @@ in
 
   hardware = {
     i2c.enable = true;
+    bluetooth.enable = true;
     graphics.enable = true;
     nvidia = {
       nvidiaSettings = true;
@@ -265,13 +258,13 @@ in
     # Global Environment Variables
     bash.shellInit = ''
       	export GRIMBLAST_HIDE_CURSOR=0
-      	export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/misc/age-keys.txt"
+      	export SOPS_AGE_KEY_FILE="/home/yousuf/Assets/Misc/age-keys.txt"
       	export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
       	export MANPAGER="nvim +Man!"
       	export EDITOR="nvim"
       	export HOUR="5"
       	# awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
-      	# export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
+      	export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
     '';
   };
 
@@ -478,6 +471,7 @@ in
                 # Open new tab next to current one instead of at the rightmost.
                 "browser.tabs.insertAfterCurrent" = true;
                 "browser.tabs.insertRelatedAfterCurrent" = true;
+                "browser.quitShortcut.disabled" = true;
 
                 # Dev tools
                 "devtools.debugger.remote-enabled" = true;
@@ -546,8 +540,8 @@ in
   };
 
   sops = {
-    age.keyFile = "/home/yousuf/Assets/misc/age-keys.txt";
-    defaultSopsFile = ./nix/secrets.yaml;
+    age.keyFile = "/home/yousuf/Assets/Misc/age-keys.txt";
+    defaultSopsFile = ./secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
     secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };

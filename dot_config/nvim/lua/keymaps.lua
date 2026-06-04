@@ -14,7 +14,7 @@ vim.keymap.set("n", "<leader>wj", "<C-w><C-j>")
 vim.keymap.set("n", "<leader>wk", "<C-w><C-k>")
 vim.keymap.set("n", "<leader>wl", "<C-w><C-l>")
 
-vim.keymap.set("n", "<leader>c", "<cmd>split<cr>")
+vim.keymap.set("n", "<leader>h", "<cmd>split<cr>")
 vim.keymap.set("n", "<leader>v", "<cmd>vsplit<cr>")
 
 -- Digraph key
@@ -39,7 +39,7 @@ vim.keymap.set({ "n" }, "<m-]>", "<cmd>tabnext<cr>", opts)
 -- Hotkeys for buffer management
 vim.keymap.set("n", "<leader>6", "<cmd>tabclose<cr>", opts)
 vim.keymap.set({ "n", "v" }, "<D-w>", "<cmd>bprev<cr><cmd>bd#<cr>", opts)
-vim.keymap.set({ "n", "v" }, "<leader>u", "<cmd>b#<cr>", opts)
+vim.keymap.set({ "n", "v" }, "<leader>i", "<cmd>b#<cr>", opts)
 
 -- Move lines up and down
 vim.keymap.set({ "n", "v" }, "<M-k>", "X<up>P", { remap = true })
@@ -76,6 +76,9 @@ vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 -- Delete-Backspace to move the current file to trash
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
 
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)
+
 vim.keymap.set({ "v", "n" }, "<D-n>", function()
 	local directory = os.getenv("HOME") .. "/Assets/Scratchpad/"
 	local filename
@@ -104,11 +107,11 @@ end)
 
 -- Misc Keymaps
 vim.keymap.set("n", "<leader>q", "<cmd>:q<cr>")
+vim.keymap.set("n", "<leader>r", "<cmd>:restart<cr>")
 vim.keymap.set({ "n", "v", "i" }, "<D-s>", "<cmd>w!<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 
--- Swap ' and `
-vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
 vim.keymap.set({ "n", "v", "o" }, "<leader>z", "1z=", { remap = false })
 
 -- [[ Basic Keymaps ]], See `:help vim.keymap.set()`

@@ -19,9 +19,7 @@
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
     };
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:GaetanLepage/nixpkgs/triton-bin";
-    dolphin-overlay.url = "github:rumboon/dolphin-overlay";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     awww.url = "git+https://codeberg.org/LGFae/awww";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     hyprfloat.url = "github:yz778/hyprfloat";

@@ -58,6 +58,7 @@
     options = [
       "subvol=home"
       "compress=zstd"
+			"flushoncommit"
     ];
   };
 

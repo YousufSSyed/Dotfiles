@@ -1,5 +1,6 @@
-; From https://github.com/nvim-treesitter/nvim-treesitter/blob/master/queries/markdown_inline/highlights.scm minus link concealing
-(code_span) @markup.raw @nospell
+; From MDeiml/tree-sitter-markdown
+; (code_span) @markup.raw @nospell
+(code_span) @nospell
 
 (emphasis) @markup.italic
 
@@ -36,6 +37,43 @@
 ((image
   (link_destination) @_url) @_label
   (#set! @_label url @_url))
+
+; ; Conceal image links
+; (image
+;   [
+;     "!"
+;     "["
+;     "]"
+;     "("
+;     (link_destination)
+;     ")"
+;   ] @markup.link
+;   (#set! conceal ""))
+
+; ; Conceal full reference links
+; (full_reference_link
+;   [
+;     "["
+;     "]"
+;     (link_label)
+;   ] @markup.link
+;   (#set! conceal ""))
+
+; ; Conceal collapsed reference links
+; (collapsed_reference_link
+;   [
+;     "["
+;     "]"
+;   ] @markup.link
+;   (#set! conceal ""))
+
+; ; Conceal shortcut links
+; (shortcut_link
+;   [
+;     "["
+;     "]"
+;   ] @markup.link
+;   (#set! conceal ""))
 
 [
   (link_destination)

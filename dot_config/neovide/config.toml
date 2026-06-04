@@ -6,4 +6,13 @@ size = 14
 
 [[font.normal]]
 family = "Iosevka Custom"
-style = "W500"
+
+[[font.italic]]
+family = "Iosevka Custom Oblique"
+
+[[font.bold]]
+family = "Iosevka Custom Extrabold"
+
+[[font.bold_italic]]
+family = "Iosevka Custom XBd Obl"
+style = "Bold Italic"

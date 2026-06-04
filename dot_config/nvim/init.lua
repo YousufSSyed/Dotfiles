@@ -28,12 +28,16 @@ require("lazy").setup({
 	change_detection = {
 		enabled = false,
 	},
+	performance = {
+		rtp = {
+			paths = { vim.env.NVIM_TREESITTER_PARSERS },
+		},
+	},
 })
 
 require("keymaps")
 require("pluginconfig")
 
--- wrap settings
 vim.opt.whichwrap = "<,>,h,l,[,]"
 vim.opt.wrap = true
 vim.opt.linebreak = true
@@ -77,6 +81,7 @@ vim.env.PATH = vim.env.PATH .. "/run/current-system/sw/bin/"
 vim.opt.spell = true
 vim.opt.spelllang = "en_us"
 vim.opt.spellfile = os.getenv("HOME") .. "/.local/share/chezmoi/dot_config/nvim/spell/en.utf-8.add"
+vim.opt.splitkeep = "screen"
 
 -- vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 -- vim.opt.foldtext = "v:lua.vim.treesitter.foldtext()"
@@ -158,10 +163,16 @@ end, { nargs = "+", complete = "command" })
 -- 	[".*tridactylrc"] = "vim",
 -- } })
 
--- vim.api.create_autocmd("User", {
--- 	pattern = "ObsidianNoteWritePost",
--- 	callback = function(ev)
--- 		local note = require("obsidian.note").from_buffer(ev.buf)
--- 		require("obsidian.builtin").frontmatter.func(note)
--- 	end,
--- })
+vim.lsp.enable({
+	"lua_ls",
+	"gopls",
+	"rust_analyzer",
+	"markdown_oxide",
+})
+vim.lsp.codelens.enable(true)
+
+require("vim._core.ui2").enable({
+	enable = true,
+})
+
+vim.cmd(":highlight @spell.markdown guifg=#d1f1ff")

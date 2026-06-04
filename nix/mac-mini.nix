@@ -24,8 +24,26 @@
   system.primaryUser = "yousuf";
   system.defaults = {
     NSGlobalDomain."com.apple.swipescrolldirection" = false;
-    dock.mineffect = "scale";
-    dock.minimize-to-application = true;
+    dock = {
+      minimize-to-application = true;
+      show-recents = false;
+      wvous-br-corner = 1;
+      mineffect = "scale";
+      autohide = false;
+      tilesize = 40;
+    };
+    finder = {
+      FXEnableExtensionChangeWarning = false;
+      AppleShowAllExtensions = true;
+      FXDefaultSearchScope = "SCcf";
+      AppleShowAllFiles = true;
+      NewWindowTarget = "Other";
+      NewWindowTargetPath = "file:///Users/yousuf/Downloads";
+      QuitMenuItem = false;
+      ShowExternalHardDrivesOnDesktop = false;
+      ShowRemovableMediaOnDesktop = false;
+      ShowPathbar = true;
+    };
     controlcenter.Sound = true;
     NSGlobalDomain.AppleShowAllFiles = true;
     CustomUserPreferences = {

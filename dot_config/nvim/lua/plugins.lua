@@ -9,120 +9,24 @@ return {
 		"neovim/nvim-lspconfig",
 		lazy = false,
 		enabled = true,
-		legacy_commands = false, -- explicitly disabled to hide the startup warning until v4.0.
-		config = function()
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
-				callback = function(event)
-					local servers = {
-						-- clangd = {},
-						-- pyright = {},
-						-- rust_analyzer = {},
-						-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-						--
-						-- Some languages (like typescript) have entire language plugins that can be useful:
-						--    https://github.com/pmizio/typescript-tools.nvim
-						--
-						-- But for many setups, the LSP (`ts_ls`) will work just fine
-						-- ts_ls = {},
-						--
-						gopls = {
-							settings = {
-								gopls = {
-									gofumpt = true,
-									codelenses = {
-										gc_details = false,
-										generate = true,
-										regenerate_cgo = true,
-										run_govulncheck = true,
-										test = true,
-										tidy = true,
-										upgrade_dependency = true,
-										vendor = true,
-									},
-									hints = {
-										assignVariableTypes = true,
-										compositeLiteralFields = true,
-										compositeLiteralTypes = true,
-										constantValues = true,
-										functionTypeParameters = true,
-										parameterNames = true,
-										rangeVariableTypes = true,
-									},
-									analyses = {
-										fieldalignment = true,
-										nilness = true,
-										unusedparams = true,
-										unusedwrite = true,
-										useany = true,
-									},
-									usePlaceholders = true,
-									completeUnimported = true,
-									staticcheck = true,
-									directoryFilters = {
-										"-.git",
-										"-.vscode",
-										"-.idea",
-										"-.vscode-test",
-										"-node_modules",
-									},
-									semanticTokens = true,
-								},
-							},
-						},
-
-						lua_ls = {
-							-- cmd = { ... },
-							-- filetypes = { ... },
-							-- capabilities = {},
-							settings = {
-								Lua = {
-									completion = {
-										callSnippet = "Replace",
-									},
-									-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-									-- diagnostics = { disable = { 'missing-fields' } },
-								},
-							},
-						},
-					}
-				end,
-			})
-		end,
 	},
 	{
 		"OXY2DEV/helpview.nvim",
-		enabled = true,
 		lazy = false,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		opts = {
-			highlight = { enable = true },
-			indent = { enable = true },
-			ensure_installed = {
-				"html",
-				"help",
-				"css",
-				"lua",
-				"luau",
-				"markdown",
-				"rust",
-				"go",
-				"gomod",
-				"gowork",
-				"gosum",
-				"python",
-				"typescript",
-				"tsx",
-				"swift",
-				"markdown_inline",
-				"nix",
-				"hyprlang",
-			},
-			auto_install = true,
-		},
 		lazy = false,
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter").install({ "all" })
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function()
+					pcall(vim.treesitter.start)
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				end,
+			})
+		end,
 	},
 	{
 		"folke/noice.nvim",
@@ -241,7 +145,6 @@ return {
 				{
 					ft = "help",
 					size = { height = 20 },
-					-- only show help buffers
 					filter = function(buf)
 						return vim.bo[buf].buftype == "help"
 					end,
@@ -281,9 +184,6 @@ return {
 		"gbprod/substitute.nvim",
 		enabled = false,
 	},
-	{
-		"RRethy/vim-illuminate",
-	},
 
 	-- cmp plugins
 	{
@@ -297,7 +197,6 @@ return {
 	{ "saadparwaiz1/cmp_luasnip" },
 	{ "hrsh7th/cmp-cmdline" },
 	{ "hrsh7th/cmp-buffer" },
-	{ "mtoohey31/cmp-fish", ft = "fish" },
 	-- Plugins for markdown
 	{
 		"jakewvincent/mkdnflow.nvim",
@@ -331,12 +230,12 @@ return {
 	{ "nvim-treesitter/nvim-treesitter-textobjects" },
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		enabled = true,
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		lazy = false,
 		opts = {
+			render_modes = { "n", "c", "t", "i" },
 			link = {
-				enabled = false,
+				enabled = true,
 			},
 			heading = {
 				icons = { "􀀺  # ", "􀀼  ## ", "􀀾  ### ", "􀁀  #### ", "􀁂  ##### ", "􀁄  ###### " },
@@ -348,44 +247,43 @@ return {
 				icons = { "-" },
 			},
 			checkbox = {
-				unchecked = {
-					icon = "􀂒 ",
+				unchecked = { icon = "􀂒 " },
+				checked = { icon = "􀃲 ", highlight = "rainbow4" },
+				custom = {
+					cancelled = {
+						-- highlight = "RenderMarkdownCancelled",
+						highlight = "rainbow1",
+						rendered = "􀃞 ",
+						raw = "[-]",
+					},
+					incomplete = {
+						-- highlight = "RenderMarkdownIncomplete",
+						highlight = "rainbow2",
+						rendered = "􀃮 ",
+						raw = "[/]",
+					},
 				},
 			},
+			quote = { icon = "▎", repeat_linebreak = true },
+			anti_conceal = { enabled = true },
 			-- callout = {
 			-- 	tip = { raw = '[!TIP]', rendered = '󰌶', highlight = 'RenderMarkdownSuccess', border = true },
 			-- },
+			--
+			-- 
 		},
 	},
-	-- {
-	--     'altermo/ultimate-autopair.nvim',
-	--     event={'InsertEnter','CmdlineEnter'},
-	--     branch='v0.6', --recommended as each new version will have breaking changes
-	--     opts={
-	-- 				{'*,','*',ft={"markdown"}}
-	--     },
-	-- },
-	-- {
-	--     'windwp/nvim-autopairs',
-	-- 		enabled = true,
-	--     event = "InsertEnter",
-	--     config = true
-	--     -- use opts = {} for passing setup options
-	--     -- this is equivalent to setup({}) function
-	-- },
 	{
 		"obsidian-nvim/obsidian.nvim",
 		ft = "markdown",
 		lazy = false,
 		opts = {
+			legacy_commands = false,
 			workspaces = {
 				{
 					path = "/home/yousuf/Assets/Obsidian",
 					name = "Obsidian",
 				},
-			},
-			templates = {
-				folder = "(1) Obsidian Notes & Files",
 			},
 			ui = {
 				enable = false,
@@ -393,7 +291,11 @@ return {
 			frontmatter = {
 				func = function(note)
 					local out = require("obsidian.builtin").frontmatter(note)
-					out["Date Modified"] = os.date("%Y-%m-%d %H:%M")
+					if not out["Date Created"] then
+						local time = vim.uv.fs_stat(note.path.filename)
+						out["Date Created"] = time and time.birthtime.sec or os.date("%Y-%m-%d %H:%M", time)
+					end
+					out["Date Modified"] = out["Date Created"] and os.date("%Y-%m-%d %H:%M") or nil
 					out["id"] = nil
 					out["aliases"] = nil
 					out["tags"] = nil
@@ -447,28 +349,6 @@ return {
 		},
 	},
 	{
-		"zbirenbaum/neodim",
-		event = "LspAttach",
-		config = function()
-			require("neodim").setup({
-				alpha = 0.75,
-				blend_color = "#000000",
-				hide = {
-					underline = true,
-					virtual_text = true,
-					signs = true,
-				},
-				regex = {
-					"[uU]nused",
-					"[nN]ever [rR]ead",
-					"[nN]ot [rR]ead",
-				},
-				priority = 128,
-				disable = {},
-			})
-		end,
-	},
-	{
 		"chrisgrieser/nvim-various-textobjs",
 		event = "UIEnter",
 		opts = {
@@ -476,15 +356,6 @@ return {
 				useDefaultKeymaps = true,
 			},
 		},
-	},
-	{
-		"Gelio/cmp-natdat",
-		config = function()
-			require("cmp_natdat").setup({
-				cmp_kind_text = "NatDat",
-				highlight_group = "Red",
-			})
-		end,
 	},
 	{
 		"olimorris/persisted.nvim",
@@ -496,6 +367,49 @@ return {
 		"catppuccin/nvim",
 		name = "catppuccin",
 		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				term_colors = true,
+				auto_integrations = true,
+				dim_inactive = {
+					enabled = false,
+				},
+				integrations = {
+					flash = true,
+					aerial = true,
+					grug_far = true,
+					hop = true,
+					treesitter_context = true,
+					neogit = true,
+					noice = true,
+					render_markdown = false,
+					gitsigns = {
+						enabled = true,
+						transparent = false,
+					},
+					indent_blankline = {
+						enabled = true,
+						scope_color = "",
+						colored_indent_levels = true,
+					},
+					mini = {
+						enabled = true,
+						indentscope_color = "",
+					},
+				},
+			})
+			vim.cmd.colorscheme("catppuccin-mocha")
+			vim.cmd(":hi @markup.strong guifg=none")
+			vim.cmd(":hi @markup.italic guifg=none")
+			vim.cmd(":hi @lsp.type.decorator.markdown guifg=#8fefe7")
+			vim.cmd(":hi @markup.link.label guifg=#8fefe7")
+			vim.cmd(":hi @markup.quote guifg=none")
+			vim.cmd(":hi RenderMarkdownQuote guifg=#00608b")
+			vim.cmd(":hi @markup.list.unchecked guifg=none")
+			vim.cmd(":hi @markup.list.checked guifg=#02ad96")
+			vim.cmd(":hi RenderMarkdownCancelled guifg=#ff5252")
+			vim.cmd(":hi RenderMarkdownIncomplete guifg=#ff9354")
+		end,
 	},
 	{
 		"mikavilpas/yazi.nvim",
@@ -640,7 +554,6 @@ return {
 		end,
 	},
 	{ "nvzone/volt", lazy = true },
-	{ "nvzone/menu", lazy = true },
 	{
 		"nvzone/minty",
 		cmd = { "Shades", "Huefy" },
@@ -649,10 +562,20 @@ return {
 		"lukas-reineke/indent-blankline.nvim",
 		enabled = true,
 		main = "ibl",
-		---@module "ibl"
-		---@type ibl.config
 		config = function()
-			require("ibl").setup({})
+			require("ibl").setup({
+				indent = {
+					highlight = {
+						"RainbowRed",
+						"RainbowYellow",
+						"RainbowBlue",
+						"RainbowOrange",
+						"RainbowGreen",
+						"RainbowViolet",
+						"RainbowCyan",
+					},
+				},
+			})
 		end,
 	},
 	{
@@ -670,12 +593,6 @@ return {
 			-- { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
 			-- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
 		},
-	},
-	{
-		"mbbill/undotree",
-	},
-	{
-		"debugloop/telescope-undo.nvim",
 	},
 	{
 		"monaqa/dial.nvim",
@@ -707,7 +624,6 @@ return {
 		version = "v1.*",
 	},
 	{ "sindrets/diffview.nvim" },
-	{ "napisani/nvim-github-codesearch", build = "make" },
 	{
 		"subnut/nvim-ghost.nvim",
 		name = "nvim_ghost",
@@ -864,7 +780,6 @@ return {
 			})
 		end,
 	},
-	{ "Tastyep/structlog.nvim" },
 	{
 		"mikesmithgh/kitty-scrollback.nvim",
 		lazy = true,

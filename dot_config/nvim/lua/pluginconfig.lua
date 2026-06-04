@@ -60,17 +60,6 @@ cmp.setup.cmdline(":", {
 	matching = { disallow_symbol_nonprefix_matching = false },
 })
 
--- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
--- Set configuration for specific filetype.
--- cmp.setup.filetype("gitcommit", {
--- 	sources = cmp.config.sources({
--- 		{ name = "git" },
--- 	}, {
--- 		{ name = "buffer" },
--- 	}),
--- })
--- require("cmp_git").setup()
-
 --substitute.nvim
 --vim.keymap.set("n", "s", require('substitute').operator, { noremap = true })
 --vim.keymap.set("n", "ss", require('substitute').line, { noremap = true })
@@ -92,63 +81,7 @@ require("kitty-scrollback").setup({
 	},
 })
 
--- LSP Config
-vim.lsp.config("lua_ls", {
-	capabilities = capabilities,
-	on_attach = on_attach,
-})
-
-local function check_codelens_support()
-	local clients = vim.lsp.get_active_clients({ bufnr = 0 })
-	for _, c in ipairs(clients) do
-		if c.server_capabilities.codeLensProvider then
-			return true
-		end
-	end
-	return false
-end
-
-vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "CursorHold", "LspAttach", "BufEnter" }, {
-	buffer = bufnr,
-	callback = function()
-		if check_codelens_support() then
-			vim.lsp.codelens.refresh({ bufnr = 0 })
-		end
-	end,
-})
-
--- trigger codelens refresh
-vim.api.nvim_exec_autocmds("User", { pattern = "LspAttached" })
-
--- An example nvim-lspconfig capabilities setting
-local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
-vim.lsp.config("markdown_oxide", {
-	-- Ensure that dynamicRegistration is enabled! This allows the LS to take into account actions like the
-	-- Create Unresolved File code action, resolving completions for unindexed code blocks, ...
-	capabilities = vim.tbl_deep_extend("force", capabilities, {
-		workspace = {
-			didChangeWatchedFiles = {
-				dynamicRegistration = true,
-			},
-		},
-	}),
-	on_attach = on_attach, -- configure your on attach config
-})
-
 require("gitsigns").setup()
-
-require("nvim-treesitter.configs").setup({
-	auto_install = true,
-	highlight = {
-		enable = true,
-	},
-})
-
--- From: https://github.com/folke/edgy.nvim/blob/main/README.md
--- Default splitting will cause your main splits to jump when opening an edgebar.
--- To prevent this, set `splitkeep` to either `screen` or `topline`.
-vim.opt.splitkeep = "screen"
 
 require("markdown-toggle").setup({
 	use_default_keymaps = true,
@@ -232,6 +165,9 @@ vim.keymap.set({ "v" }, "<D-b>", "sab", { remap = false })
 vim.keymap.set({ "n" }, "<D-i>", "saiwi", { remap = false })
 vim.keymap.set({ "v" }, "<D-i>", "sai", { remap = false })
 
+require("mini.cursorword").setup()
+require("mini.pick").setup()
+
 require("mini.surround").setup({
 	custom_surroundings = {
 		b = {
@@ -257,41 +193,10 @@ require("mini.surround").setup({
 	},
 })
 
-vim.keymap.set("n", "<D-p>", function()
-	require("menu").open(menu)
-end, {})
-
-require("mini.pairs").setup({
-	modes = { insert = true, command = true, terminal = false },
-	-- skip autopair when next character is one of these
-	skip_next = [=[[%w%%%'%[%"%.%`%$]]=],
-	-- skip autopair when the cursor is inside these treesitter nodes
-	skip_ts = { "string" },
-	-- skip autopair when next character is closing pair
-	-- and there are more closing pairs than opening pairs
-	skip_unbalanced = true,
-	-- better deal with markdown code blocks
-	markdown = true,
-})
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "markdown",
-	callback = function()
-		MiniPairs.map_buf(0, "i", "*", { action = "closeopen", pair = "**" })
-	end,
-})
-
 require("telescope").load_extension("fzf")
-require("telescope").load_extension("undo")
-if fresh() then
-	require("telescope").load_extension("persisted")
-end
-
-require("mini.pick").setup()
-
--- Misc plugin keymaps
 
 vim.keymap.set({ "n" }, "<leader>f", "<cmd>Telescope frecency<cr>", opts)
-vim.keymap.set({ "n" }, "<leader>s", "<cmd>Obsidian quick_switch<cr>", opts)
+vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", opts)
 
 vim.keymap.set({ "n" }, "<leader>oo", function()
 	vim.api.nvim_feedkeys(":Obsidian today ", "n", false)
@@ -308,50 +213,18 @@ vim.keymap.set({ "n" }, "<D-p>", function()
 		local filepath = vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
 	end
 end, opts)
-vim.keymap.set({ "v", "n" }, "<leader>n", "<cmd>Noice dismiss<cr>", opts)
-vim.keymap.set({ "v", "n" }, "<leader>r", "<cmd>RipSubstitute<cr>", opts)
 
-require("catppuccin").setup({
-	term_colors = true,
-	dim_inactive = {
-		enabled = false,
-	},
-	no_underline = false,
-	integrations = {
-		treesitter_context = true,
-		treesitter = true,
+vim.keymap.set({ "v", "n" }, "<leader>n", "<cmd>Noice dismiss<cr>", opts)
+vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", opts)
+
+require("lspsaga").setup({
+	ui = {
+		kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
 	},
 })
-vim.cmd.colorscheme("catppuccin-mocha")
-
--- Synchronize Indent blank line colors with rainbow delimiters
-local highlight = {
-	"RainbowRed",
-	"RainbowYellow",
-	"RainbowBlue",
-	"RainbowOrange",
-	"RainbowGreen",
-	"RainbowViolet",
-	"RainbowCyan",
-}
-
-local hooks = require("ibl.hooks")
--- create the highlight groups in the highlight setup hook, so they are reset
--- every time the colorscheme changes
-hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-	vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
-	vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
-	vim.api.nvim_set_hl(0, "RainbowBlue", { fg = "#61AFEF" })
-	vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
-	vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
-	vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
-	vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
-end)
-require("ibl").setup({ indent = { highlight = highlight } })
 
 -- Dial.nvim configuration
 local augend = require("dial.augend")
-
 require("dial.config").augends:register_group({
 	default = {
 		augend.integer.alias.decimal,
@@ -371,29 +244,10 @@ vim.keymap.set({ "n", "v", "i" }, "<C-k>", function()
 	require("dial.map").manipulate("decrement", "normal")
 end)
 
-vim.api.nvim_command("highlight HopUnmatched guifg=none guibg=none guisp=none ctermfg=none")
-
-require("nvim-treesitter.configs").setup({
-	highlight = {
-		enable = true,
-	},
-	textobjects = {
-		select = {
-			enable = true,
-			lookahead = true,
-			keymaps = {
-				["af"] = "@function.outer",
-				["if"] = "@function.inner",
-				["ac"] = "@class.outer",
-				["ic"] = "@class.inner",
-			},
-		},
-	},
-})
-
 vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", opts)
 vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", opts)
 
+vim.api.nvim_command("highlight HopUnmatched guifg=none guibg=none guisp=none ctermfg=none")
 local function process_previous_word(command)
 	vim.cmd(":norm mz")
 	vim.cmd("HopWordBC")
@@ -440,6 +294,7 @@ vim.api.nvim_create_autocmd("vimenter", {
 			vim.cmd.close()
 		end
 		if fresh() then
+			require("telescope").load_extension("persisted")
 			vim.cmd(":Telescope persisted")
 			vim.api.nvim_create_autocmd({ "BufAdd", "BufDelete" }, {
 				pattern = "*",
@@ -452,54 +307,63 @@ vim.api.nvim_create_autocmd("vimenter", {
 	nested = true,
 })
 
--- you can use the capture groups defined in textobjects.scm
-require("nvim-treesitter.configs").setup({
-	textobjects = {
-		select = {
-			enable = true,
-			-- automatically jump forward to textobj, similar to targets.vim
-			lookahead = true,
-			keymaps = {
-				["af"] = "@function.outer",
-				["if"] = "@function.inner",
-				["aC"] = "@class.outer",
-				["iC"] = { query = "@class.inner" },
-				["ic"] = { query = "@comment.inner" },
-				["ac"] = { query = "@comment.outer" },
-				["ax"] = { query = "@statement.outer" }, -- There is not statement.inner
-				["iP"] = "@parameter.inner",
-				["aP"] = "@parameter.outer",
-				-- You can also use captures from other query groups like `locals.scm`
-				["aS"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-				["ia"] = "@assignment.inner",
-				["aa"] = "@assignment.outer",
-				["iA"] = "@attribute.inner",
-				["aA"] = "@attribute.outer",
-			},
-			-- You can choose the select mode (default is charwise 'v')
-			-- Can also be a function which gets passed a table with the keys
-			-- * query_string: eg '@function.inner'
-			-- * method: eg 'v' or 'o'
-			-- and should return the mode ('v', 'V', or '<c-v>') or a table
-			-- mapping query_strings to modes.
-			selection_modes = {
-				["@parameter.outer"] = "v", -- charwise
-				["@function.outer"] = "V", -- linewise
-				["@class.outer"] = "<c-v>", -- blockwise
-			},
-			-- If you set this to `true` (default is `false`) then any textobject is
-			-- extended to include preceding or succeeding whitespace. Succeeding
-			-- whitespace has priority in order to act similarly to eg the built-in
-			-- `ap`.
-			--
-			-- Can also be a function which gets passed a table with the keys
-			-- * query_string: eg '@function.inner'
-			-- * selection_mode: eg 'v'
-			-- and should return true or false
-			include_surrounding_whitespace = true,
+require("nvim-treesitter-textobjects").setup({
+	select = {
+		lookahead = true,
+		selection_modes = {
+			["@parameter.outer"] = "v", -- charwise
+			["@function.outer"] = "V", -- linewise
+			["@class.outer"] = "<c-v>", -- blockwise
 		},
+		include_surrounding_whitespace = true,
 	},
 })
+local function sel(query, group)
+	require("nvim-treesitter-textobjects.select").select_textobject(query, group or "textobjects")
+end
+
+vim.keymap.set({ "x", "o" }, "af", function()
+	sel("@function.outer")
+end)
+vim.keymap.set({ "x", "o" }, "if", function()
+	sel("@function.inner")
+end)
+vim.keymap.set({ "x", "o" }, "aC", function()
+	sel("@class.outer")
+end)
+vim.keymap.set({ "x", "o" }, "iC", function()
+	sel("@class.inner")
+end)
+vim.keymap.set({ "x", "o" }, "ic", function()
+	sel("@comment.inner")
+end)
+vim.keymap.set({ "x", "o" }, "ac", function()
+	sel("@comment.outer")
+end)
+vim.keymap.set({ "x", "o" }, "ax", function()
+	sel("@statement.outer")
+end)
+vim.keymap.set({ "x", "o" }, "iP", function()
+	sel("@parameter.inner")
+end)
+vim.keymap.set({ "x", "o" }, "aP", function()
+	sel("@parameter.outer")
+end)
+vim.keymap.set({ "x", "o" }, "aS", function()
+	sel("@local.scope", "locals")
+end)
+vim.keymap.set({ "x", "o" }, "ia", function()
+	sel("@assignment.inner")
+end)
+vim.keymap.set({ "x", "o" }, "aa", function()
+	sel("@assignment.outer")
+end)
+vim.keymap.set({ "x", "o" }, "iA", function()
+	sel("@attribute.inner")
+end)
+vim.keymap.set({ "x", "o" }, "aA", function()
+	sel("@attribute.outer")
+end)
 
 require("conform").setup({
 	formatters_by_ft = {
