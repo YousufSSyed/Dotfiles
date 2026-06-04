@@ -20,8 +20,7 @@
     copyparty-most
     losslesscut-bin
     tableplus
-
-    lazygit
+    feishin
 
     # Command Line Tools / CLIs
     git
@@ -73,6 +72,7 @@
     (mpv-unwrapped.override {
       ffmpeg = ffmpeg-full;
     })
+    lazygit
 
     # Nix tools
     nix-init

@@ -71,6 +71,7 @@ in
     xdg-desktop-portal
     widevine-cdm
     ddcutil
+    libnotify
 
     # Flakes
     inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
@@ -135,9 +136,7 @@ in
         wantedBy = [ "default.target" ];
       };
       "wallpaper" = {
-        script = ''
-          ${pkgs.fish}/bin/fish /home/yousuf/Sync/Scripts/wallpaper.fish
-        '';
+        script = "${pkgs.fish}/bin/fish /home/yousuf/Sync/Scripts/wallpaper.fish";
         serviceConfig = {
           Type = "oneshot";
           User = "yousuf";
