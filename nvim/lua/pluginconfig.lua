@@ -324,6 +324,7 @@ require("catppuccin").setup({
 		treesitter = true,
 	},
 })
+vim.cmd.colorscheme("catppuccin-mocha")
 
 -- Synchornize Indent Blankline colors with rainbow delimiters
 local highlight = {

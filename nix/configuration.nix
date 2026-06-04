@@ -5,6 +5,10 @@
   inputs,
   ...
 }:
+
+let
+  zen-profile = "3672jyyb.Default Profile";
+in
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -128,6 +132,7 @@
     pkgs.xdg-desktop-portal
     pkgs.hyprpanel
     pkgs.widevine-cdm
+    pkgs.dconf
 
     # Flakes
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -137,7 +142,6 @@
     inputs.hyprland-contrib.packages.${pkgs.stdenv.hostPlatform.system}.shellevents
     inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
     inputs.aw-hyprland.packages.${pkgs.stdenv.hostPlatform.system}.aw-watcher-window-hyprland
-    inputs.matugen.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # inputs.youtube-tui.packages.${pkgs.stdenv.hostPlatform.system}.youtube-tui
     pkgs.youtube-tui
@@ -152,31 +156,49 @@
     pkgs.looking-glass-client
   ];
 
-  systemd.timers."wallpaper" = {
+  systemd.user.timers."wallpaper" = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnBootSec = "1s";
-      OnUnitActiveSec = "1m";
       Unit = "wallpaper.service";
+      OnCalendar = "minutely";
+      OnBootSec = "1s";
     };
   };
-  systemd.services."wallpaper" = {
+  systemd.user.services."wallpaper" = {
     script = ''
-      			set -eu
-            /run/current-system/sw/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
+      /run/current-system/sw/bin/fish /home/yousuf/Assets/Scripts/wallpaper.fish
     '';
     serviceConfig = {
       Type = "oneshot";
       User = "yousuf";
-      RemainAfterExit = true;
-      PrivateTmp = true;
-      IgnoreSIGPIPE = false;
     };
   };
 
+  ## Update flake inputs daily
 
-
-
+  systemd.services = {
+    flake-update = {
+      preStart = "/run/current-system/sw/bin/nm-online";
+      unitConfig = {
+        Description = "Update flake inputs";
+        StartLimitIntervalSec = 300;
+        StartLimitBurst = 5;
+      };
+      serviceConfig = {
+        ExecStart = "${pkgs.nix}/bin/nix flake update --flake ${inputs.self.outPath}";
+        Restart = "on-failure";
+        RestartSec = "30";
+        Type = "oneshot"; # Ensure that it finishes before starting nixos-upgrade
+        User = "yousuf";
+      };
+      before = [ "nixos-upgrade.service" ];
+      path = [
+        pkgs.nix
+        pkgs.git
+        pkgs.host
+      ];
+    };
+  };
 
   programs.virt-manager.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
@@ -277,12 +299,8 @@
 
   system.autoUpgrade = {
     enable = true;
-    flake = inputs.self.outPath;
-    flags = [
-      "--update-input"
-      "nixpkgs"
-      "-L" # print build logs
-    ];
+    flake = "path:///home/yousuf/.config/nix";
+    flags = [ "-L" ];
     dates = "0:00";
     randomizedDelaySec = "45min";
   };
@@ -316,24 +334,24 @@
     };
   };
 
-  nix.settings = {
-    substituters = [
-      "https://hyprland.cachix.org"
-      "https://cache.garnix.io"
-    ];
-    trusted-substituters = [
-      "https://hyprland.cachix.org"
-      "https://cache.garnix.io"
-    ];
-    trusted-public-keys = [
-      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-    ];
-    trusted-users = [
-      "@wheel"
-      "yousuf"
-    ];
-  };
+  # nix.settings = {
+  #   substituters = [
+  #     "https://hyprland.cachix.org"
+  #     "https://cache.garnix.io"
+  #   ];
+  #   trusted-substituters = [
+  #     "https://hyprland.cachix.org"
+  #     "https://cache.garnix.io"
+  #   ];
+  #   trusted-public-keys = [
+  #     "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+  #     "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+  #   ];
+  #   trusted-users = [
+  #     "@wheel"
+  #     "yousuf"
+  #   ];
+  # };
 
   services.hypridle.enable = true;
 
@@ -445,6 +463,8 @@
             x11.defaultCursor = "macOS";
           };
           file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Assets/Fonts/";
+          file.".zen/${zen-profile}/chrome".source =
+            config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.config/Fonts/";
         };
         programs.zen-browser = {
           enable = true;
@@ -453,7 +473,7 @@
               id = 0;
               name = "Default";
               isDefault = true;
-              path = "3672jyyb.Default Profile";
+              path = zen-profile;
               settings = {
                 "browser.startup.homepage" = "chrome://browser/content/blanktab.html";
                 "toolkit.legacyUserProfile.Customizations.stylesheets" = true;
@@ -471,12 +491,35 @@
                 "xpinstall.signatures.required" = false; # Don't require signatures on addons to install them. Allows sideloading addons.
                 "browser.tabs.loadBookmarksInTabs" = true; # Open bookmarks in new tabs instead of in the current one.
                 "browser.urlbar.trimURLs" = false; # Show whole URLs in the URL bar.
+                "devtools.debugger.remote-enabled" = true;
+                "devtools.chrome.enabled" = true;
               };
             };
           };
         };
+        services.darkman = {
+          enable = true;
+          lightModeScripts.gtk-theme = ''
+            ${pkgs.dconf}/bin/dconf write \
+                /org/gnome/desktop/interface/color-scheme "'prefer-light'"
+          '';
+          darkModeScripts.gtk-theme = ''
+            ${pkgs.dconf}/bin/dconf write \
+                /org/gnome/desktop/interface/color-scheme "'prefer-dark'"
+          '';
+          settings = {
+            usegeoclue = true;
+            dbusserver = true;
+            portal = true;
+          };
+        };
       };
   };
+
+  services.avahi.enable = true;
+  services.geoclue2.enable = true;
+  services.geoclue2.submitData = true;
+  services.geoclue2.enableDemoAgent = lib.mkForce true;
 
   sops = {
     age.keyFile = "/home/yousuf/Assets/sops/age/keys.txt";

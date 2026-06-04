@@ -106,9 +106,6 @@ vim.cmd([[
 ]])
 
 -- Neovide
-vim.keymap.set("n", "<leader>s", function()
-	vim.cmd(":source ~/.config/nvim/init.lua")
-end)
 
 if vim.g.neovide then
 	vim.g.neovide_scroll_animation_length = 0.15

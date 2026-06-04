@@ -435,7 +435,11 @@ return {
 				return out
 			end,
 			callbacks = {
-				pre_write_note = function(note)
+				-- Runs right before writing the buffer for a note.
+				---@param client obsidian.Client
+				---@param note obsidian.Note
+				---@diagnostic disable-next-line: unused-local
+				pre_write_note = function(client, note)
 					return -- this function is disabled for now
 						note:add_field("Date Modified", os.date(dateFormat))
 				end,
@@ -522,7 +526,6 @@ return {
 	},
 	{
 		"catppuccin/nvim",
-		enabled = true,
 		name = "catppuccin",
 		priority = 1000,
 	},
@@ -584,7 +587,6 @@ return {
 	{
 		"nvim-lualine/lualine.nvim",
 		-- enabled = not vim.env.KITTY_SCROLLBACK_NVIM,
-		enabled = true,
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = function()
 			local lineTheme = require("catppuccin.utils.lualine")()
@@ -749,22 +751,6 @@ return {
 		end,
 		keys = {
 			{ "<leader>ug", ":GhostTextStart<cr>", desc = "GhostTextStart", silent = true },
-		},
-	},
-	{
-		"f-person/auto-dark-mode.nvim",
-		enabled = true,
-		opts = {
-			update_interval = 1000,
-			set_dark_mode = function()
-				vim.api.nvim_set_option_value("background", "dark", {})
-				vim.cmd.colorscheme("catppuccin-mocha")
-			end,
-			set_light_mode = function()
-				vim.api.nvim_set_option_value("background", "light", {})
-				-- vim.cmd.colorscheme("catppuccin-latte")
-				vim.cmd.colorscheme("catppuccin-mocha")
-			end,
 		},
 	},
 	{

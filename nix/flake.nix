@@ -34,9 +34,6 @@
       # inputs.hyprland.follows = "hyprland";
       # inputs.hyprland.follows = "nixpkgs";
     };
-    matugen = {
-      url = "github:/InioX/Matugen";
-    };
     # nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     dolphin-overlay.url = "github:rumboon/dolphin-overlay";
@@ -55,7 +52,7 @@
           ./hardware-configuration.nix
           {
             home-manager.extraSpecialArgs = { inherit inputs; };
-            environment.systemPackages = [ inputs.affinity-nix.packages.x86_64-linux.v3 ];
+            # environment.systemPackages = [ inputs.affinity-nix.packages.x86_64-linux.v3 ];
           }
         ];
       };
