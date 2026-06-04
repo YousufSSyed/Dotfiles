@@ -45,3 +45,9 @@ matches:
         params:
           format: "%Y-%m-/%d"
           offset: -86400
+
+
+  - trigger: "@red"
+    replace: "@AmanBabuHemant @retornam @prodleni @Least-Candidate-4819 @TheNoeTrevino "
+
+  

@@ -1,14 +1,11 @@
 return {
 	{ "neovim/nvim-lspconfig" },
 	{ "okuuva/auto-save.nvim" },
-	{
-		"OXY2DEV/helpview.nvim",
-		lazy = false,
-	},
+	{ "OXY2DEV/helpview.nvim", lazy = false },
 	{
 		"nvim-treesitter/nvim-treesitter",
-		lazy = false,
 		build = ":TSUpdate",
+		lazy = false,
 		config = function()
 			require("nvim-treesitter").install({ "all" })
 			vim.api.nvim_create_autocmd("FileType", {
@@ -20,13 +17,194 @@ return {
 		end,
 	},
 	{
-		"nvimdev/lspsaga.nvim",
+		"nvim-treesitter/nvim-treesitter-context",
+		opts = { multiwindow = true, line_numbers = false, multiline_threshold = 2 },
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-textobjects",
+		opts = {
+			select = {
+				lookahead = true,
+				include_surrounding_whitespace = true,
+				selection_modes = {
+					["@parameter.outer"] = "v", -- charwise
+					["@function.outer"] = "V", -- linewise
+					["@class.outer"] = "<c-v>", -- blockwise
+				},
+			},
+		},
 		config = function()
-			require("lspsaga").setup({ symbol_in_winbar = { enable = false } })
+			local function sel(query, group)
+				require("nvim-treesitter-textobjects.select").select_textobject(
+					query,
+					group or "textobjects"
+				)
+			end
+			vim.keymap.set({ "x", "o" }, "af", function() sel("@function.outer") end)
+			vim.keymap.set({ "x", "o" }, "if", function() sel("@function.inner") end)
+			vim.keymap.set({ "x", "o" }, "aC", function() sel("@class.outer") end)
+			vim.keymap.set({ "x", "o" }, "iC", function() sel("@class.inner") end)
+			vim.keymap.set({ "x", "o" }, "ic", function() sel("@comment.inner") end)
+			vim.keymap.set({ "x", "o" }, "ac", function() sel("@comment.outer") end)
+			vim.keymap.set({ "x", "o" }, "ax", function() sel("@statement.outer") end)
+			vim.keymap.set({ "x", "o" }, "iP", function() sel("@parameter.inner") end)
+			vim.keymap.set({ "x", "o" }, "aP", function() sel("@parameter.outer") end)
+			vim.keymap.set({ "x", "o" }, "aS", function() sel("@local.scope", "locals") end)
+			vim.keymap.set({ "x", "o" }, "ia", function() sel("@assignment.inner") end)
+			vim.keymap.set({ "x", "o" }, "aa", function() sel("@assignment.outer") end)
+			vim.keymap.set({ "x", "o" }, "iA", function() sel("@attribute.inner") end)
+			vim.keymap.set({ "x", "o" }, "aA", function() sel("@attribute.outer") end)
+
+			-- keymaps
+			-- You can use the capture groups defined in `textobjects.scm`
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]m",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_start(
+						"@function.outer",
+						"textobjects"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]]",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_start(
+						"@class.outer",
+						"textobjects"
+					)
+				end
+			)
+			-- You can also pass a list to group multiple queries.
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]o",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_start(
+						{ "@loop.inner", "@loop.outer" },
+						"textobjects"
+					)
+				end
+			)
+			-- You can also use captures from other query groups like `locals.scm` or `folds.scm`
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]s",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_start(
+						"@local.scope",
+						"locals"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]z",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_start("@fold", "folds")
+				end
+			)
+
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]M",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_end(
+						"@function.outer",
+						"textobjects"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"][",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next_end(
+						"@class.outer",
+						"textobjects"
+					)
+				end
+			)
+
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[m",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_previous_start(
+						"@function.outer",
+						"textobjects"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[[",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_previous_start(
+						"@class.outer",
+						"textobjects"
+					)
+				end
+			)
+
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[M",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_previous_end(
+						"@function.outer",
+						"textobjects"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[]",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_previous_end(
+						"@class.outer",
+						"textobjects"
+					)
+				end
+			)
+
+			-- Go to either the start or the end, whichever is closer.
+			-- Use if you want more granular movements
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]d",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_next(
+						"@conditional.outer",
+						"textobjects"
+					)
+				end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[d",
+				function()
+					require("nvim-treesitter-textobjects.move").goto_previous(
+						"@conditional.outer",
+						"textobjects"
+					)
+				end
+			)
 		end,
+	},
+	{
+		"nvimdev/lspsaga.nvim",
+		enabled = false,
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter", -- optional
 			"nvim-tree/nvim-web-devicons", -- optional
+			"catppuccin/nvim",
+		},
+		opts = {
+			-- kind = require("catppuccin.groups.integrations.lsp_saga").custom_kind(),
+			symbol_in_winbar = { enable = false },
 		},
 	},
 	{
@@ -98,22 +276,21 @@ return {
 		},
 		lazy = false,
 	},
-	{ "nvim-pack/nvim-spectre" },
 	{
 		"stevearc/aerial.nvim",
-		opts = {},
-		-- Optional dependencies
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-tree/nvim-web-devicons",
 		},
+		opts = {
+			layout = {
+				default_direction = "float",
+				min_width = 0.8,
+			},
+		},
 		config = function()
-			require("aerial").setup({
-				layout = {
-					default_direction = "float",
-					min_width = 0.8,
-				},
-			})
+			vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", opts)
+			vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", opts)
 		end,
 	},
 	{
@@ -126,16 +303,17 @@ return {
 				{
 					ft = "help",
 					size = { height = 20 },
-					filter = function(buf)
-						return vim.bo[buf].buftype == "help"
-					end,
+					filter = function(buf) return vim.bo[buf].buftype == "help" end,
 				},
 			},
 		},
 	},
 	{
 		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-lua/plenary.nvim" },
+		priority = 998,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
 		extensions = {
 			fzf = {
 				fuzzy = true, -- false will only do exact matching
@@ -144,20 +322,41 @@ return {
 				case_mode = "smart_case",
 			},
 		},
+		config = function()
+			vim.keymap.set("n", "<leader>b", function()
+				require("telescope.builtin").live_grep({
+					search_dirs = { vim.fn.expand("%:p") },
+					attach_mappings = function(prompt_bufnr, map)
+						map({ "n", "i" }, "<CR>", function()
+							require("telescope.actions").send_to_qflist(prompt_bufnr)
+							require("telescope.actions").open_qflist(prompt_bufnr)
+							vim.cmd("wincmd k")
+						end)
+						return true
+					end,
+				})
+			end)
+		end,
 	},
 	{
 		"nvim-telescope/telescope-fzf-native.nvim",
 		build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
+		config = function() require("telescope").load_extension("fzf") end,
 	},
 	{
 		"L3MON4D3/LuaSnip",
 		version = "*",
 		build = "make install_jsregexp",
 	},
-	{
-		"gbprod/substitute.nvim",
-		enabled = false,
-	},
+	-- {
+	-- 	"gbprod/substitute.nvim",
+	-- 	config = function()
+	-- 		vim.keymap.set("n", "s", require("substitute").operator)
+	-- 		vim.keymap.set("n", "ss", require("substitute").line)
+	-- 		vim.keymap.set("n", "S", require("substitute").eol)
+	-- 		vim.keymap.set("x", "s", require("substitute").visual)
+	-- 	end,
+	-- },
 	{
 		"saghen/blink.cmp",
 		dependencies = {
@@ -169,7 +368,7 @@ return {
 		opts_extend = { "sources.default" },
 		build = "nix run .#build-plugin",
 		opts = {
-			keymap = { preset = "default" },
+			keymap = { preset = "default", ["<S-CR>"] = { "accept" } },
 			appearance = { nerd_font_variant = "normal" },
 			signature = { enabled = true },
 			completion = {
@@ -211,18 +410,46 @@ return {
 					markdown = { "dictionary", "thesaurus" },
 				},
 				providers = {
+					-- Use the thesaurus source
 					thesaurus = {
+						name = "blink-cmp-words",
 						module = "blink-cmp-words.thesaurus",
+						-- All available options
 						opts = {
+							-- A score offset applied to returned items.
+							-- By default the highest score is 0 (item 1 has a score of -1, item 2 of -2 etc..).
+							score_offset = 0,
+
+							-- Default pointers define the lexical relations listed under each definition,
+							-- see Pointer Symbols below.
+							-- Default is as below ("antonyms", "similar to" and "also see").
 							definition_pointers = { "!", "&", "^" },
+
+							-- The pointers that are considered similar words when using the thesaurus,
+							-- see Pointer Symbols below.
+							-- Default is as below ("similar to", "also see" }
 							similarity_pointers = { "&", "^" },
+
+							-- The depth of similar words to recurse when collecting synonyms. 1 is similar words,
+							-- 2 is similar words of similar words, etc. Increasing this may slow results.
 							similarity_depth = 2,
 						},
 					},
+
+					-- Use the dictionary source
 					dictionary = {
+						name = "blink-cmp-words",
 						module = "blink-cmp-words.dictionary",
+						-- All available options
 						opts = {
+							-- The number of characters required to trigger completion.
+							-- Set this higher if completion is slow, 3 is default.
 							dictionary_search_threshold = 3,
+
+							-- See above
+							score_offset = 0,
+
+							-- See above
 							definition_pointers = { "!", "&", "^" },
 						},
 					},
@@ -255,6 +482,9 @@ return {
 					complete = { marker = "x" },
 				},
 			},
+			config = function()
+				vim.keymap.set({ "n", "v" }, "<leader>p", "<cmd>MkdnCreateLinkFromClipboard<cr>")
+			end,
 		},
 	},
 	{
@@ -267,8 +497,16 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 			"nvim-tree/nvim-web-devicons",
 		},
+		opts = {
+			headings = {
+				heading_1 = {
+					sign_hl = "MarkviewHeading1Sign",
+					icon = "󰼏  ",
+					hl = "MarkviewHeading1",
+				},
+			},
+		},
 	},
-	{ "nvim-treesitter/nvim-treesitter-textobjects" },
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -277,13 +515,19 @@ return {
 		opts = {
 			render_modes = { "n", "c", "t", "i" },
 			bullet = { icons = { "-" } },
-			link = { enabled = true },
+			link = { enabled = true, wiki = { conceal_destination = false } },
 			code = { left_pad = 1 },
 			pipe_table = { preset = "heavy" },
 			anti_conceal = { enabled = true, disabled_modes = { "n" } },
-			-- Markdown styling
 			heading = {
-				icons = { "􀀺  # ", "􀀼  ## ", "􀀾  ### ", "􀁀  #### ", "􀁂  ##### ", "􀁄  ###### " },
+				icons = {
+					"􀀺  # ",
+					"􀀼  ## ",
+					"􀀾  ### ",
+					"􀁀  #### ",
+					"􀁂  ##### ",
+					"􀁄  ###### ",
+				},
 				signs = { "" },
 				backgrounds = {},
 				position = "inline",
@@ -292,16 +536,8 @@ return {
 				unchecked = { icon = "􀂒 ", highlight = "rainbow5" },
 				checked = { icon = "􀃲 ", highlight = "rainbow4" },
 				custom = {
-					cancelled = {
-						highlight = "rainbow1",
-						rendered = "􀃞 ",
-						raw = "[-]",
-					},
-					incomplete = {
-						highlight = "rainbow2",
-						rendered = "􀃮 ",
-						raw = "[/]",
-					},
+					cancelled = { highlight = "rainbow1", rendered = "􀃞 ", raw = "[-]" },
+					incomplete = { highlight = "rainbow2", rendered = "􀃮 ", raw = "[/]" },
 				},
 			},
 			quote = { icon = "▎", repeat_linebreak = true },
@@ -318,18 +554,14 @@ return {
 			ui = { enable = false },
 			legacy_commands = false,
 			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd" },
-			workspaces = {
-				{
-					path = "/home/yousuf/Assets/Obsidian",
-					name = "Obsidian",
-				},
-			},
+			workspaces = { { path = "/home/yousuf/Assets/Obsidian", name = "Obsidian" } },
 			frontmatter = {
 				func = function(note)
 					local out = require("obsidian.builtin").frontmatter(note)
-					if not out["Date Created"] then
+					if not out["Date Created"] or out["Date Created"] == vim.NIL then
 						local time = vim.uv.fs_stat(note.path.filename)
-						out["Date Created"] = time and time.birthtime.sec or os.date("%Y-%m-%d %H:%M", time)
+						out["Date Created"] =
+							os.date("%Y-%m-%d %H:%M", time and time.birthtime.sec or nil)
 					end
 					out["Date Modified"] = out["Date Created"] and os.date("%Y-%m-%d %H:%M") or nil
 					out["id"] = nil
@@ -338,16 +570,35 @@ return {
 					return out
 				end,
 			},
-			config = function()
-				vim.api.create_autocmd("User", {
-					pattern = "ObsidianNoteWritePost",
-					callback = function(ev)
-						local note = require("obsidian.note").from_buffer(ev.buf)
-						require("obsidian.builtin").frontmatter.func(note)
-					end,
-				})
-			end,
 		},
+		config = function(_, opts)
+			require("obsidian").setup(opts)
+			vim.api.create_autocmd("User", {
+				pattern = "ObsidianNoteWritePost",
+				callback = function(ev)
+					local note = require("obsidian.note").from_buffer(ev.buf)
+					require("obsidian.builtin").frontmatter.func(note)
+				end,
+			})
+			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", opts)
+			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", opts)
+			vim.keymap.set(
+				{ "n" },
+				"<leader>oo",
+				function() vim.api.nvim_feedkeys(":Obsidian today ", "n", false) end,
+				opts
+			)
+			vim.keymap.set({ "n" }, "<D-p>", function()
+				local result = vim.system({
+					"/home/yousuf/.config/nvim/FinishNote.fish",
+					vim.api.nvim_buf_get_name(0),
+				}, { text = true }):wait()
+				if result.code ~= 0 then
+					local filepath =
+						vim.cmd("<cmd>edit " .. vim.trim(result.stdout) .. "<cr><cmd>bd#<cr>")
+				end
+			end, opts)
+		end,
 	},
 	{
 		"roodolv/markdown-toggle.nvim",
@@ -361,11 +612,9 @@ return {
 					local opts = { silent = true, noremap = true, buffer = args.buf }
 					local toggle = require("markdown-toggle")
 					-- Keymap configurations will be added here for each feature
-
 					opts.expr = true -- required for dot-repeat in Normal mode
 					vim.keymap.set({ "n", "v" }, "<D-l>", toggle.list_dot, opts)
 					vim.keymap.set("n", "<D-k>", toggle.checkbox_dot, opts)
-
 					opts.expr = false -- required for Visual mode
 					vim.keymap.set("x", "<C-l>", toggle.list, opts)
 					vim.keymap.set("x", "<S-l>", toggle.checkbox, opts)
@@ -376,64 +625,83 @@ return {
 	{
 		"antonk52/markdowny.nvim",
 		enabled = false,
-		config = function()
-			require("markdowny").setup()
-		end,
 	},
 	{ "opdavies/toggle-checkbox.nvim" },
-	{ "echasnovski/mini.nvim" },
-	{ "chrisgrieser/nvim-rip-substitute" },
+	{
+		"echasnovski/mini.nvim",
+		config = function()
+			require("mini.cursorword").setup()
+			require("mini.ai").setup()
+			require("mini.pairs").setup({ mappings = { ["`"] = false } })
+			require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
+			require("mini.operators").setup({
+				exchange = { prefix = "gx", reindent_linewise = true },
+				replace = { prefix = "S", reindent_linewise = true },
+				sort = { prefix = "", func = nil },
+			})
+			require("mini.surround").setup({
+				custom_surroundings = {
+					b = { input = { "%*%*().-()%*%*" }, output = { left = "**", right = "**" } },
+					s = { input = { "~~().-()~~" }, output = { left = "~~", right = "~~" } },
+					c = { input = { "`().-()`" }, output = { left = "`", right = "`" } },
+					C = {
+						input = { "`.-?\n().-()\n`.-" },
+						output = { left = "````\n", right = "\n````" },
+					},
+				},
+			})
+		end,
+	},
+	{
+		"chrisgrieser/nvim-rip-substitute",
+		config = function() vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", opts) end,
+	},
 	{
 		"chrisgrieser/nvim-various-textobjs",
 		event = "UIEnter",
-		opts = {
-			keymaps = {
-				useDefaultKeymaps = true,
-			},
-		},
+		opts = { keymaps = { useDefaultKeymaps = true } },
 	},
 	{
 		"olimorris/persisted.nvim",
+		dependencies = { "nvim-telescope/telescope.nvim" },
 		enabled = fresh(),
 		lazy = false,
+		priority = 999,
 		event = "BufReadPre",
 	},
 	{
 		"catppuccin/nvim",
 		name = "catppuccin",
 		priority = 1000,
-		config = function()
-			require("catppuccin").setup({
-				term_colors = true,
-				auto_integrations = true,
-				dim_inactive = {
-					enabled = false,
+		opts = {
+			term_colors = true,
+			auto_integrations = true,
+			dim_inactive = { enabled = false },
+			integrations = {
+				flash = true,
+				aerial = true,
+				hop = true,
+				treesitter_context = true,
+				neogit = true,
+				render_markdown = true,
+				markview = true,
+				blink_pairs = true,
+				telescope = { enabled = true },
+				mini = { enabled = true },
+				blink_cmp = { style = "bordered" },
+				gitsigns = {
+					enabled = true,
+					transparent = false,
 				},
-				integrations = {
-					flash = true,
-					aerial = true,
-					grug_far = true,
-					hop = true,
-					treesitter_context = true,
-					neogit = true,
-					render_markdown = false,
-					blink_pairs = true,
-					telescope = { enabled = true },
-					mini = { enabled = true },
-					blink_cmp = {
-						style = "bordered",
-					},
-					gitsigns = {
-						enabled = true,
-						transparent = false,
-					},
-					indent_blankline = {
-						colored_indent_levels = true,
-						enabled = true,
-					},
+				indent_blankline = {
+					colored_indent_levels = true,
+					enabled = true,
 				},
-			})
-			vim.cmd.colorscheme("catppuccin-mocha")
+			},
+		},
+		config = function(_, opts)
+			require("catppuccin").setup(opts)
+			vim.cmd.colorscheme("catppuccin-nvim")
 			vim.cmd(":hi @markup.strong guifg=none")
 			vim.cmd(":hi @markup.italic guifg=none")
 			vim.cmd(":hi @markup.quote guifg=none")
@@ -476,24 +744,83 @@ return {
 		auto_dir = false,
 	},
 	{
+		"xiaoshihou514/squirrel.nvim",
+		lazy = false,
+		config = function() vim.keymap.set({ "n", "x" }, "gt", require("squirrel.hop").hop) end,
+	},
+	{
 		"nvim-telescope/telescope-frecency.nvim",
 		config = function()
 			require("telescope").load_extension("frecency")
+			vim.keymap.set({ "n" }, "<leader>f", "<cmd>Telescope frecency<cr>", opts)
 		end,
 		opts = { db_version = "v2" },
 	},
 	{ "tpope/vim-eunuch" },
 	{
 		"smoka7/hop.nvim",
-		opts = {
-			keys = "etovxqpdygfblzhckisuran",
-			case_insentitive = false,
-		},
+		opts = { keys = "etovxqpdygfblzhckisuran", case_insentitive = false },
+		config = function()
+			require("hop").setup()
+			vim.cmd("highlight HopUnmatched guifg=none guibg=none")
+			local function process_previous_word(command)
+				vim.cmd(":norm mz")
+				vim.cmd("HopWordBC")
+				vim.cmd('call feedkeys("", "n")')
+				vim.cmd(":norm " .. command)
+				vim.cmd(":norm 'z")
+			end
+
+			vim.keymap.set({ "n", "i" }, "<M-d>", function() process_previous_word("daw") end, opts)
+			vim.keymap.set({ "n", "i" }, "<M-c>", function() process_previous_word("caw") end, opts)
+
+			-- Replace w b e f j k with hop.nvim search
+			vim.keymap.set({ "n", "v", "o" }, "e", "<cmd>HopWord<cr>", opts)
+			vim.keymap.set({ "n", "v", "o" }, "f", "<cmd>HopChar1<cr>", opts)
+			-- vim.keymap.set({ "n", "v", "o" }, "F", "<cmd>HopNodes<cr>", opts)
+			vim.keymap.set({ "n", "v" }, "j", "<cmd>HopVertical<cr>", opts)
+			vim.keymap.set({ "o" }, "j", "V<cmd>HopVertical<cr>", opts) -- Note the V<cmd>
+			-- vim.keymap.set({ "n", "v", "o" }, "B", "<cmd>HopWordCurrentLineBC<cr>", opts)
+			vim.keymap.set(
+				{ "n", "v", "o" },
+				"E",
+				function()
+					require("hop").hint_words({
+						hint_position = require("hop.hint").HintPosition.END,
+					})
+				end,
+				opts
+			)
+		end,
+	},
+	{
+		"aaronik/treewalker.nvim",
+
+		-- optional (see options below)
+		opts = { ... },
+		config = function()
+			vim.keymap.set({ "n", "v" }, "<C-k>", "<cmd>Treewalker Up<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, "<C-j>", "<cmd>Treewalker Down<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, "<C-h>", "<cmd>Treewalker Left<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, "<C-l>", "<cmd>Treewalker Right<cr>", { silent = true })
+		end,
+	},
+	{
+		"gsuuon/tshjkl.nvim",
+		config = true,
+	},
+	{
+		"mfussenegger/nvim-treehopper",
+		enabled = true,
+		config = function()
+			vim.keymap.set({ "n", "v", "i" }, "F", function() require("tsht").nodes() end, opts)
+		end,
 	},
 	{
 		"nvim-lualine/lualine.nvim",
 		-- enabled = not vim.env.KITTY_SCROLLBACK_NVIM,
 		dependencies = { "nvim-tree/nvim-web-devicons" },
+		lazy = false,
 		config = function()
 			local lineTheme = require("catppuccin.utils.lualine")()
 			local C = require("catppuccin.palettes").get_palette(flavour)
@@ -569,21 +896,24 @@ return {
 				["!"] = "SHELL",
 				["t"] = ">_",
 			}
+			vim.go.laststatus = 3
 			require("lualine").setup({
+				sections = {},
+				winbar = {},
+				inactive_winbar = {},
+				extensions = {},
+				globalstatus = false,
 				options = {
 					theme = lineTheme,
 					section_separators = { left = "", right = "" },
 					component_separators = { left = "", right = "" },
 				},
-				sections = {},
-				winbar = {},
-				inactive_winbar = {},
-				extensions = {},
+				disabled_filetypes = { -- Filetypes to disable lualine for.
+					statusline = { ".*" },
+				},
 				tabline = {
 					lualine_a = {
-						function()
-							return mode_map[vim.api.nvim_get_mode().mode] or "__"
-						end,
+						function() return mode_map[vim.api.nvim_get_mode().mode] or "__" end,
 					},
 					lualine_b = {
 						"branch",
@@ -592,9 +922,7 @@ return {
 					},
 					lualine_c = { "%=", "filename", "filetype" },
 					lualine_y = {
-						function()
-							return vim.fn.wordcount().words .. " words"
-						end,
+						function() return vim.fn.wordcount().words .. " words" end,
 					},
 					lualine_z = {
 						"location",
@@ -606,8 +934,6 @@ return {
 					},
 				},
 			})
-			vim.go.laststatus = 0
-			vim.go.cmdheight = 0
 		end,
 	},
 	{
@@ -626,28 +952,61 @@ return {
 			-- { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
 		},
 	},
-	{ "monaqa/dial.nvim" },
+	{
+		"monaqa/dial.nvim",
+		config = function()
+			-- Dial.nvim configuration
+			local augend = require("dial.augend")
+			require("dial.config").augends:register_group({
+				default = {
+					augend.integer.alias.decimal,
+					augend.integer.alias.hex,
+					augend.constant.alias.bool,
+				},
+			})
+			require("dial.config").augends:on_filetype({
+				typescript = {
+					augend.constant.new({
+						elements = { "let", "const" },
+						word = true,
+						cyclic = true,
+					}),
+				},
+				javascript = {
+					augend.constant.new({
+						elements = { "let", "const" },
+						word = true,
+						cyclic = true,
+					}),
+				},
+				css = {
+					augend.constant.new({
+						elements = { ";", "!important;" },
+						word = true,
+						cyclic = true,
+					}),
+				},
+			})
+			vim.keymap.set(
+				{ "n", "v", "i" },
+				"<C-j>",
+				function() require("dial.map").manipulate("increment", "normal") end
+			)
+			vim.keymap.set(
+				{ "n", "v", "i" },
+				"<C-k>",
+				function() require("dial.map").manipulate("decrement", "normal") end
+			)
+		end,
+	},
 	{
 		"NeogitOrg/neogit",
 		dependencies = {
-			"nvim-lua/plenary.nvim", -- required
-			"sindrets/diffview.nvim", -- optional - Diff integration
-			-- Only one of these is needed.
-			"nvim-telescope/telescope.nvim", -- optional
+			"nvim-lua/plenary.nvim",
+			"sindrets/diffview.nvim",
+			"nvim-telescope/telescope.nvim",
 		},
 		config = true,
-	},
-	{
-		"ColinKennedy/cursor-text-objects.nvim",
-		config = function()
-			local down_description = "Operate from your current cursor to the end of some text-object."
-			local up_description = "Operate from the start of some text-object to your current cursor."
-			vim.keymap.set("o", "[", "<Plug>(cursor-text-objects-up)", { desc = up_description })
-			vim.keymap.set("o", "]", "<Plug>(cursor-text-objects-down)", { desc = down_description })
-			vim.keymap.set("x", "[", "<Plug>(cursor-text-objects-up)", { desc = up_description })
-			vim.keymap.set("x", "]", "<Plug>(cursor-text-objects-down)", { desc = down_description })
-		end,
-		version = "v1.*",
 	},
 	{ "sindrets/diffview.nvim" },
 	{
@@ -662,9 +1021,7 @@ return {
 				command = "setfiletype markdown",
 			})
 		end,
-		keys = {
-			{ "<leader>ug", ":GhostTextStart<cr>", desc = "GhostTextStart", silent = true },
-		},
+		keys = { { "<leader>ug", ":GhostTextStart<cr>", silent = true } },
 	},
 	{
 		"folke/lazydev.nvim",
@@ -678,32 +1035,24 @@ return {
 		},
 	},
 	{
-		"nvim-treesitter/nvim-treesitter-context",
+		"serhez/bento.nvim",
+		enabled = false,
 		config = function()
-			require("treesitter-context").setup({
-				multiwindow = true,
-				line_numbers = false,
-				multiline_threshold = 2,
+			require("bento").setup({
+				ordering_metric = "directory",
+				ui = { floating = { minimal_menu = "full" } },
 			})
+			vim.keymap.set({ "n" }, "<leader>;", "<cmd>BentoToggle<cr>", opts)
 		end,
 	},
 	{
 		"leath-dub/snipe.nvim",
-		keys = {
-			{
-				";",
-				function()
-					require("snipe").open_buffer_menu()
-				end,
-			},
-		},
+		keys = { { ";", function() require("snipe").open_buffer_menu() end } },
 		opts = {
 			ui = {
 				position = "center",
 				text_align = "file-first",
-				navigate = {
-					cancel_snipe = "q",
-				},
+				navigate = { cancel_snipe = "q" },
 				open_win_override = { title = "" },
 			},
 			sort = function(buffers)
@@ -723,34 +1072,28 @@ return {
 		},
 	},
 	{
-		"MagicDuck/grug-far.nvim",
-		config = function()
-			require("grug-far").setup({})
-		end,
+		"stevearc/conform.nvim",
+		opts = {
+			formatters_by_ft = {
+				lua = { "stylua" },
+				nix = { "nixfmt" },
+				javascript = { "biome-check" },
+			},
+			format_on_save = {
+				-- These options will be passed to conform.format()
+				timeout_ms = 500,
+				lsp_format = "fallback",
+			},
+		},
 	},
-	{ "stevearc/conform.nvim" },
 	{
 		"aidancz/paramo.nvim",
 		enabled = false,
-		config = function()
-			require("paramo").setup({
-				{
-					type = "para0",
-					backward = "{",
-					forward = "}",
-				},
-				{
-					type = "para1",
-					backward = "(",
-					forward = ")",
-				},
-				{
-					type = "para2",
-					backward = "<home>",
-					forward = "<end>",
-				},
-			})
-		end,
+		opts = {
+			{ type = "para0", backward = "{", forward = "}" },
+			{ type = "para1", backward = "(", forward = ")" },
+			{ type = "para2", backward = "<home>", forward = "<end>" },
+		},
 	},
 	{
 		"folke/trouble.nvim",
@@ -780,13 +1123,24 @@ return {
 	},
 	{
 		"mikesmithgh/kitty-scrollback.nvim",
-		lazy = true,
 		cmd = {
 			"KittyScrollbackGenerateKittens",
 			"KittyScrollbackCheckHealth",
 			"KittyScrollbackGenerateCommandLineEditing",
 		},
 		event = { "User KittyScrollbackLaunch" },
+		opts = {
+			{
+				keymaps_enabled = false,
+				paste_window = { yank_register_enabled = false },
+				status_window = { autoclose = false },
+			},
+		},
+		config = function()
+			local autocmds = require("kitty-scrollback.autocommands")
+			autocmds.set_term_enter_autocmd = function(_) end
+			autocmds.set_yank_post_autocmd = function() end
+		end,
 	},
 	{ "tpope/vim-fugitive" },
 	{
@@ -799,9 +1153,15 @@ return {
 	},
 	{
 		"tridactyl/vim-tridactyl",
-		config = function()
-			vim.filetype.add({ pattern = { [".*tridactylrc"] = "vim" } })
-		end,
+		config = function() vim.filetype.add({ pattern = { [".*tridactylrc"] = "vim" } }) end,
 	},
-	{ "aaronik/treewalker.nvim" },
+	{ "kevinhwang91/nvim-bqf" },
+	{
+		"stevearc/quicker.nvim",
+		ft = "qf",
+		---@module "quicker"
+		---@type quicker.SetupOptions
+		opts = {},
+	},
+	{ "folke/todo-comments.nvim" },
 }

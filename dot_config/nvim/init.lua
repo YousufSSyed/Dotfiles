@@ -18,9 +18,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
-	ui = { backdrop = 100 },
-	spec = { { import = "plugins" } },
 	change_detection = { enabled = false },
+	spec = { { import = "plugins" } },
+	ui = { backdrop = 100 },
 })
 
 require("keymaps")
@@ -42,7 +42,6 @@ vim.opt.undofile = true
 vim.opt.undolevels = 1000
 vim.opt.nu = false
 vim.opt.mouse = "a"
-vim.opt.showmode = false
 vim.opt.clipboard = "unnamedplus"
 vim.opt.breakindent = true
 vim.opt.ignorecase = true
@@ -54,9 +53,9 @@ vim.opt.splitbelow = true
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.list = true
-vim.opt.listchars = { tab = "▎ ", trail = "·", nbsp = "␣" }
 vim.opt.joinspaces = false
 vim.opt.fillchars = "vert: ,horiz: ,horizup: ,horizdown: ,vertleft: ,vertright: ,verthoriz: "
+vim.opt.listchars = { tab = "┃ ", trail = "·", nbsp = "␣" }
 vim.opt.autowrite = true
 vim.opt.autowriteall = true
 vim.opt.autoread = true
@@ -66,32 +65,29 @@ vim.opt.spelllang = "en_us"
 vim.opt.spellfile = os.getenv("HOME") .. "/.local/share/chezmoi/dot_config/nvim/spell/en.utf-8.add"
 vim.opt.splitkeep = "screen"
 vim.opt.updatetime = 60000
+vim.opt.grepprg = "rg --vimgrep"
+vim.opt.grepformat = "%f:%l:%c:%m"
 -- vim.g & vim.env
 vim.g.markdown_recommended_style = 0
 vim.g.have_nerd_font = true
 vim.env.PATH = vim.env.PATH .. "/run/current-system/sw/bin/"
 vim.cmd(":digr mr 772") -- Digraph command
 
-vim.cmd("au CursorHoldI * stopinsert")
-
 vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function()
-		vim.hl.on_yank()
-	end,
+	callback = function() vim.hl.on_yank() end,
 })
 
--- vim.cmd([[
---       autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
---       autocmd FileChangedShellPost *
---         \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
--- ]])
+vim.cmd([[ 
+au FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
+au CursorHoldI * stopinsert 
+]])
 
-if vim.g.neovide then -- Neovide configuration
+if vim.g.neovide then
+	vim.opt.winblend = 100
+	vim.opt.pumblend = 100
 	vim.g.neovide_scroll_animation_length = 0.3
 	vim.g.neovide_remember_window_size = true
 	vim.g.experimental_layer_grouping = true
-	vim.opt.winblend = 100
-	vim.opt.pumblend = 100
 	vim.g.neovide_confirm_quit = true
 	vim.g.neovide_floating_shadow = false
 	vim.g.neovide_floating_blur_amount_x = 30
@@ -103,5 +99,16 @@ if vim.g.neovide then -- Neovide configuration
 end
 
 vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide" })
-vim.lsp.codelens.enable(true)
 require("vim._core.ui2").enable({ enable = true })
+-- vim.lsp.inlay_hint.enable(true)
+-- vim.lsp.codelens.enable(true)
+
+vim.api.nvim_create_autocmd("QuickFixCmdPost", {
+	group = vim.api.nvim_create_augroup("AutoOpenQuickfix", { clear = true }),
+	pattern = { "[^l]*" },
+	command = "cwindow",
+})
+
+vim.keymap.set({ "n", "v" }, "u", ":silent undo<cr>", { silent = true })
+vim.keymap.set({ "n", "v" }, "U", ":silent redo<cr>", { silent = true })
+vim.keymap.set({ "n", "v" }, "<C-r>", ":silent redo<cr>", { silent = true })

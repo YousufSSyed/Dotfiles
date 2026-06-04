@@ -1,6 +1,5 @@
-local opts = { noremap = true, silent = true }
+opts = { noremap = true, silent = true }
 
--- Scroll up and down by 5 lines (the scroll opt is automatically changed with window size)
 vim.keymap.set({ "n", "v" }, "<C-d>", "5<C-d>")
 vim.keymap.set({ "n", "v" }, "<C-u>", "5<C-u>")
 
@@ -8,12 +7,11 @@ vim.keymap.set({ "n", "v" }, "<C-u>", "5<C-u>")
 vim.keymap.set("n", "<leader>j", "o<esc><up>")
 vim.keymap.set("n", "<leader>k", "O<esc><down>")
 
---  CTRL+<hjkl> to switch between windows
+-- Window hotkeys
 vim.keymap.set("n", "<leader>wh", "<C-w><C-h>")
 vim.keymap.set("n", "<leader>wj", "<C-w><C-j>")
 vim.keymap.set("n", "<leader>wk", "<C-w><C-k>")
 vim.keymap.set("n", "<leader>wl", "<C-w><C-l>")
-
 vim.keymap.set("n", "<leader>h", "<cmd>split<cr>")
 vim.keymap.set("n", "<leader>v", "<cmd>vsplit<cr>")
 
@@ -72,22 +70,14 @@ vim.keymap.set({ "n" }, "<D-c>", "<cmd>silent %y+<cr>")
 vim.keymap.set({ "n" }, "<D-x>", "<cmd>silent %d+<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
 
--- Delete-Backspace to move the current file to trash
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
-
-vim.cmd("packadd nvim.undotree")
-vim.keymap.set("n", "<leader>u", require("undotree").open)
 
 vim.keymap.set({ "v", "n" }, "<D-n>", function()
 	local directory = os.getenv("HOME") .. "/Assets/Scratchpad/"
 	local filename
 	while true do
-		vim.ui.input({ prompt = "New file name: " }, function(i)
-			filename = i
-		end)
-		if filename == "" then
-			break
-		end
+		vim.ui.input({ prompt = "New file name: " }, function(i) filename = i end)
+		if filename == "" then break end
 		if not io.open(directory .. filename, "r") then
 			vim.cmd(":edit " .. directory .. filename)
 			return
@@ -105,24 +95,35 @@ vim.keymap.set({ "v", "n" }, "<D-n>", function()
 end)
 
 -- Misc Keymaps
-vim.keymap.set("n", "<leader>q", "<cmd>:q<cr>")
-vim.keymap.set("n", "<leader>r", "<cmd>:restart<cr>")
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)
+vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
+vim.keymap.set({ "n", "v" }, "<leader>r", "<cmd>:restart<cr>")
 vim.keymap.set({ "n", "v", "i" }, "<D-s>", "<cmd>w!<cr>")
 vim.keymap.set({ "n" }, "<D-d>", "<cmd>silent %d_<cr>")
-
 vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
-vim.keymap.set({ "n", "v", "o" }, "<leader>z", "1z=", { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<C-g>u<Esc>[s1z=gi<C-g>u", "1z=", { remap = false })
+vim.keymap.set("n", "ycc", "Ygccp", { remap = true })
 
 -- [[ Basic Keymaps ]], See `:help vim.keymap.set()`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 -- Diagnostic keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
+vim.keymap.set(
+	"n",
+	"[d",
+	vim.diagnostic.goto_prev,
+	{ desc = "Go to previous [D]iagnostic message" }
+)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show diagnostic [E]rror messages" })
+vim.keymap.set(
+	"n",
+	"<leader>e",
+	vim.diagnostic.open_float,
+	{ desc = "Show diagnostic [E]rror messages" }
+)
 -- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Keep cursor in place when joining lines
-vim.keymap.set("n", "J", "mzJ`z:delmarks z<cr>")
+vim.keymap.set("n", "J", "mzJ`z:delmarks z<cr>") -- Keep cursor in place when joining lines
 
 -- Task hotkeys
 local function changeTask(character)
@@ -134,24 +135,10 @@ local function changeTask(character)
 	vim.cmd(firstline .. "," .. lastline .. "s/\\(^\\s*- \\[\\).\\]/\\1" .. character .. "\\]")
 end
 
-vim.keymap.set({ "n", "v" }, "<leader>t", function()
-	require("toggle-checkbox").toggle()
-end, opts)
-vim.keymap.set({ "n", "v" }, "<leader>x", function()
-	changeTask("x")
-end, { noremap = true, silent = true })
-vim.keymap.set({ "n", "v" }, "<leader>-", function()
-	changeTask("-")
-end, { noremap = true, silent = true })
-vim.keymap.set({ "n", "v" }, "<leader>/", function()
-	changeTask("\\/")
-end, { noremap = true, silent = true })
-
--- https://www.reddit.com/r/neovim/comments/1k4efz8/comment/mo9t5xq/
-vim.keymap.set("n", "ycc", "Ygccp", { remap = true })
-
--- https://www.reddit.com/r/neovim/comments/1k4efz8/comment/mo9nalp/
-vim.keymap.set("x", "/", "<Esc>/\\%V") --search within visual selection - this is magic
+vim.keymap.set({ "n", "v" }, "<leader>t", function() require("toggle-checkbox").toggle() end, opts)
+vim.keymap.set({ "n", "v" }, "<leader>x", function() changeTask("x") end, opts)
+vim.keymap.set({ "n", "v" }, "<leader>-", function() changeTask("-") end, opts)
+vim.keymap.set({ "n", "v" }, "<leader>/", function() changeTask("\\/") end, opts)
 
 -- Quote Hotkeys
 local function quote(callout)
@@ -165,9 +152,7 @@ local function quote(callout)
 	pcall(vim.cmd, firstline .. "," .. lastline .. "s/^\\(>\\|\\s\\)\\+//")
 	vim.cmd(firstline .. "," .. lastline .. "s/^/" .. quotes .. "/")
 	if callout then
-		vim.ui.input({ prompt = "Callout Title: " }, function(i)
-			calloutTitle = i
-		end)
+		vim.ui.input({ prompt = "Callout Title: " }, function(i) calloutTitle = i end)
 		vim.fn.append(firstline - 1, quotes .. "[!" .. calloutTitle .. "]")
 	end
 	vim.cmd("noh")
@@ -189,16 +174,40 @@ local function unquote()
 	vim.fn.winrestview(r)
 end
 
-vim.keymap.set({ "v", "n" }, "<M-b>", function()
-	quote(false)
-end, opts)
-vim.keymap.set({ "v", "n" }, "<M-q>", function()
-	unquote()
-end, opts)
+vim.keymap.set({ "v", "n" }, "<M-b>", function() quote(false) end, opts)
+vim.keymap.set({ "v", "n" }, "<M-q>", function() unquote() end, opts)
 
 --- Create callout
-vim.keymap.set({ "v", "n" }, "<M-z>", function()
-	quote(true)
-end)
+vim.keymap.set({ "v", "n" }, "<M-z>", function() quote(true) end)
 
 vim.keymap.set({ "n", "v" }, "<leader>p", "<cmd>MkdnCreateLinkFromClipboard<cr>")
+
+vim.keymap.set(
+	{ "x" },
+	"[n",
+	function() require("vim.treesitter._select").select_prev(vim.v.count1) end,
+	{ desc = "Select previous treesitter node" }
+)
+
+vim.keymap.set(
+	{ "x" },
+	"]n",
+	function() require("vim.treesitter._select").select_next(vim.v.count1) end,
+	{ desc = "Select next treesitter node" }
+)
+
+vim.keymap.set({ "x", "o" }, "an", function()
+	if vim.treesitter.get_parser(nil, nil, { error = false }) then
+		require("vim.treesitter._select").select_parent(vim.v.count1)
+	else
+		vim.lsp.buf.selection_range(vim.v.count1)
+	end
+end, { desc = "Select parent treesitter node or outer incremental lsp selections" })
+
+vim.keymap.set({ "x", "o" }, "in", function()
+	if vim.treesitter.get_parser(nil, nil, { error = false }) then
+		require("vim.treesitter._select").select_child(vim.v.count1)
+	else
+		vim.lsp.buf.selection_range(-vim.v.count1)
+	end
+end, { desc = "Select child treesitter node or inner incremental lsp selections" })
