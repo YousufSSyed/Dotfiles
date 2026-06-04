@@ -468,7 +468,7 @@ return {
 			})
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "ObsidianNoteEnter",
-				callback = function(ev)
+				callback = function()
 					vim.keymap.del("n", "<CR>", { buffer = true })
 					vim.keymap.set("n", "gx", require("obsidian.api").smart_action, { buffer = true })
 				end,
@@ -480,7 +480,7 @@ return {
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<C-p>", function()
 				vim.system({
-					os.getenv("HOME") .. "/.local/share/chezmoi/Scripts/FinishNote.fish",
+					os.getenv("HOME") .. "/.local/share/chezmoi/scripts/finish_note.fish",
 					vim.api.nvim_buf_get_name(0),
 				}, function(result)
 					vim.schedule(function()

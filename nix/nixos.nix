@@ -372,7 +372,7 @@ in
 
   sops = {
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
-    defaultSopsFile = ./secrets.yaml;
+    defaultSopsFile = ./Other/secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
     secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };

@@ -65,7 +65,7 @@ vim.keymap.set({ "n", "v", "o" }, "<leader>]g", function() mark("]szg") end, { r
 vim.keymap.set("n", "<CR>", function() mark("o") end) -- Insert blank lines above & below
 vim.keymap.set("n", "<S-CR>", function() mark("O") end)
 
-vim.cmd("packadd nvim.undotree") -- Misc Keymaps
+vim.cmd("packadd nvim.undotree") -- Misc keymaps
 vim.keymap.set("n", "<leader>u", require("undotree").open)
 vim.keymap.set({ "n", "v" }, "<leader>w", "<cmd>bprev<cr><cmd>bd!#<cr>", keyopts)
 vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
@@ -76,6 +76,7 @@ vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
 vim.keymap.set("n", "J", function() mark("J") end) -- Keep cursor in place when joining lines
 vim.keymap.set("n", "ycc", "Ygccp", { remap = true }) -- Comment the current line then paste it below
 vim.keymap.set({ "i" }, "<D-k>", "<c-k>", { noremap = true }) -- Digraph key
+vim.keymap.set({ "n" }, "A", "$", { noremap = true })
 
 vim.keymap.set("n", "<Esc>", function()
 	vim.opt.cursorline = true

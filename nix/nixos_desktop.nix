@@ -13,7 +13,7 @@
 
   imports = [
     ./nixos.nix
-    ./nixos-desktop-hardware.nix
+    ./Other/nixos_desktop_hardware.nix
   ];
 
   services = {

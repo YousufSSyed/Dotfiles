@@ -9,7 +9,7 @@
 {
   imports = [
     ./nixos.nix
-    ./nixos-laptop-hardware.nix
+    ./Other/nixos_laptop_hardware.nix
   ];
 
   services.avahi.enable = true;
