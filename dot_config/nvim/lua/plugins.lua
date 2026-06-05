@@ -926,13 +926,13 @@ return {
 		"stevearc/conform.nvim",
 		opts = {
 			formatters_by_ft = {
-				lua = { "stylua" },
-				nix = { "nixfmt" },
+				fish = { "fish_indent" },
 				javascript = { "biome-check" },
 				json = { "biome-check" },
+				lua = { "stylua" },
+				nix = { "nixfmt" },
 			},
 			format_on_save = {
-				-- These options will be passed to conform.format()
 				timeout_ms = 500,
 				lsp_format = "fallback",
 			},
