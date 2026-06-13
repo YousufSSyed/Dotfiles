@@ -436,6 +436,7 @@ return {
 	{
 		"obsidian-nvim/obsidian.nvim",
 		ft = "markdown",
+		version = "*",
 		lazy = false,
 		opts = {
 			ui = { enable = false },
@@ -474,8 +475,8 @@ return {
 				end,
 			})
 			function obsidian(text) vim.api.nvim_feedkeys(":Obsidian today " .. text, "n", false) end
-			vim.keymap.set({ "n" }, "<leader>or", function() obsidian("-") end, keyopts)
-			vim.keymap.set({ "n" }, "<leader>od", function() obsidian("") end, keyopts)
+			vim.keymap.set({ "n" }, "<leader>old", function() obsidian("") end, keyopts)
+			vim.keymap.set({ "n" }, "<leader>od", function() obsidian("-") end, keyopts)
 			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<C-p>", function()
@@ -484,7 +485,7 @@ return {
 					vim.api.nvim_buf_get_name(0),
 				}, function(result)
 					vim.schedule(function()
-						if result.code == 0 then vim.cmd(":bd") end
+						if result.code == 0 then vim.cmd("bd") end
 					end)
 				end)
 			end, keyopts)
@@ -558,7 +559,7 @@ return {
 		enabled = fresh(),
 		config = function()
 			if vim.o.filetype == "lazy" then vim.cmd.close() end
-			vim.schedule(function() vim.cmd(":Persisted select") end)
+			vim.schedule(function() vim.cmd("Persisted select") end)
 		end,
 	},
 	{
@@ -585,13 +586,13 @@ return {
 			},
 		},
 		config = function(_, opts)
-			vim.cmd(":hi @markup.strong guifg=none")
-			vim.cmd(":hi @markup.italic guifg=none")
-			vim.cmd(":hi @markup.quote guifg=none")
-			-- vim.cmd(":hi @spell.markdown guifg=#d1f1ff")
-			vim.cmd(":hi @lsp.type.decorator.markdown guifg=#8fefe7")
-			vim.cmd(":hi @markup.link.label guifg=#8fefe7")
-			vim.cmd(":hi RenderMarkdownQuote guifg=#00608b")
+			vim.cmd("hi @markup.strong guifg=none")
+			vim.cmd("hi @markup.italic guifg=none")
+			vim.cmd("hi @markup.quote guifg=none")
+			-- vim.cmd("hi @spell.markdown guifg=#d1f1ff")
+			vim.cmd("hi @lsp.type.decorator.markdown guifg=#8fefe7")
+			vim.cmd("hi @markup.link.label guifg=#8fefe7")
+			vim.cmd("hi RenderMarkdownQuote guifg=#00608b")
 			require("catppuccin").setup(opts)
 			vim.cmd.colorscheme("catppuccin-nvim")
 		end,
@@ -627,11 +628,11 @@ return {
 			require("hop").setup()
 			vim.cmd("highlight HopUnmatched guifg=none guibg=none")
 			local function process_previous_word(command)
-				vim.cmd(":norm mz")
+				vim.cmd("norm mz")
 				vim.cmd("HopWordBC")
 				vim.cmd('call feedkeys("", "n")')
-				vim.cmd(":norm " .. command)
-				vim.cmd(":norm 'z")
+				vim.cmd("norm " .. command)
+				vim.cmd("norm 'z")
 			end
 			vim.keymap.set({ "n", "i" }, "<M-d>", function() process_previous_word("daw") end, keyopts)
 			vim.keymap.set({ "n", "i" }, "<M-c>", function() process_previous_word("caw") end, keyopts)
@@ -769,22 +770,12 @@ return {
 					section_separators = { left = "", right = "" },
 					component_separators = { left = "", right = "" },
 				},
-				disabled_filetypes = { -- Filetypes to disable lualine for.
-					statusline = { ".*" },
-				},
+				disabled_filetypes = { statusline = { ".*" } },
 				tabline = {
-					lualine_a = {
-						function() return mode_map[vim.api.nvim_get_mode().mode] or "__" end,
-					},
-					lualine_b = {
-						"branch",
-						"diff",
-						"diagnostics",
-					},
+					lualine_a = { function() return mode_map[vim.api.nvim_get_mode().mode] or "__" end },
+					lualine_b = { "branch", "diff", "diagnostics" },
 					lualine_c = { "%=", "filename", "filetype" },
-					lualine_y = {
-						function() return vim.fn.wordcount().words .. " words" end,
-					},
+					lualine_y = { function() return vim.fn.wordcount().words .. " words" end },
 					lualine_z = {
 						"location",
 						function()
@@ -818,34 +809,12 @@ return {
 		config = function()
 			local augend = require("dial.augend")
 			require("dial.config").augends:register_group({
-				default = {
-					augend.integer.alias.decimal,
-					augend.integer.alias.hex,
-					augend.constant.alias.bool,
-				},
+				default = { augend.integer.alias.decimal, augend.integer.alias.hex, augend.constant.alias.bool },
 			})
 			require("dial.config").augends:on_filetype({
-				typescript = {
-					augend.constant.new({
-						elements = { "let", "const" },
-						word = true,
-						cyclic = true,
-					}),
-				},
-				javascript = {
-					augend.constant.new({
-						elements = { "let", "const" },
-						word = true,
-						cyclic = true,
-					}),
-				},
-				css = {
-					augend.constant.new({
-						elements = { ";", "!important;" },
-						word = true,
-						cyclic = true,
-					}),
-				},
+				typescript = { augend.constant.new({ elements = { "let", "const" }, word = true, cyclic = true }) },
+				javascript = { augend.constant.new({ elements = { "let", "const" }, word = true, cyclic = true }) },
+				css = { augend.constant.new({ elements = { ";", "!important;" }, word = true, cyclic = true }) },
 			})
 			vim.keymap.set(
 				{ "n", "v", "i" },

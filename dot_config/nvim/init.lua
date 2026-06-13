@@ -98,6 +98,6 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 })
 
 -- vim.lsp.inlay_hint.enable(true) vim.lsp.codelens.enable(true)
-vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide", "nixd", "hyprls" })
+vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide", "nixd", "vtsls" })
 require("vim._core.ui2").enable({ enable = true })
 vim.schedule(function() vim.opt.cmdheight = 0 end)

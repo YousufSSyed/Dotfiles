@@ -21,81 +21,107 @@ in
   ];
 
   # Packages
-  environment.systemPackages = with pkgs; [
-    # Apps
-    gparted
-    # ulauncher
-    font-manager
-    vivaldi
-    # birdtray
-    rofi
-    obsidian
-    nvitop
-    vesktop
-    davinci-resolve
-    kdePackages.kde-dev-utils
-    plasma-panel-colorizer
-    # activitywatch
-    # kdotool
-    libreoffice
-    qview
-    mousai
-    proton-vpn
-    proton-vpn-cli
+  environment = {
+    systemPackages = with pkgs; [
+      # Apps
+      gparted
+      # ulauncher
+      font-manager
+      vivaldi
+      # birdtray
+      rofi
+      obsidian
+      nvitop
+      vesktop
+      davinci-resolve
+      kdePackages.kde-dev-utils
+      plasma-panel-colorizer
+      # activitywatch
+      # kdotool
+      libreoffice
+      qview
+      mousai
+      proton-vpn
+      proton-vpn-cli
 
-    rustdesk-flutter
+      rustdesk-flutter
 
-    # Command Line Tools / CLIs
-    keyd
-    trashy
-    rofimoji
-    hyprpicker
-    snapper
-    wl-clipboard
-    slurp
+      # Command Line Tools / CLIs
+      keyd
+      trashy
+      rofimoji
+      hyprpicker
+      snapper
+      wl-clipboard
+      slurp
 
-    discordchatexporter-desktop
+      discordchatexporter-desktop
 
-    # Command Line Apps / CLI Apps
-    wf-recorder
-    grim
-    quickshell
-    (ffmpeg-full.override {
-      withUnfree = true;
-    })
+      # Command Line Apps / CLI Apps
+      wf-recorder
+      grim
+      quickshell
+      (ffmpeg-full.override {
+        withUnfree = true;
+      })
 
-    # Misc Packages
-    libinput-gestures
-    apple-cursor
-    xdg-desktop-portal-hyprland
-    xdg-desktop-portal
-    widevine-cdm
-    ddcutil
-    libnotify
+      # Misc Packages
+      libinput-gestures
+      apple-cursor
+      xdg-desktop-portal-hyprland
+      xdg-desktop-portal
+      widevine-cdm
+      ddcutil
+      libnotify
 
-    # Flakes
-    inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
-    inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.shellevents
-    inputs.awww.packages.${stdenv.hostPlatform.system}.awww
-    inputs.aw-hyprland.packages.${stdenv.hostPlatform.system}.aw-watcher-window-hyprland
-    inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
+      # Flakes
+      inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
+      inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.shellevents
+      inputs.awww.packages.${stdenv.hostPlatform.system}.awww
+      inputs.aw-hyprland.packages.${stdenv.hostPlatform.system}.aw-watcher-window-hyprland
+      inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
 
-    # KDE Packages
-    inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
-    inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
-    kdePackages.extra-cmake-modules
+      # KDE Packages
+      inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
+      inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
+      kdePackages.extra-cmake-modules
 
-    # System Tools
-    btrfs-progs
-    compsize
+      # System Tools
+      btrfs-progs
+      compsize
 
-    # Git tools
-    github-desktop
-  ];
+      # Git tools
+      github-desktop
+    ];
+    variables = {
+      GRIMBLAST_HIDE_CURSOR = "0";
+      SOPS_AGE_KEY_FILE = "/home/yousuf/Sync/Misc/age-keys.txt";
+      SLURP_ARGS = "-B 00000000 -b 00000000 -c 80808080 -w 2";
+      MANPAGER = "nvim +Man!";
+      EDITOR = "nvim";
+      HOUR = "5";
+      TRITON_LIBCUDA_PATH = "/run/opengl-driver/lib"; # awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
+      PYTHON_HISTORY = "/home/yousuf/.local/share/python/history";
+      PSQL_HISTORY = "/home/yousuf/.local/share/.psql_history";
+      GTK2_RC_FILES = "/home/yousuf/.config/gtkrc-2.0";
+      TRITON_CACHE_DIR = "/home/yousuf/.local/share/triton/";
+      GIT_CONFIG_GLOBAL = "/home/yousuf/.config/.gitconfig";
+    };
+  };
+
+  system.autoUpgrade = {
+    # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
+    enable = true;
+    flags = [ "--print-build-logs" ];
+    flake = "path:///home/yousuf/.local/share/chezmoi";
+  };
 
   systemd = {
     packages = [ pkgs.libinput-gestures ];
-    # Systemd Timers
+    services.nixos-upgrade = {
+      after = [ "flake-update.service" ];
+      requires = [ "flake-update.service" ];
+    };
     user.timers."wallpaper" = {
       wantedBy = [ "timers.target" ];
       timerConfig = {
@@ -104,7 +130,6 @@ in
         OnBootSec = "1s";
       };
     };
-    # Systemd services
     user.services = {
       "mac-mounting" = {
         serviceConfig = {
@@ -146,34 +171,22 @@ in
   };
 
   hardware = {
-    i2c.enable = true;
     bluetooth.enable = true;
     graphics.enable = true;
+    i2c.enable = true;
   };
-
-  system.autoUpgrade = {
-    # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
-    enable = true;
-    flags = [ "--print-build-logs" ];
-    flake = "path:///home/yousuf/.local/share/chezmoi";
-  };
-
-  systemd.services.nixos-upgrade = {
-    after = [ "flake-update.service" ];
-    requires = [ "flake-update.service" ];
-  };
-
-  nix.channel.enable = false;
 
   programs = {
     ydotool.enable = true;
-    firefox.enable = true;
-    firefox.autoConfig = builtins.readFile (
-      builtins.fetchurl {
-        url = "https://raw.githubusercontent.com/MrOtherGuy/fx-autoconfig/master/program/config.js";
-        sha256 = "1mx679fbc4d9x4bnqajqx5a95y1lfasvf90pbqkh9sm3ch945p40";
-      }
-    );
+    firefox = {
+      enable = true;
+      autoConfig = builtins.readFile (
+        builtins.fetchurl {
+          url = "https://raw.githubusercontent.com/MrOtherGuy/fx-autoconfig/master/program/config.js";
+          sha256 = "1mx679fbc4d9x4bnqajqx5a95y1lfasvf90pbqkh9sm3ch945p40";
+        }
+      );
+    };
     nh = {
       enable = true;
       clean.enable = true;
@@ -194,26 +207,10 @@ in
         binPath = "/run/current-system/sw/bin/start-hyprland";
       };
     };
-    # Global Environment Variables
-    bash.shellInit = ''
-      export GRIMBLAST_HIDE_CURSOR=0
-      export SOPS_AGE_KEY_FILE="/home/yousuf/Sync/Misc/age-keys.txt"
-      export SLURP_ARGS="-B 00000000 -b 00000000 -c 80808080 -w 2"
-      export MANPAGER="nvim +Man!"
-      export EDITOR="nvim"
-      export HOUR="5"
-      # awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
-      export TRITON_LIBCUDA_PATH=/run/opengl-driver/lib
-      export PYTHON_HISTORY=~/.local/share/python/history
-      export PSQL_Hsitory=~/.local/share/.psql_history
-      export GTK2_RC_FILES="$XDG_CONFIG_HOME"/gtkrc-2.0
-      export TRITON_CACHE_DIR=~/.local/share/triton/
-      export GIT_CONFIG_GLOBAL=~/.config/.gitconfig
-    '';
   };
 
   nix.settings = {
-    download-buffer-size = 524288000; # 500 MiB
+    download-buffer-size = 524288000;
     trusted-users = [
       "@wheel"
       "yousuf"

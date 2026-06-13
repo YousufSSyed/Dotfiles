@@ -31,6 +31,8 @@
       "rustdesk"
       "protonvpn"
       "obsidian"
+      "ddcctl"
+      "waydabber/betterdisplay/betterdisplaycli"
     ];
   };
 

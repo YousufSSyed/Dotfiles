@@ -52,16 +52,16 @@ vim.keymap.set({ "n" }, "<C-x>", "<cmd>silent %d+<cr>")
 vim.keymap.set({ "n" }, "<C-BS>", "<cmd>silent %d_<cr>")
 vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) | bprev | bd#<cr>")
 
-local function mark(cmd)
+function mark(cmd)
 	local count = vim.v.count > 0 and vim.v.count or ""
 	vim.api.nvim_feedkeys("mz" .. count .. cmd .. "\27`z:delmarks z\13", "n", false)
 end
-vim.keymap.set({ "n", "v", "o" }, "<leader>[z", function() mark("[sz=") end, { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>]z", function() mark("]sz=") end, { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>[s", function() mark("[s1z=") end, { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>]s", function() mark("]s1z=") end, { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>[g", function() mark("[szg") end, { remap = false })
-vim.keymap.set({ "n", "v", "o" }, "<leader>]g", function() mark("]szg") end, { remap = false })
+vim.keymap.set({ "n", "v", "o" }, "<leader>[z", function() mark("[sz=") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>]z", function() mark("]sz=") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>[s", function() mark("[s1z=") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>]s", function() mark("]s1z=") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>[g", function() mark("[szg") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>]g", function() mark("]szg") end)
 vim.keymap.set("n", "<CR>", function() mark("o") end) -- Insert blank lines above & below
 vim.keymap.set("n", "<S-CR>", function() mark("O") end)
 
@@ -72,15 +72,14 @@ vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
 vim.keymap.set({ "n", "v" }, "<leader>r", "<cmd>:restart<cr>")
 vim.keymap.set({ "n", "v", "i" }, "<C-s>", "<cmd>w!<cr>")
 vim.keymap.set({ "n" }, "<C-d>", "<cmd>silent %d_<cr>")
-vim.keymap.set({ "n", "v", "o" }, "'", "`", { remap = false }) -- Swap ' and `
+vim.keymap.set({ "n", "v", "o" }, "'", "`") -- Swap ' and `
 vim.keymap.set("n", "J", function() mark("J") end) -- Keep cursor in place when joining lines
 vim.keymap.set("n", "ycc", "Ygccp", { remap = true }) -- Comment the current line then paste it below
 vim.keymap.set({ "n" }, "A", "$", { noremap = true })
 
 vim.keymap.set("n", "<Esc>", function()
-	vim.opt.cursorline = true
-	vim.cmd(":nohlsearch")
 	vim.defer_fn(function() vim.opt.cursorline = false end, 1000)
+	vim.cmd("set cursorline | nohlsearch")
 end)
 
 vim.keymap.set({ "v", "n" }, "<c-n>", function()
@@ -90,7 +89,7 @@ vim.keymap.set({ "v", "n" }, "<c-n>", function()
 		vim.ui.input({ prompt = "New file name: " }, function(i) filename = i end)
 		if filename == "" then break end
 		if not io.open(directory .. filename, "r") then
-			vim.cmd(":edit " .. directory .. filename)
+			vim.cmd("edit " .. directory .. filename)
 			return
 		end
 	end
@@ -98,7 +97,7 @@ vim.keymap.set({ "v", "n" }, "<c-n>", function()
 	while true do
 		local newfile = directory .. "Untitled-" .. filenumber .. ".md"
 		if not io.open(newfile, "r") then
-			vim.cmd(":edit " .. newfile)
+			vim.cmd("edit " .. newfile)
 			return
 		end
 		filenumber = filenumber + 1

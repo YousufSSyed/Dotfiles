@@ -14,8 +14,6 @@
     qbittorrent
     megabasterd
     ruffle
-    diff-so-fancy
-    delta
     dolphin-emu
     copyparty-most
     losslesscut-bin
@@ -67,12 +65,14 @@
     libjxl
     fish
     sqlite
-    mpvScripts.modernz
-    mpvScripts.thumbfast
     (mpv-unwrapped.override {
       ffmpeg = ffmpeg-full;
     })
+    mpvScripts.modernz
+    mpvScripts.thumbfast
     lazygit
+    diff-so-fancy
+    delta
 
     # Nix tools
     nix-init
@@ -85,7 +85,6 @@
     markdown-oxide
     nixfmt
     nixd
-    hyprls
     uv
     # Golang
     go
@@ -97,7 +96,7 @@
     biome
     yarn
     nodejs
-
+    vtsls
     # Other Dev Packages
     tree-sitter
     pkg-config
@@ -108,6 +107,8 @@
     # Misc Packages
     nerd-fonts.iosevka
     dconf
+
+    opencode
   ];
 
   security.sudo.extraConfig = "Defaults pwfeedback";

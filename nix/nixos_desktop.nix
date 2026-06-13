@@ -60,21 +60,21 @@
   nixpkgs.config.cudaSupport = true;
 
   systemd = {
-    # Systemd Timers
-    user.timers."obsidian" = {
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        Unit = "obsidian.service";
-        OnCalendar = "5m";
-        OnBootSec = "1s";
-      };
-    };
-    user.services."wallpaper" = {
-      script = "${pkgs.fish}/bin/fish /home/yousuf/Sync/Scripts/wallpaper.fish";
+    user.services."obsidian" = {
+      script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian ${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
+      environment = config.environment.variables;
       serviceConfig = {
-        Type = "oneshot";
+        Type = "simple";
         User = "yousuf";
       };
+      path = [
+        pkgs.git
+        pkgs.fish
+        pkgs.watchexec
+        pkgs.libnotify
+        pkgs.openssh
+      ];
+      wantedBy = [ "default.target" ];
     };
     services = {
       navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
@@ -111,6 +111,29 @@
       # nvidiaPersistenced = true;
       # nvidiaSettings = true;
       open = true;
+    };
+  };
+
+  services.home-assistant = {
+    enable = true;
+    extraComponents = [
+      # Components required to complete the onboarding
+      "analytics"
+      "google_translate"
+      "met"
+      "radio_browser"
+      "shopping_list"
+
+      "smlight"
+
+      # Recommended for fast zlib compression
+      # https://www.home-assistant.io/integrations/isal
+      "isal"
+    ];
+    config = {
+      # Includes dependencies for a basic setup
+      # https://www.home-assistant.io/integrations/default_config/
+      default_config = { };
     };
   };
 }
