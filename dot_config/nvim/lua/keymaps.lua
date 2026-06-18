@@ -17,12 +17,12 @@ vim.keymap.set("n", "<leader>l", "<cmd>vsplit<cr>")
 vim.keymap.set({ "n", "v" }, "G", "G$", { silent = true }) -- Remap G and gg
 vim.keymap.set({ "n", "v" }, "gg", "gg0", { silent = true })
 
-vim.keymap.set("i", "<C-tab>", "<c-T>", { noremap = true }) -- Use Tab for indenting
-vim.keymap.set("i", "<S-tab>", "<c-D>", { noremap = true })
-vim.keymap.set("v", "<S-tab>", ">", { noremap = true })
-vim.keymap.set("v", "<C-tab>", "<", { noremap = true })
-vim.keymap.set("n", "<C-tab>", ">>", { noremap = true })
-vim.keymap.set("n", "<S-tab>", "<<", { noremap = true })
+-- vim.keymap.set("i", "<C-tab>", "<c-T>", { noremap = true }) -- Use Tab for indenting
+-- vim.keymap.set("i", "<S-tab>", "<leader>d", { noremap = true })
+-- vim.keymap.set("v", "<S-tab>", ">", { noremap = true })
+-- vim.keymap.set("v", "<C-tab>", "<", { noremap = true })
+-- vim.keymap.set("n", "<C-tab>", ">>", { noremap = true })
+-- vim.keymap.set("n", "<S-tab>", "<<", { noremap = true })
 
 vim.keymap.set({ "n", "v" }, "<C-k>", "X<up>P", { remap = true }) -- Move lines up and down
 vim.keymap.set({ "n", "v" }, "<C-j>", "Xp", { remap = true })
@@ -54,7 +54,10 @@ vim.keymap.set("n", "<S-BS>", "<cmd>execute 'silent !trash ' . shellescape(@%) |
 
 function mark(cmd)
 	local count = vim.v.count > 0 and vim.v.count or ""
+	local saved_cursor = vim.opt.guicursor:get()
+	vim.opt.guicursor = ""
 	vim.api.nvim_feedkeys("mz" .. count .. cmd .. "\27`z:delmarks z\13", "n", false)
+	vim.opt.guicursor = saved_cursor
 end
 vim.keymap.set({ "n", "v", "o" }, "<leader>[z", function() mark("[sz=") end)
 vim.keymap.set({ "n", "v", "o" }, "<leader>]z", function() mark("]sz=") end)
@@ -65,17 +68,24 @@ vim.keymap.set({ "n", "v", "o" }, "<leader>]g", function() mark("]szg") end)
 vim.keymap.set("n", "<CR>", function() mark("o") end) -- Insert blank lines above & below
 vim.keymap.set("n", "<S-CR>", function() mark("O") end)
 
-vim.cmd("packadd nvim.undotree") -- Misc keymaps
-vim.keymap.set("n", "<leader>u", require("undotree").open)
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open) -- Misc keymaps
 vim.keymap.set({ "n", "v" }, "<leader>w", "<cmd>bprev<cr><cmd>bd!#<cr>", keyopts)
 vim.keymap.set({ "n", "v" }, "<leader>q", "<cmd>:q<cr>")
 vim.keymap.set({ "n", "v" }, "<leader>r", "<cmd>:restart<cr>")
 vim.keymap.set({ "n", "v", "i" }, "<C-s>", "<cmd>w!<cr>")
-vim.keymap.set({ "n" }, "<C-d>", "<cmd>silent %d_<cr>")
+vim.keymap.set({ "n" }, "M-d", "<cmd>silent %d_<cr>")
 vim.keymap.set({ "n", "v", "o" }, "'", "`") -- Swap ' and `
 vim.keymap.set("n", "J", function() mark("J") end) -- Keep cursor in place when joining lines
 vim.keymap.set("n", "ycc", "Ygccp", { remap = true }) -- Comment the current line then paste it below
 vim.keymap.set({ "n" }, "A", "$", { noremap = true })
+vim.keymap.set({ "n" }, ":", "q:i", { noremap = true })
+vim.api.nvim_create_autocmd("CmdwinEnter", {
+	callback = function()
+		vim.keymap.set("n", "<CR>", "<CR>", { buffer = true, noremap = true })
+		vim.keymap.set("n", "<ESC>", "<cmd>:q<cr>", { buffer = true })
+	end,
+})
 
 vim.keymap.set("n", "<Esc>", function()
 	vim.defer_fn(function() vim.opt.cursorline = false end, 1000)

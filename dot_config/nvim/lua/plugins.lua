@@ -50,7 +50,6 @@ return {
 			vim.keymap.set({ "x", "o" }, "aa", function() sel("@assignment.outer") end)
 			vim.keymap.set({ "x", "o" }, "iA", function() sel("@attribute.inner") end)
 			vim.keymap.set({ "x", "o" }, "aA", function() sel("@attribute.outer") end)
-
 			-- keymaps
 			-- You can use the capture groups defined in `textobjects.scm`
 			vim.keymap.set(
@@ -139,6 +138,37 @@ return {
 					require("nvim-treesitter-textobjects.move").goto_previous("@conditional.outer", "textobjects")
 				end
 			)
+
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[P",
+				function() require("nvim-treesitter-textobjects.move").goto_previous("@parameter.outer", "textobjects") end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]P",
+				function() require("nvim-treesitter-textobjects.move").goto_next("@parameter.outer", "textobjects") end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]a",
+				function() require("nvim-treesitter-textobjects.move").goto_next("@assignment.outer", "textobjects") end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[a",
+				function() require("nvim-treesitter-textobjects.move").goto_previous("@assignment.outer", "textobjects") end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"[A",
+				function() require("nvim-treesitter-textobjects.move").goto_previous("@attribute.outer", "textobjects") end
+			)
+			vim.keymap.set(
+				{ "n", "x", "o" },
+				"]A",
+				function() require("nvim-treesitter-textobjects.move").goto_next("@attribute.outer", "textobjects") end
+			)
 		end,
 	},
 	{
@@ -154,16 +184,12 @@ return {
 			symbol_in_winbar = { enable = false },
 		},
 	},
-	{
-		"lukas-reineke/indent-blankline.nvim",
-		main = "ibl",
-		opts = { indent = { highlight = rainbowgroup } },
-	},
+	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = { indent = { highlight = rainbowgroup } } },
 	{
 		"saghen/blink.pairs",
 		enabled = true,
 		version = "*",
-		build = "nix run .#build-plugin",
+		build = function() require("blink.pairs").build():pwait(60000) end,
 		opts = {
 			mappings = { enabled = false },
 			highlights = {
@@ -239,7 +265,7 @@ return {
 			},
 		},
 		config = function()
-			vim.keymap.set("n", "<leader>g", function()
+			vim.keymap.set("n", "<leader>gg", function()
 				require("telescope.builtin").live_grep({
 					search_dirs = { vim.fn.expand("%:p") },
 					attach_mappings = function(prompt_bufnr, map)
@@ -255,6 +281,47 @@ return {
 		end,
 	},
 	{
+		"ibhagwan/fzf-lua",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		opts = {},
+	},
+	{
+		"aaronhallaert/advanced-git-search.nvim",
+		cmd = { "AdvancedGitSearch" },
+		config = function()
+			-- optional: setup telescope before loading the extension
+
+			require("telescope").load_extension("advanced_git_search")
+		end,
+		dependencies = {
+			--- See dependencies
+		},
+	},
+	{
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		---@type snacks.Config
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+
+			-- bigfile = { enabled = true },
+			-- dashboard = { enabled = true },
+			-- explorer = { enabled = true },
+			-- indent = { enabled = true },
+			-- input = { enabled = true },
+			-- picker = { enabled = true },
+			-- notifier = { enabled = true },
+			-- quickfile = { enabled = true },
+			-- scope = { enabled = true },
+			-- scroll = { enabled = true },
+			-- statuscolumn = { enabled = true },
+			-- words = { enabled = true },
+		},
+	},
+	{
 		"nvim-telescope/telescope-fzf-native.nvim",
 		build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release",
 		config = function() require("telescope").load_extension("fzf") end,
@@ -266,6 +333,7 @@ return {
 	},
 	{
 		"saghen/blink.cmp",
+		-- version = "1.*",
 		dependencies = {
 			"saghen/blink.lib",
 			"rafamadriz/friendly-snippets",
@@ -273,14 +341,8 @@ return {
 			"archie-judd/blink-cmp-words",
 			"onsails/lspkind.nvim",
 		},
+		build = function() require("blink.cmp").build():pwait(60000) end,
 		opts_extend = { "sources.default" },
-		-- build = function()
-		-- 	-- build the fuzzy matcher, wait up to 60 seconds
-		-- 	-- you can use `gb` in `:Lazy` to rebuild the plugin as needed
-		-- 	require("blink.cmp").build():wait(60000)
-		-- end,
-		build = "nix run .#build-plugin",
-		version = "1.*",
 		opts = {
 			keymap = { preset = "default", ["<S-CR>"] = { "accept" } },
 			appearance = { nerd_font_variant = "normal" },
@@ -441,7 +503,7 @@ return {
 		opts = {
 			ui = { enable = false },
 			legacy_commands = false,
-			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd" },
+			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd", folder = "Daily Notes/" },
 			workspaces = { { path = os.getenv("HOME") .. "/Sync/Obsidian", name = "Obsidian" } },
 			frontmatter = {
 				func = function(note)
@@ -521,10 +583,14 @@ return {
 	{
 		"echasnovski/mini.nvim",
 		config = function()
+			-- require("mini.git").setup()
 			require("mini.cursorword").setup()
 			require("mini.ai").setup()
 			require("mini.pairs").setup({ mappings = { ["`"] = false } })
 			require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
+			require("mini.diff").setup({ view = { style = "number" } })
+			vim.keymap.set({ "n", "v", "o" }, "<leader>d", function() MiniDiff.toggle_overlay() end)
+			vim.keymap.set({ "n", "v", "o" }, "<leader>v", "<cmd>:DiffviewFileHistory % --pin-local<cr>")
 			require("mini.operators").setup({
 				exchange = { prefix = "gx", reindent_linewise = true },
 				replace = { prefix = "S", reindent_linewise = true },
@@ -535,10 +601,7 @@ return {
 					b = { input = { "%*%*().-()%*%*" }, output = { left = "**", right = "**" } },
 					s = { input = { "~~().-()~~" }, output = { left = "~~", right = "~~" } },
 					c = { input = { "`().-()`" }, output = { left = "`", right = "`" } },
-					C = {
-						input = { "`.-?\n().-()\n`.-" },
-						output = { left = "````\n", right = "\n````" },
-					},
+					C = { input = { "`.-?\n().-()\n`.-" }, output = { left = "````\n", right = "\n````" } },
 				},
 			})
 		end,
@@ -554,7 +617,6 @@ return {
 	},
 	{
 		"olimorris/persisted.nvim",
-		dependencies = { "nvim-telescope/telescope.nvim" },
 		lazy = false,
 		enabled = fresh(),
 		config = function()
@@ -567,23 +629,23 @@ return {
 		name = "catppuccin",
 		priority = 1000,
 		opts = {
-			term_colors = true,
-			auto_integrations = true,
-			dim_inactive = { enabled = false },
-			integrations = {
-				flash = true,
-				aerial = true,
-				hop = true,
-				treesitter_context = true,
-				neogit = true,
-				render_markdown = true,
-				markview = true,
-				telescope = { enabled = true },
-				mini = { enabled = true },
-				blink_cmp = { style = "bordered" },
-				gitsigns = { enabled = true, transparent = false },
-				indent_blankline = { colored_indent_levels = true, enabled = true },
-			},
+			-- 	term_colors = true,
+			-- 	auto_integrations = true,
+			-- 	dim_inactive = { enabled = false },
+			-- 	integrations = {
+			-- 		flash = true,
+			-- 		aerial = true,
+			-- 		hop = true,
+			-- 		treesitter_context = true,
+			-- 		neogit = true,
+			-- 		render_markdown = true,
+			-- 		markview = true,
+			-- 		telescope = { enabled = true },
+			-- 		mini = { enabled = true },
+			-- 		blink_cmp = { style = "bordered" },
+			-- 		gitsigns = { enabled = true, transparent = false },
+			-- 		indent_blankline = { colored_indent_levels = true, enabled = true },
+			-- 	},
 		},
 		config = function(_, opts)
 			vim.cmd("hi @markup.strong guifg=none")
@@ -618,7 +680,6 @@ return {
 			require("telescope").load_extension("frecency")
 			vim.keymap.set({ "n" }, "<leader>f", "<cmd>Telescope frecency<cr>", keyopts)
 		end,
-		opts = { db_version = "v2" },
 	},
 	{ "tpope/vim-eunuch" },
 	{
@@ -828,7 +889,7 @@ return {
 			)
 		end,
 	},
-	{ "sindrets/diffview.nvim" },
+	{ "dlyongemallo/diffview-plus.nvim" },
 	{
 		"subnut/nvim-ghost.nvim",
 		name = "nvim_ghost",
@@ -856,40 +917,16 @@ return {
 	},
 	{
 		"serhez/bento.nvim",
-		enabled = false,
+		enabled = true,
 		config = function()
 			require("bento").setup({
 				ordering_metric = "directory",
 				ui = { floating = { minimal_menu = "full" } },
+				-- highlights = { window_bg = "Normal" },
 			})
 			vim.keymap.set({ "n" }, "<leader>;", "<cmd>BentoToggle<cr>", keyopts)
+			vim.api.nvim_set_hl(0, "BentoNormal", { bg = "NONE", ctermbg = "NONE" })
 		end,
-	},
-	{
-		"leath-dub/snipe.nvim",
-		keys = { { ";", function() require("snipe").open_buffer_menu() end } },
-		opts = {
-			ui = {
-				position = "center",
-				text_align = "file-first",
-				navigate = { cancel_snipe = "q" },
-				open_win_override = { title = "" },
-			},
-			sort = function(buffers)
-				local buffers_with_dir = vim.tbl_map(function(buf)
-					buf.dirname = vim.fs.dirname(buf.name)
-					return buf
-				end, buffers)
-				table.sort(buffers_with_dir, function(a, b)
-					if a.dirname == b.dirname then
-						return a.name < b.name
-					else
-						return a.dirname < b.dirname
-					end
-				end)
-				return buffers_with_dir
-			end,
-		},
 	},
 	{
 		"stevearc/conform.nvim",
@@ -965,9 +1002,9 @@ return {
 		"NeogitOrg/neogit",
 		dependencies = {
 			"nvim-lua/plenary.nvim", -- required
-			"sindrets/diffview.nvim", -- optional - Diff integration
 			"nvim-telescope/telescope.nvim", -- optional
 		},
+		config = function() vim.keymap.set("n", "<leader>n", "<cmd>Neogit<cr>", keyopts) end,
 	},
 	{
 		"tridactyl/vim-tridactyl",
@@ -982,4 +1019,15 @@ return {
 		opts = {},
 	},
 	{ "folke/todo-comments.nvim" },
+	{
+		"chrisgrieser/nvim-tinygit",
+		-- dependencies = "nvim-telescope/telescope.nvim", -- only for interactive staging
+	},
+	{
+		"tanvirtin/vgit.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "nvim-tree/nvim-web-devicons" },
+		-- Lazy loading on 'VimEnter' event is necessary.
+		event = "VimEnter",
+		config = function() require("vgit").setup() end,
+	},
 }

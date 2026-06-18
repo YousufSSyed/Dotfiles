@@ -61,7 +61,7 @@
 
   systemd = {
     user.services."obsidian" = {
-      script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian ${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
+      script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
       environment = config.environment.variables;
       serviceConfig = {
         Type = "simple";

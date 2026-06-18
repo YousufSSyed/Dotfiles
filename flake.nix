@@ -55,6 +55,10 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -70,6 +74,7 @@
           modules = [ ./nix/nixos_laptop.nix ];
         };
       };
+
       darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
         specialArgs = { inherit inputs; };
         modules = [ ./nix/mac_mini.nix ];

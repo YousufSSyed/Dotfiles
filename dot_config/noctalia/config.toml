@@ -1,0 +1,5 @@
+		# Disable Noctalia wallpaper display
+[wallpaper]
+enabled = false
+
+

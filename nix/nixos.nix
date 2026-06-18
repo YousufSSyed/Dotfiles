@@ -2,6 +2,7 @@
   config,
   pkgs,
   inputs,
+  lib,
   ...
 }:
 
@@ -43,6 +44,8 @@ in
       mousai
       proton-vpn
       proton-vpn-cli
+
+      inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       rustdesk-flutter
 
@@ -122,14 +125,14 @@ in
       after = [ "flake-update.service" ];
       requires = [ "flake-update.service" ];
     };
-    user.timers."wallpaper" = {
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        Unit = "wallpaper.service";
-        OnCalendar = "minutely";
-        OnBootSec = "1s";
-      };
-    };
+    # user.timers."wallpaper" = {
+    #   wantedBy = [ "timers.target" ];
+    #   timerConfig = {
+    #     Unit = "wallpaper.service";
+    #     OnCalendar = "minutely";
+    #     OnBootSec = "1s";
+    #   };
+    # };
     user.services = {
       "mac-mounting" = {
         serviceConfig = {
@@ -161,7 +164,8 @@ in
         wantedBy = [ "default.target" ];
       };
       "wallpaper" = {
-        script = "${pkgs.fish}/bin/fish /home/yousuf/Sync/Scripts/wallpaper.fish";
+        wantedBy = lib.mkForce [ ];
+        script = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/wallpaper_cycle.fish";
         serviceConfig = {
           Type = "oneshot";
           User = "yousuf";
@@ -221,6 +225,7 @@ in
       "https://cache.nixos-cuda.org"
       "https://cache.flox.dev"
       "https://nix-community.cachix.org"
+      "https://noctalia.cachix.org"
     ];
     trusted-substituters = [
       "https://hyprland.cachix.org"
@@ -232,6 +237,7 @@ in
       "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs"
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ];
   };
 
@@ -448,16 +454,15 @@ in
       enable = true;
       package = pkgs.espanso-wayland;
     };
-    hardware.openrgb = {
-      enable = true;
-    };
+    hardware.openrgb.enable = true;
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
-      # defaultSession = "hyprland-uwsm";
-      defaultSession = "plasma";
+      defaultSession = "hyprland-uwsm";
+      # defaultSession = "plasma";
       autoLogin.user = "yousuf";
-      plasma-login-manager.enable = true;
+      # plasma-login-manager.enable = true;
+      sddm.enable = true;
     };
     # System services
     pipewire.enable = true;
