@@ -86,15 +86,12 @@ in
 
       # KDE Packages
       inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
-      inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
+      # inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
       kdePackages.extra-cmake-modules
 
       # System Tools
       btrfs-progs
       compsize
-
-      # Git tools
-      github-desktop
     ];
     variables = {
       GRIMBLAST_HIDE_CURSOR = "0";
@@ -156,7 +153,7 @@ in
       "copyparty" = {
         serviceConfig = {
           ExecStartPre = "-${pkgs.udisks}/bin/udisksctl mount -b /dev/nvme0n1p4";
-          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A -v /run/media/yousuf/Secondary:/Secondary:A --see-dots";
+          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
           ExecStop = "${pkgs.udisks}/bin/udisksctl unmount -b /dev/nvme0n1p4";
           Type = "oneshot";
           User = "yousuf";
@@ -458,11 +455,11 @@ in
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
-      defaultSession = "hyprland-uwsm";
-      # defaultSession = "plasma";
+      # defaultSession = "hyprland-uwsm";
+      # sddm.enable = true;
+      defaultSession = "plasma";
+      plasma-login-manager.enable = true;
       autoLogin.user = "yousuf";
-      # plasma-login-manager.enable = true;
-      sddm.enable = true;
     };
     # System services
     pipewire.enable = true;

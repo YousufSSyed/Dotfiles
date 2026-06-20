@@ -60,6 +60,8 @@
   nixpkgs.config.cudaSupport = true;
 
   systemd = {
+    user.services."copyparty".serviceConfig.ExecStart =
+      "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
     user.services."obsidian" = {
       script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
       environment = config.environment.variables;

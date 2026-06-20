@@ -469,14 +469,7 @@ return {
 			pipe_table = { preset = "heavy" },
 			anti_conceal = { enabled = true, disabled_modes = { "n" } },
 			heading = {
-				icons = {
-					"􀀺  # ",
-					"􀀼  ## ",
-					"􀀾  ### ",
-					"􀁀  #### ",
-					"􀁂  ##### ",
-					"􀁄  ###### ",
-				},
+				icons = { "􀀺  # ", "􀀼  ## ", "􀀾  ### ", "􀁀  #### ", "􀁂  ##### ", "􀁄  ###### " },
 				signs = { "" },
 				backgrounds = {},
 				position = "inline",
@@ -490,9 +483,29 @@ return {
 				},
 			},
 			quote = { icon = "▎", repeat_linebreak = true },
-			-- callout = {
-			-- 	tip = { raw = '[!TIP]', rendered = '󰌶', highlight = 'RenderMarkdownSuccess', border = true },
-			-- }, 
+			callout = {
+				example = { raw = "[!EXAMPLE]", rendered = "􀫗  ", highlight = "CalloutExample", border = false },
+				chat = { raw = "[!Chat]", rendered = "􀌲  ", highlight = "CalloutChat", border = false },
+				info = { raw = "[!Info]", rendered = "􀅴  ", highlight = "CalloutInfo", border = false },
+				bug = { raw = "[!Bug]", rendered = "􀌚 ", highlight = "CalloutBug", border = false },
+				spoiler = { raw = "[!Spoiler]", rendered = "􀋯  ", highlight = "CalloutSpoiler", border = false },
+				tip = { raw = "[!Tip]", rendered = "􁎦 ", highlight = "CalloutTip", border = false },
+				warning = { raw = "[!Warning]", rendered = "􀁞  ", highlight = "CalloutWarning", border = false },
+				failure = { raw = "[!Failure]", rendered = "􀆄 ", highlight = "CalloutFailure", border = false },
+				success = { raw = "[!Success]", rendered = "􀆅 ", highlight = "CalloutSuccess", border = false },
+				question = { raw = "[!Question]", rendered = "􀁜  ", highlight = "CalloutQuestion", border = false },
+				danger = { raw = "[!Danger]", rendered = "􀋧  ", highlight = "CalloutDanger", border = false },
+				abstract = { raw = "[!Abstract]", rendered = "􀌀  ", highlight = "CalloutAbstract", border = false },
+				nsfw = { raw = "[!NSFW]", rendered = "􀌀  ", highlight = "CalloutNSFW", border = false },
+				note = { raw = "[!Note]", rendered = "􀧵  ", highlight = "CalloutNote", border = false },
+				todo = { raw = "[!Todo]", rendered = "􀃲  ", highlight = "CalloutTodo", border = false },
+				warningblur = {
+					raw = "[!WarningBlur]",
+					rendered = "􀇾  ",
+					highlight = "CalloutWarningBlur",
+					border = false,
+				},
+			},
 		},
 	},
 	{
@@ -536,7 +549,7 @@ return {
 					vim.keymap.set("n", "gx", require("obsidian.api").smart_action, { buffer = true })
 				end,
 			})
-			function obsidian(text) vim.api.nvim_feedkeys(":Obsidian today " .. text, "n", false) end
+			function obsidian(text) vim.api.nvim_feedkeys(":Obsidian dailies " .. text, "n", false) end
 			vim.keymap.set({ "n" }, "<leader>old", function() obsidian("") end, keyopts)
 			vim.keymap.set({ "n" }, "<leader>od", function() obsidian("-") end, keyopts)
 			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
@@ -590,7 +603,6 @@ return {
 			require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
 			require("mini.diff").setup({ view = { style = "number" } })
 			vim.keymap.set({ "n", "v", "o" }, "<leader>d", function() MiniDiff.toggle_overlay() end)
-			vim.keymap.set({ "n", "v", "o" }, "<leader>v", "<cmd>:DiffviewFileHistory % --pin-local<cr>")
 			require("mini.operators").setup({
 				exchange = { prefix = "gx", reindent_linewise = true },
 				replace = { prefix = "S", reindent_linewise = true },
@@ -629,25 +641,27 @@ return {
 		name = "catppuccin",
 		priority = 1000,
 		opts = {
-			-- 	term_colors = true,
-			-- 	auto_integrations = true,
-			-- 	dim_inactive = { enabled = false },
-			-- 	integrations = {
-			-- 		flash = true,
-			-- 		aerial = true,
-			-- 		hop = true,
-			-- 		treesitter_context = true,
-			-- 		neogit = true,
-			-- 		render_markdown = true,
-			-- 		markview = true,
-			-- 		telescope = { enabled = true },
-			-- 		mini = { enabled = true },
-			-- 		blink_cmp = { style = "bordered" },
-			-- 		gitsigns = { enabled = true, transparent = false },
-			-- 		indent_blankline = { colored_indent_levels = true, enabled = true },
-			-- 	},
+			term_colors = true,
+			auto_integrations = true,
+			dim_inactive = { enabled = false },
+			integrations = {
+				flash = true,
+				aerial = true,
+				hop = true,
+				treesitter_context = true,
+				neogit = true,
+				render_markdown = true,
+				markview = true,
+				telescope = { enabled = true },
+				mini = { enabled = true },
+				blink_cmp = { style = "bordered" },
+				gitsigns = { enabled = true, transparent = false },
+				indent_blankline = { colored_indent_levels = true, enabled = true },
+			},
 		},
 		config = function(_, opts)
+			require("catppuccin").setup(opts)
+			vim.cmd.colorscheme("catppuccin-nvim")
 			vim.cmd("hi @markup.strong guifg=none")
 			vim.cmd("hi @markup.italic guifg=none")
 			vim.cmd("hi @markup.quote guifg=none")
@@ -655,8 +669,23 @@ return {
 			vim.cmd("hi @lsp.type.decorator.markdown guifg=#8fefe7")
 			vim.cmd("hi @markup.link.label guifg=#8fefe7")
 			vim.cmd("hi RenderMarkdownQuote guifg=#00608b")
-			require("catppuccin").setup(opts)
-			vim.cmd.colorscheme("catppuccin-nvim")
+
+			vim.cmd("hi CalloutExample guibg=#211235 guifg=#9653EE")
+			vim.cmd("hi CalloutChat guibg=#002C17 guifg=#00C767")
+			vim.cmd("hi CalloutBug guibg=#310A00 guifg=#DB2C00")
+			vim.cmd("hi CalloutInfo guibg=#021831 guifg=#086CDD")
+			vim.cmd("hi CalloutTip guibg=#002A29 guifg=#00BDBA")
+			vim.cmd("hi CalloutWarning guibg=#34220E guifg=#E9973F")
+			vim.cmd("hi CalloutFailure guibg=#381011 guifg=#FB464C")
+			vim.cmd("hi CalloutWarningBlur guibg=#381011 guifg=#FB464C")
+			vim.cmd("hi CalloutSuccess guibg=#022912 guifg=#08BA4F")
+			vim.cmd("hi CalloutQuestion guibg=#341A00 guifg=#EB7500")
+			vim.cmd("hi CalloutDanger guibg=#340A0F guifg=#E92F45")
+			vim.cmd("hi CalloutAbstract guibg=#00231E guifg=#009E89")
+			vim.cmd("hi CalloutSpoiler guibg=#1C1139 guifg=#7C4DFF")
+			vim.cmd("hi CalloutNSFW guibg=#390F1D guifg=#FF4281")
+			vim.cmd("hi CalloutNote guibg=#291333 guifg=#B856E6")
+			vim.cmd("hi CalloutTodo guibg=#392012 guifg=#FF9152")
 		end,
 	},
 	{
@@ -889,7 +918,12 @@ return {
 			)
 		end,
 	},
-	{ "dlyongemallo/diffview-plus.nvim" },
+	{
+		"dlyongemallo/diffview-plus.nvim",
+		config = function()
+			vim.keymap.set({ "n", "v", "o" }, "<leader>v", "<cmd>:DiffviewFileHistory % --pin-local<cr>")
+		end,
+	},
 	{
 		"subnut/nvim-ghost.nvim",
 		name = "nvim_ghost",
@@ -916,16 +950,17 @@ return {
 		},
 	},
 	{
-		"serhez/bento.nvim",
+		-- "serhez/bento.nvim",
+		"YousufSSyed/bento.nvim",
+		branch = "no_blending",
 		enabled = true,
 		config = function()
 			require("bento").setup({
 				ordering_metric = "directory",
-				ui = { floating = { minimal_menu = "full" } },
-				-- highlights = { window_bg = "Normal" },
+				ui = { floating = { minimal_menu = "full", position = "bottom-right", label_padding = 0 } },
 			})
 			vim.keymap.set({ "n" }, "<leader>;", "<cmd>BentoToggle<cr>", keyopts)
-			vim.api.nvim_set_hl(0, "BentoNormal", { bg = "NONE", ctermbg = "NONE" })
+			-- vim.api.nvim_set_hl(0, "BentoNormal", { bg = "NONE", ctermbg = "NONE" })
 		end,
 	},
 	{
@@ -938,10 +973,13 @@ return {
 				lua = { "stylua" },
 				nix = { "nixfmt" },
 			},
-			format_on_save = {
-				timeout_ms = 500,
-				lsp_format = "fallback",
-			},
+			format_on_save = function()
+				local pwd = vim.fn.getcwd()
+				for line in io.lines(os.getenv("HOME") .. "/Sync/Misc/other_repos.txt") do
+					if line == pwd then return end
+				end
+				return { timeout_ms = 500, lsp_format = "fallback" }
+			end,
 		},
 	},
 	{
@@ -1021,6 +1059,7 @@ return {
 	{ "folke/todo-comments.nvim" },
 	{
 		"chrisgrieser/nvim-tinygit",
+		enabled = false,
 		-- dependencies = "nvim-telescope/telescope.nvim", -- only for interactive staging
 	},
 	{
@@ -1029,5 +1068,49 @@ return {
 		-- Lazy loading on 'VimEnter' event is necessary.
 		event = "VimEnter",
 		config = function() require("vgit").setup() end,
+	},
+	{
+		"coder/claudecode.nvim",
+		dependencies = { "folke/snacks.nvim" },
+		config = true,
+		-- `cmd` lets lazy.nvim create command stubs that load the plugin on first use,
+		-- so `:ClaudeCode` and friends work on a fresh start. Without it, a keys-only
+		-- spec defers loading until a <leader>a* mapping is pressed and the commands
+		-- would not exist yet.
+		cmd = {
+			"ClaudeCode",
+			"ClaudeCodeFocus",
+			"ClaudeCodeSelectModel",
+			"ClaudeCodeAdd",
+			"ClaudeCodeSend",
+			"ClaudeCodeTreeAdd",
+			"ClaudeCodeStatus",
+			"ClaudeCodeStart",
+			"ClaudeCodeStop",
+			"ClaudeCodeOpen",
+			"ClaudeCodeClose",
+			"ClaudeCodeDiffAccept",
+			"ClaudeCodeDiffDeny",
+			"ClaudeCodeCloseAllDiffs",
+		},
+		keys = {
+			{ "<leader>a", nil, desc = "AI/Claude Code" },
+			{ "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
+			{ "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude" },
+			{ "<leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "Resume Claude" },
+			{ "<leader>aC", "<cmd>ClaudeCode --continue<cr>", desc = "Continue Claude" },
+			{ "<leader>am", "<cmd>ClaudeCodeSelectModel<cr>", desc = "Select Claude model" },
+			{ "<leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "Add current buffer" },
+			{ "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send to Claude" },
+			{
+				"<leader>as",
+				"<cmd>ClaudeCodeTreeAdd<cr>",
+				desc = "Add file",
+				ft = { "NvimTree", "neo-tree", "oil", "minifiles", "netrw", "snacks_picker_list" },
+			},
+			-- Diff management
+			{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
+			{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+		},
 	},
 }

@@ -36,10 +36,10 @@
       url = "github:xarblu/kwin-effects-better-blur-dx";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    kwin-effects-glass = {
-      url = "github:4v3ngR/kwin-effects-glass";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # kwin-effects-glass = {
+    #   url = "github:4v3ngR/kwin-effects-glass";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs = {

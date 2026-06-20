@@ -103,12 +103,13 @@
     gnumake
     gcc
     cmake
+    # LLM-related packages
+    opencode
+    claude-code
 
     # Misc Packages
     nerd-fonts.iosevka
     dconf
-
-    opencode
   ];
 
   security.sudo.extraConfig = "Defaults pwfeedback";
