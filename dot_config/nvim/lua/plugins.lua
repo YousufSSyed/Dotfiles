@@ -235,8 +235,8 @@ return {
 		config = function(_, opts)
 			require("aerial").setup({ opts })
 			require("telescope").load_extension("aerial")
-			vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", keyopts)
-			vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", keyopts)
+			-- vim.keymap.set({ "n", "v" }, "<leader>a", "<cmd>Telescope aerial<cr>", keyopts)
+			-- vim.keymap.set({ "n", "v" }, "<leader>A", "<cmd>AerialOpen<cr>", keyopts)
 		end,
 	},
 	{
@@ -602,7 +602,7 @@ return {
 			require("mini.pairs").setup({ mappings = { ["`"] = false } })
 			require("mini.splitjoin").setup({ mappings = { toggle = "gs" } })
 			require("mini.diff").setup({ view = { style = "number" } })
-			vim.keymap.set({ "n", "v", "o" }, "<leader>d", function() MiniDiff.toggle_overlay() end)
+			vim.keymap.set({ "n", "v", "o" }, "<leader>d", function() require("mini.diff").toggle_overlay() end)
 			require("mini.operators").setup({
 				exchange = { prefix = "gx", reindent_linewise = true },
 				replace = { prefix = "S", reindent_linewise = true },
