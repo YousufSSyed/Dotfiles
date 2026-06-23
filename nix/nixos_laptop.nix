@@ -19,4 +19,8 @@
   services.geoclue2.enableDemoAgent = lib.mkForce true;
 
   system.autoUpgrade.dates = "1:00";
+
+    networking = {
+    hostName = "NixOS-Laptop";
+    };
 }

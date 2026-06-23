@@ -5,35 +5,34 @@
 
 {
   imports =
-    [ (modulesPath + "/hardware/cpu/intel-npu.nix")
-      (modulesPath + "/installer/scan/not-detected.nix")
+    [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "usbhid" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/26ec16aa-4f1f-4647-b3b4-9783f5e465c9";
+    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
       fsType = "btrfs";
       options = [ "subvol=root" ];
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/26ec16aa-4f1f-4647-b3b4-9783f5e465c9";
+    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
       fsType = "btrfs";
       options = [ "subvol=home" ];
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/26ec16aa-4f1f-4647-b3b4-9783f5e465c9";
+    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
       fsType = "btrfs";
       options = [ "subvol=nix" ];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/12CE-A600";
+    { device = "/dev/disk/by-uuid/8995-2FCD";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };

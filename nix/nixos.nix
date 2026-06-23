@@ -370,11 +370,21 @@ in
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
     defaultSopsFile = ./Other/secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
-    secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
+  };
+
+  # Nvidia Settings
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware = {
+    nvidia = {
+      # powerManagement.enable = true;
+      # nvidiaPersistenced = true;
+      # nvidiaSettings = true;
+      open = true;
+    };
   };
 
   networking = {
-    hostName = "NixOS-Desktop";
     networkmanager.enable = true;
     networkmanager.wifi.backend = "iwd";
     wireless.iwd = {

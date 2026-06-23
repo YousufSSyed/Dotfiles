@@ -104,17 +104,13 @@
     };
   };
 
-  # Nvidia Settings
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware = {
-    nvidia = {
-      # powerManagement.enable = true;
-      # nvidiaPersistenced = true;
-      # nvidiaSettings = true;
-      open = true;
-    };
+    sops = {
+    secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };
+
+    networking = {
+    hostName = "NixOS-Desktop";
+    };
 
   services.home-assistant = {
     enable = true;
