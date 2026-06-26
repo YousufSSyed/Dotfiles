@@ -57,29 +57,14 @@
   };
 
   system.autoUpgrade.dates = "0:00";
-  nixpkgs.config.cudaSupport = true;
 
   systemd = {
-    user.services."copyparty".serviceConfig.ExecStart =
-      "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
-    user.services."obsidian" = {
-      script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
-      environment = config.environment.variables;
-      serviceConfig = {
-        Type = "simple";
-        User = "yousuf";
-      };
-      path = [
-        pkgs.git
-        pkgs.fish
-        pkgs.watchexec
-        pkgs.libnotify
-        pkgs.openssh
-      ];
-      wantedBy = [ "default.target" ];
-    };
     services = {
       navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
+      nixos-upgrade = {
+        after = [ "flake-update.service" ];
+        requires = [ "flake-update.service" ];
+      };
       flake-update = {
         description = "Update flake inputs";
         unitConfig = {
@@ -102,15 +87,30 @@
         ];
       };
     };
+    user.services = {
+      "copyparty".serviceConfig.ExecStart =
+        "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
+      "laptop-mounting" = {
+        serviceConfig = {
+          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Laptop/";
+          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosLaptop-dav: /home/yousuf/NixOS-Laptop/";
+          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Laptop/";
+          Type = "oneshot";
+          User = "yousuf";
+          Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+        };
+        wantedBy = [ "default.target" ];
+      };
+    };
   };
 
-    sops = {
+  sops = {
     secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   };
 
-    networking = {
+  networking = {
     hostName = "NixOS-Desktop";
-    };
+  };
 
   services.home-assistant = {
     enable = true;

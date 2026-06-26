@@ -33,6 +33,7 @@
       "obsidian"
       "ddcctl"
       "waydabber/betterdisplay/betterdisplaycli"
+      "music-decoy"
     ];
   };
 

@@ -994,7 +994,7 @@ return {
 	{
 		"folke/trouble.nvim",
 		opts = {}, -- for default options, refer to the configuration section for custom setup.
-		enabled = false,
+		enabled = true,
 		cmd = "Trouble",
 		-- keys = {
 		-- 	{

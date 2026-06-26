@@ -118,10 +118,6 @@ in
 
   systemd = {
     packages = [ pkgs.libinput-gestures ];
-    services.nixos-upgrade = {
-      after = [ "flake-update.service" ];
-      requires = [ "flake-update.service" ];
-    };
     # user.timers."wallpaper" = {
     #   wantedBy = [ "timers.target" ];
     #   timerConfig = {
@@ -175,9 +171,20 @@ in
     bluetooth.enable = true;
     graphics.enable = true;
     i2c.enable = true;
+    nvidia = {
+      powerManagement.enable = true;
+      powerManagement.finegrained = true;
+      nvidiaPersistenced = true;
+      nvidiaSettings = true;
+      open = true;
+    };
   };
 
   programs = {
+    appimage = {
+      enable = true;
+      binfmt = true;
+    };
     ydotool.enable = true;
     firefox = {
       enable = true;
@@ -241,37 +248,40 @@ in
   services.hypridle.enable = true;
 
   environment.etc."keyd/default.conf".text = ''
-    		[ids]
-    		046d:c24d:f7b1be65
-    		046d:c24d:61c4abd0
-    		2333:6666:69419150
-    		0000:0006:bdb72f48
-    		0000:0000:faf03c86
+            [ids]
+            046d:c24d:f7b1be65
+            046d:c24d:61c4abd0
+            2333:6666:69419150
+            0000:0006:bdb72f48
+            0000:0000:faf03c86
+            0b05:19b6:9e0e30a6
 
-    		[main]
-    		capslock = esc
-    		leftshift = capslock
-    		leftmeta = leftalt
-    		leftalt  = leftcontrol
-    		rightalt = leftshift
-    		rightsuper = leftmeta
+            [main]
+            capslock = esc
+            leftshift = capslock
+            leftmeta = leftalt
+            leftalt  = leftcontrol
+            rightalt = leftshift
+            rightsuper = leftmeta
+        		rightcontrol = leftmeta
+    				
 
-    		[control]
-    		backspace = delete
+            [control]
+            backspace = delete
 
-    		[meta]
-    		h = left
-    		j = down
-    		k = up
-    		l = right
+            [meta]
+            h = left
+            j = down
+            k = up
+            l = right
 
-    		[alt+meta]
-    		h = C-pageup
-    		l = C-pagedown
+            [alt+meta]
+            h = C-pageup
+            l = C-pagedown
 
-    		[control+meta]
-    		h = C-[
-    		l = C-]
+            [control+meta]
+            h = C-[
+            l = C-]
   '';
 
   boot = {
@@ -320,9 +330,6 @@ in
       "re.fossplant.songrec"
       "org.vinegarhq.Sober"
     ];
-    overrides.global.Environment.filesystems = [
-      "/home" # Expose user Git config
-    ];
   };
 
   home-manager = {
@@ -370,18 +377,6 @@ in
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
     defaultSopsFile = ./Other/secrets.yaml;
     secrets.YOUSUFS_PASSWORD.neededForUsers = true;
-  };
-
-  # Nvidia Settings
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware = {
-    nvidia = {
-      # powerManagement.enable = true;
-      # nvidiaPersistenced = true;
-      # nvidiaSettings = true;
-      open = true;
-    };
   };
 
   networking = {
@@ -462,6 +457,8 @@ in
       package = pkgs.espanso-wayland;
     };
     hardware.openrgb.enable = true;
+    tailscale.enable = true;
+    syncthing.enable = true;
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
@@ -473,12 +470,12 @@ in
     };
     # System services
     pipewire.enable = true;
-    # pipewire.pulse.enable = false;
     gvfs.enable = true;
     udisks2.enable = true;
     automatic-timezoned.enable = true;
     xserver = {
       enable = true;
+      videoDrivers = [ "nvidia" ];
     };
     # Filesystem services
     btrfs.autoScrub = {
@@ -497,12 +494,6 @@ in
         ];
       };
     };
-    # Network hosted services
-    tailscale.enable = true;
-    syncthing = {
-      enable = true;
-      user = "yousuf";
-    };
   };
 
   swapDevices = [
@@ -513,16 +504,5 @@ in
   ];
 
   system.stateVersion = "26.05";
-
-  services.lidarr = {
-    enable = true;
-    user = "yousuf";
-    group = "users";
-  };
-
-  programs.appimage = {
-    enable = true;
-    binfmt = true;
-  };
-
+  nixpkgs.config.cudaSupport = true;
 }
