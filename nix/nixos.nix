@@ -458,7 +458,12 @@ in
     };
     hardware.openrgb.enable = true;
     tailscale.enable = true;
-    syncthing.enable = true;
+    syncthing = {
+      enable = true;
+      user = "yousuf";
+      dataDir = "/home/yousuf/.config/syncthing";
+      configDir = "/home/yousuf/.config/syncthing/.config";
+    };
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {

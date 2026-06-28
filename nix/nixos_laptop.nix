@@ -50,4 +50,12 @@
 
   networking.hostName = "NixOS-Laptop";
   system.autoUpgrade.dates = "1:00";
+
+  environment.etc."libinput/local-overrides.quirks".text = pkgs.lib.mkForce ''
+    [Serial Keyboards]
+    MatchUdevType=keyboard
+    MatchName=keyd virtual keyboard
+    AttrKeyboardIntegration=internal
+  '';
+
 }

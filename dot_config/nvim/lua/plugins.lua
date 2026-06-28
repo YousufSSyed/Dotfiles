@@ -461,8 +461,10 @@ return {
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		enabled = true,
 		lazy = false,
+		ft = { "markdown", "Avante" },
 		opts = {
 			render_modes = { "n", "c", "t", "i" },
+			file_types = { "markdown", "Avante" },
 			bullet = { icons = { "-" } },
 			link = { enabled = true, wiki = { conceal_destination = false } },
 			code = { left_pad = 1 },
@@ -1111,6 +1113,43 @@ return {
 			-- Diff management
 			{ "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
 			{ "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
+		},
+	},
+	{
+		"yetone/avante.nvim",
+		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		-- ⚠️ must add this setting! ! !
+		build = vim.fn.has("win32") ~= 0
+				and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+			or "make",
+		event = "VeryLazy",
+		version = false, -- Never set this value to "*"! Never!
+		---@module 'avante'
+		---@type avante.Config
+		opts = {
+			-- add any opts here
+			-- this file can contain specific instructions for your project
+			instructions_file = "Claude.md",
+			-- for example
+			provider = "claude-code",
+			acp_providers = {
+				["claude-code"] = {
+					command = "claude-agent-acp",
+					args = {},
+					env = {
+						NODE_NO_WARNINGS = "1",
+						ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY"),
+					},
+				},
+			},
+		},
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			--- The below dependencies are optional,
+			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+			"folke/snacks.nvim", -- for input provider snacks
+			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 		},
 	},
 }
