@@ -3,7 +3,6 @@
   inputs,
   ...
 }:
-
 {
 
   imports = [
@@ -17,8 +16,6 @@
 
   environment.systemPackages = with pkgs; [
     syncthing-macos
-    karabiner-elements
-    espanso
   ];
 
   homebrew = {
@@ -31,9 +28,9 @@
       "rustdesk"
       "protonvpn"
       "obsidian"
-      "ddcctl"
-      "waydabber/betterdisplay/betterdisplaycli"
       "music-decoy"
+      "karabiner-elements"
+      "espanso"
     ];
   };
 
@@ -62,12 +59,12 @@
     };
     NSGlobalDomain = {
       "com.apple.swipescrolldirection" = false;
+      NSAutomaticPeriodSubstitutionEnabled = false;
       ApplePressAndHoldEnabled = false;
       AppleShowAllFiles = true;
       InitialKeyRepeat = 15;
       KeyRepeat = 4;
     };
-
     CustomUserPreferences = {
       NSGlobalDomain = {
         AppleActionOnDoubleClick = "Maximize";

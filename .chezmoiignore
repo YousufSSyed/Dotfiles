@@ -8,3 +8,4 @@ nix/
 firefox/
 fish/
 scripts/
+dot_config/OpenRGB/logs/*

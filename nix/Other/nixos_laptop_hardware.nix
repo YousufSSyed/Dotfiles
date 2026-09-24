@@ -8,36 +8,39 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "usbhid" "sd_mod" "rtsx_pci_sdmmc" ];
+  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
+    { device = "/dev/disk/by-uuid/2677774b-0d7b-4645-8b53-4be6bed43997";
       fsType = "btrfs";
       options = [ "subvol=root" ];
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
+    { device = "/dev/disk/by-uuid/2677774b-0d7b-4645-8b53-4be6bed43997";
       fsType = "btrfs";
       options = [ "subvol=home" ];
     };
 
   fileSystems."/nix" =
-    { device = "/dev/disk/by-uuid/db988f37-3994-4f66-9e8d-47ef72a59a76";
+    { device = "/dev/disk/by-uuid/2677774b-0d7b-4645-8b53-4be6bed43997";
       fsType = "btrfs";
       options = [ "subvol=nix" ];
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/8995-2FCD";
+    { device = "/dev/disk/by-uuid/12CE-A600";
       fsType = "vfat";
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
-  swapDevices = [ ];
+swapDevices = [{ 
+  device = "/swap/swapfile"; 
+  size = 32*1024; # Creates an 8GB swap file 
+}];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.npu.enable = true;

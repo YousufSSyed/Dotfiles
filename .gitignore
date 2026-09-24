@@ -2,3 +2,4 @@
 .DS_Store
 *.sync-conflict-*
 .stfolder/
+dot_config/OpenRGB/logs/*

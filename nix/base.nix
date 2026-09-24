@@ -4,7 +4,9 @@
   ...
 }:
 {
-  nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ];
+  nixpkgs.overlays = [
+    inputs.rust-overlay.overlays.default
+  ];
 
   environment.systemPackages = with pkgs; [
     # Apps
@@ -13,29 +15,34 @@
     neovim
     qbittorrent
     megabasterd
-    ruffle
     dolphin-emu
+    ruffle
     copyparty-most
     losslesscut-bin
     tableplus
-    feishin
+    vesktop
+    mullvad-browser
 
     # Command Line Tools / CLIs
     git
     uutils-coreutils-noprefix
     coreutils-prefixed
-    whisper-cpp
     fd
     fzf
     eza
     bat
+    whisper-cpp
     zoxide
     ripgrep
     starship
     bottom
     yazi
     sd
-    ffmpeg-full
+    (ffmpeg-full.override {
+      withUnfree = true;
+      withCudaLLVM = false;
+      withCudaNVCC = false;
+    })
     jujutsu
     yt-dlp
     gallery-dl
@@ -59,17 +66,29 @@
     watchexec
     dua
     gifski
+
     wordnet
     immich-go
     spotdl
     libjxl
     fish
     sqlite
-    (mpv-unwrapped.override {
-      ffmpeg = ffmpeg-full;
+    (pkgs.mpv.override {
+      scripts = [
+        # pkgs.mpvScripts.modernz
+        pkgs.mpvScripts.thumbfast
+      ];
+      mpv-unwrapped = pkgs.mpv-unwrapped.override {
+        ffmpeg = (
+          ffmpeg-full.override {
+            withUnfree = true;
+            withCudaLLVM = false;
+            withCudaNVCC = false;
+          }
+        );
+      };
     })
-    mpvScripts.modernz
-    mpvScripts.thumbfast
+
     lazygit
     diff-so-fancy
     delta
@@ -80,12 +99,12 @@
 
     # Language Packages
     # Misc languages
-    pkgs.rust-bin.stable.latest.default
     rust-analyzer
     markdown-oxide
     nixfmt
     nixd
     uv
+    libclang
     # Golang
     go
     gopls
@@ -93,19 +112,22 @@
     stylua
     lua-language-server
     # JS
-    biome
+    # biome
     yarn
     nodejs
     vtsls
+
     # Other Dev Packages
     tree-sitter
     pkg-config
     gnumake
     gcc
     cmake
+
     # LLM-related packages
     opencode
     claude-code
+    claude-agent-acp
 
     # Misc Packages
     nerd-fonts.iosevka

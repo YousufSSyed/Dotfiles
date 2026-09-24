@@ -2,6 +2,7 @@
   pkgs,
   config,
   inputs,
+  lib,
   ...
 }:
 
@@ -9,7 +10,7 @@
   imports = [
     ./nixos.nix
     ./Other/nixos_laptop_hardware.nix
-    inputs.nixos-hardware.nixosModules.asus-zephyrus-gu605my
+    # inputs.nixos-hardware.nixosModules.asus-zephyrus-gu605my
   ];
 
   # services.avahi.enable = true;
@@ -17,6 +18,10 @@
   # services.geoclue2.submitData = true;
   # services.geoclue2.enableWifi = false;
   # services.geoclue2.enableDemoAgent = lib.mkForce true;
+
+  environment.systemPackages = with pkgs; [
+    supergfxctl
+  ];
 
   systemd.user.services = {
     "obsidian" = {
@@ -57,5 +62,4 @@
     MatchName=keyd virtual keyboard
     AttrKeyboardIntegration=internal
   '';
-
 }

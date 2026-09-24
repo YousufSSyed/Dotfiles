@@ -27,14 +27,12 @@ in
       # Apps
       gparted
       # ulauncher
-      font-manager
+      # font-manager
       vivaldi
       # birdtray
       rofi
       obsidian
       nvitop
-      vesktop
-      davinci-resolve
       kdePackages.kde-dev-utils
       plasma-panel-colorizer
       # activitywatch
@@ -43,9 +41,11 @@ in
       qview
       mousai
       proton-vpn
-      proton-vpn-cli
+      wireguard-tools
+      # proton-vpn-cli
+      rmg-wayland
 
-      inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
+      # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
       rustdesk-flutter
 
@@ -57,18 +57,16 @@ in
       snapper
       wl-clipboard
       slurp
-
-      discordchatexporter-desktop
-
       # Command Line Apps / CLI Apps
       wf-recorder
       grim
       quickshell
-      (ffmpeg-full.override {
-        withUnfree = true;
-      })
+      compose2nix
+
+      discordchatexporter-desktop
 
       # Misc Packages
+      pkgs.rust-bin.stable.latest.default
       libinput-gestures
       apple-cursor
       xdg-desktop-portal-hyprland
@@ -85,13 +83,14 @@ in
       inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
 
       # KDE Packages
-      inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
-      # inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
+      # inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
+      inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
       kdePackages.extra-cmake-modules
 
       # System Tools
       btrfs-progs
       compsize
+      gnome-keyring
     ];
     variables = {
       GRIMBLAST_HIDE_CURSOR = "0";
@@ -100,7 +99,6 @@ in
       MANPAGER = "nvim +Man!";
       EDITOR = "nvim";
       HOUR = "5";
-      TRITON_LIBCUDA_PATH = "/run/opengl-driver/lib"; # awaiting patch for triton to remove this: https://github.com/NixOS/nixpkgs/issues/426296
       PYTHON_HISTORY = "/home/yousuf/.local/share/python/history";
       PSQL_HISTORY = "/home/yousuf/.local/share/.psql_history";
       GTK2_RC_FILES = "/home/yousuf/.config/gtkrc-2.0";
@@ -126,7 +124,7 @@ in
     #     OnBootSec = "1s";
     #   };
     # };
-    user.services = {
+    services = {
       "mac-mounting" = {
         serviceConfig = {
           ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
@@ -171,13 +169,8 @@ in
     bluetooth.enable = true;
     graphics.enable = true;
     i2c.enable = true;
-    nvidia = {
-      powerManagement.enable = true;
-      powerManagement.finegrained = true;
-      nvidiaPersistenced = true;
-      nvidiaSettings = true;
-      open = true;
-    };
+    enableRedistributableFirmware = true;
+    enableAllFirmware = true;
   };
 
   programs = {
@@ -249,12 +242,7 @@ in
 
   environment.etc."keyd/default.conf".text = ''
             [ids]
-            046d:c24d:f7b1be65
-            046d:c24d:61c4abd0
-            2333:6666:69419150
-            0000:0006:bdb72f48
-            0000:0000:faf03c86
-            0b05:19b6:9e0e30a6
+    			  046d:c24d:61c4abd0	
 
             [main]
             capslock = esc
@@ -262,18 +250,16 @@ in
             leftmeta = leftalt
             leftalt  = leftcontrol
             rightalt = leftshift
-            rightsuper = leftmeta
         		rightcontrol = leftmeta
-    				
-
-            [control]
-            backspace = delete
 
             [meta]
             h = left
             j = down
             k = up
             l = right
+
+            [control]
+            backspace = delete
 
             [alt+meta]
             h = C-pageup
@@ -300,6 +286,7 @@ in
     plymouth.enable = true;
     consoleLogLevel = 0;
     initrd.verbose = false;
+    kernelPackages = pkgs.linuxPackages_latest;
     kernelModules = [ "uinput" ];
     kernelParams = [
       # Zswap
@@ -318,20 +305,6 @@ in
     ];
   };
 
-  services.flatpak = {
-    enable = true;
-    update.auto = {
-      enable = true;
-      onCalendar = "daily";
-    };
-    packages = [
-      "com.github.tchx84.Flatseal"
-      "eu.betterbird.Betterbird"
-      "re.fossplant.songrec"
-      "org.vinegarhq.Sober"
-    ];
-  };
-
   home-manager = {
     sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
     users.yousuf =
@@ -344,6 +317,7 @@ in
         home = {
           file.".local/share/fonts".source = config.lib.file.mkOutOfStoreSymlink "/home/yousuf/Sync/Fonts/";
           pointerCursor = {
+            enable = true;
             gtk.enable = true;
             package = pkgs.apple-cursor;
             name = "macOS";
@@ -373,6 +347,8 @@ in
       };
   };
 
+  virtualisation.podman.defaultNetwork.settings.dns_enabled = true; # Container configuration
+
   sops = {
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
     defaultSopsFile = ./Other/secrets.yaml;
@@ -382,6 +358,7 @@ in
   networking = {
     networkmanager.enable = true;
     networkmanager.wifi.backend = "iwd";
+    firewall.checkReversePath = false;
     wireless.iwd = {
       enable = true;
       settings.General.EnableNetworkConfiguration = true;
@@ -431,10 +408,6 @@ in
     ];
   };
 
-  virtualisation.docker = {
-    enable = true;
-  };
-
   security = {
     sudo-rs.enable = true;
     polkit.extraConfig = ''
@@ -452,18 +425,31 @@ in
     keyd.enable = true;
     atuin.enable = true;
     libinput.enable = true;
+    tailscale.enable = true;
     espanso = {
       enable = true;
       package = pkgs.espanso-wayland;
     };
-    hardware.openrgb.enable = true;
-    tailscale.enable = true;
+    flatpak = {
+      enable = true;
+      update.auto = {
+        enable = true;
+        onCalendar = "daily";
+      };
+      packages = [
+        "com.github.tchx84.Flatseal"
+        "eu.betterbird.Betterbird"
+        "re.fossplant.songrec"
+        "org.vinegarhq.Sober"
+      ];
+    };
     syncthing = {
       enable = true;
       user = "yousuf";
       dataDir = "/home/yousuf/.config/syncthing";
       configDir = "/home/yousuf/.config/syncthing/.config";
     };
+    hardware.openrgb.enable = true;
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
@@ -474,14 +460,14 @@ in
       autoLogin.user = "yousuf";
     };
     # System services
+    fwupd.enable = true;
     pipewire.enable = true;
     gvfs.enable = true;
     udisks2.enable = true;
     automatic-timezoned.enable = true;
-    xserver = {
-      enable = true;
-      videoDrivers = [ "nvidia" ];
-    };
+    udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
+    '';
     # Filesystem services
     btrfs.autoScrub = {
       enable = true;
@@ -509,5 +495,4 @@ in
   ];
 
   system.stateVersion = "26.05";
-  nixpkgs.config.cudaSupport = true;
 }

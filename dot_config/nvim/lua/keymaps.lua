@@ -59,8 +59,10 @@ function mark(cmd)
 	vim.api.nvim_feedkeys("mz" .. count .. cmd .. "\27`z:delmarks z\13", "n", false)
 	vim.opt.guicursor = saved_cursor
 end
+vim.keymap.set({ "n", "v", "o" }, "<leader>z", "z=")
 vim.keymap.set({ "n", "v", "o" }, "<leader>[z", function() mark("[sz=") end)
 vim.keymap.set({ "n", "v", "o" }, "<leader>]z", function() mark("]sz=") end)
+vim.keymap.set({ "n", "v", "o" }, "<leader>s", "1z=")
 vim.keymap.set({ "n", "v", "o" }, "<leader>[s", function() mark("[s1z=") end)
 vim.keymap.set({ "n", "v", "o" }, "<leader>]s", function() mark("]s1z=") end)
 vim.keymap.set({ "n", "v", "o" }, "<leader>[g", function() mark("[szg") end)

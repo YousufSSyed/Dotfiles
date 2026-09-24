@@ -4,11 +4,30 @@
   lib,
   ...
 }:
+let
+  update-containers = pkgs.writeShellScriptBin "update-containers" ''
+    	SUDO=""
+    	if [[ $(id -u) -ne 0 ]]; then
+    		SUDO="sudo"
+    	fi
 
+        images=$($SUDO ${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
+
+        for image in $images
+        do
+          $SUDO ${pkgs.podman}/bin/podman pull $image
+        done
+  '';
+in
 {
   imports = [
     ./nixos.nix
     ./Other/nixos_desktop_hardware.nix
+    ./Other/home_assistant.nix
+    ./Other/yubal.nix
+    ./Other/matter_server.nix
+    ./Other/browsertrix.nix
+    ./Other/sparkyfitness.nix
   ];
 
   services = {
@@ -56,7 +75,17 @@
     };
   };
 
-  system.autoUpgrade.dates = "0:00";
+  systemd.timers = {
+    # ...
+    updatecontainers = {
+      timerConfig = {
+        Unit = "updatecontainers.service";
+        OnCalendar = "daily";
+      };
+      wantedBy = [ "timers.target" ];
+    };
+    # ...
+  };
 
   systemd = {
     services = {
@@ -86,6 +115,12 @@
           pkgs.networkmanager
         ];
       };
+      updatecontainers = {
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = update-containers;
+        };
+      };
     };
     user.services = {
       "copyparty".serviceConfig.ExecStart =
@@ -104,34 +139,20 @@
     };
   };
 
-  sops = {
-    secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
-  };
+  sops.secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
+  networking.hostName = "NixOS-Desktop";
+  system.autoUpgrade.dates = "0:00";
 
-  networking = {
-    hostName = "NixOS-Desktop";
-  };
-
-  services.home-assistant = {
+  services.xserver = {
     enable = true;
-    extraComponents = [
-      # Components required to complete the onboarding
-      "analytics"
-      "google_translate"
-      "met"
-      "radio_browser"
-      "shopping_list"
-
-      "smlight"
-
-      # Recommended for fast zlib compression
-      # https://www.home-assistant.io/integrations/isal
-      "isal"
-    ];
-    config = {
-      # Includes dependencies for a basic setup
-      # https://www.home-assistant.io/integrations/default_config/
-      default_config = { };
-    };
+    videoDrivers = [ "nvidia" ];
   };
+
+  hardware.nvidia = {
+    powerManagement.enable = true;
+    nvidiaSettings = true;
+    open = true;
+  };
+
+  nixpkgs.config.cudaSupport = true;
 }

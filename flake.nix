@@ -36,10 +36,10 @@
       url = "github:xarblu/kwin-effects-better-blur-dx";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # kwin-effects-glass = {
-    #   url = "github:4v3ngR/kwin-effects-glass";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
+    kwin-effects-glass = {
+      url = "github:4v3ngR/kwin-effects-glass";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs = {
@@ -68,6 +68,10 @@
   outputs =
     { nixpkgs, ... }@inputs:
     {
+      darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; };
+        modules = [ ./nix/mac_mini.nix ];
+      };
       nixosConfigurations = {
         NixOS-Desktop = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit inputs; };
@@ -79,9 +83,5 @@
         };
       };
 
-      darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
-        specialArgs = { inherit inputs; };
-        modules = [ ./nix/mac_mini.nix ];
-      };
     };
 }
