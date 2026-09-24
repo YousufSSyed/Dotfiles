@@ -10,7 +10,7 @@
   imports = [
     ./nixos.nix
     ./Other/nixos_laptop_hardware.nix
-    # inputs.nixos-hardware.nixosModules.asus-zephyrus-gu605my
+    inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-13th-gen
   ];
 
   # services.avahi.enable = true;

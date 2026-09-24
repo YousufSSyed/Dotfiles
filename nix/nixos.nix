@@ -445,9 +445,7 @@ in
     };
     syncthing = {
       enable = true;
-      user = "yousuf";
-      dataDir = "/home/yousuf/.config/syncthing";
-      configDir = "/home/yousuf/.config/syncthing/.config";
+      openDefaultPorts = true;
     };
     hardware.openrgb.enable = true;
     # Desktop Services
