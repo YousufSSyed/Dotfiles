@@ -27,7 +27,7 @@ in
       # Apps
       gparted
       # ulauncher
-      # font-manager
+      font-manager
       vivaldi
       # birdtray
       rofi
@@ -41,9 +41,8 @@ in
       qview
       mousai
       proton-vpn
-      wireguard-tools
-      # proton-vpn-cli
       rmg-wayland
+      mullvad-browser
 
       # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
@@ -67,7 +66,6 @@ in
 
       # Misc Packages
       pkgs.rust-bin.stable.latest.default
-      libinput-gestures
       apple-cursor
       xdg-desktop-portal-hyprland
       xdg-desktop-portal
@@ -83,8 +81,6 @@ in
       inputs.hyprfloat.packages.${stdenv.hostPlatform.system}.default
 
       # KDE Packages
-      # inputs.kwin-effects-better-blur-dx.packages.${stdenv.hostPlatform.system}.default
-      inputs.kwin-effects-glass.packages.${stdenv.hostPlatform.system}.default
       kdePackages.extra-cmake-modules
 
       # System Tools
@@ -92,6 +88,30 @@ in
       compsize
       gnome-keyring
     ];
+    etc."keyd/default.conf".text = ''
+      [ids]
+      046d:c24d:61c4abd0	
+      0001:0001:09b4e68d
+
+      [main]
+      capslock = esc
+      leftshift = capslock
+      leftmeta = leftalt
+      leftalt  = leftcontrol
+      rightalt = leftshift
+      rightcontrol = leftmeta
+      leftshift+leftmeta+f23 =  leftmeta
+
+      [meta]
+      h = left
+      j = down
+      k = up
+      l = right
+
+      [alt+meta]
+      h = C-pageup
+      l = C-pagedown
+    '';
     variables = {
       GRIMBLAST_HIDE_CURSOR = "0";
       SOPS_AGE_KEY_FILE = "/home/yousuf/Sync/Misc/age-keys.txt";
@@ -105,72 +125,6 @@ in
       TRITON_CACHE_DIR = "/home/yousuf/.local/share/triton/";
       GIT_CONFIG_GLOBAL = "/home/yousuf/.config/.gitconfig";
     };
-  };
-
-  system.autoUpgrade = {
-    # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
-    enable = true;
-    flags = [ "--print-build-logs" ];
-    flake = "path:///home/yousuf/.local/share/chezmoi";
-  };
-
-  systemd = {
-    packages = [ pkgs.libinput-gestures ];
-    # user.timers."wallpaper" = {
-    #   wantedBy = [ "timers.target" ];
-    #   timerConfig = {
-    #     Unit = "wallpaper.service";
-    #     OnCalendar = "minutely";
-    #     OnBootSec = "1s";
-    #   };
-    # };
-    services = {
-      "mac-mounting" = {
-        serviceConfig = {
-          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
-          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
-          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
-          Type = "oneshot";
-          User = "yousuf";
-          Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "dotfiles" = {
-        script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
-        serviceConfig = {
-          Type = "oneshot";
-          User = "yousuf";
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "copyparty" = {
-        serviceConfig = {
-          ExecStartPre = "-${pkgs.udisks}/bin/udisksctl mount -b /dev/nvme0n1p4";
-          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
-          ExecStop = "${pkgs.udisks}/bin/udisksctl unmount -b /dev/nvme0n1p4";
-          Type = "oneshot";
-          User = "yousuf";
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "wallpaper" = {
-        wantedBy = lib.mkForce [ ];
-        script = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/wallpaper_cycle.fish";
-        serviceConfig = {
-          Type = "oneshot";
-          User = "yousuf";
-        };
-      };
-    };
-  };
-
-  hardware = {
-    bluetooth.enable = true;
-    graphics.enable = true;
-    i2c.enable = true;
-    enableRedistributableFirmware = true;
-    enableAllFirmware = true;
   };
 
   programs = {
@@ -210,103 +164,8 @@ in
     };
   };
 
-  nix.settings = {
-    download-buffer-size = 524288000;
-    trusted-users = [
-      "@wheel"
-      "yousuf"
-    ];
-    # Cache substitutes
-    substituters = [
-      "https://hyprland.cachix.org"
-      "https://cache.nixos-cuda.org"
-      "https://cache.flox.dev"
-      "https://nix-community.cachix.org"
-      "https://noctalia.cachix.org"
-    ];
-    trusted-substituters = [
-      "https://hyprland.cachix.org"
-      "https://cache.nixos-cuda.org"
-      "https://cache.flox.dev"
-    ];
-    trusted-public-keys = [
-      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
-      "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs"
-      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
-    ];
-  };
-
-  services.hypridle.enable = true;
-
-  environment.etc."keyd/default.conf".text = ''
-            [ids]
-    			  046d:c24d:61c4abd0	
-
-            [main]
-            capslock = esc
-            leftshift = capslock
-            leftmeta = leftalt
-            leftalt  = leftcontrol
-            rightalt = leftshift
-        		rightcontrol = leftmeta
-
-            [meta]
-            h = left
-            j = down
-            k = up
-            l = right
-
-            [control]
-            backspace = delete
-
-            [alt+meta]
-            h = C-pageup
-            l = C-pagedown
-
-            [control+meta]
-            h = C-[
-            l = C-]
-  '';
-
-  boot = {
-    supportedFilesystems = {
-      exfat = true;
-      btrfs = true;
-      ntfs = true;
-      nfs = true;
-    };
-    loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
-      timeout = 0;
-    };
-    # Silent boot
-    plymouth.enable = true;
-    consoleLogLevel = 0;
-    initrd.verbose = false;
-    kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "uinput" ];
-    kernelParams = [
-      # Zswap
-      "zswap.enabled=1"
-      "zswap.compressor=zstd"
-      "zswap.zpool=zsmalloc"
-      "zswap.max_pool_percent=200"
-      "zswap.shrinker_enabled=1"
-      # Silent boot parameters
-      "quiet"
-      "splash"
-      "rd.systemd.show_status=false"
-      "rd.udev.log_level=3"
-      "udev.log_priority=3"
-      "boot.shell_on_fail"
-    ];
-  };
-
   home-manager = {
-    sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ];
+    sharedModules = [ ];
     users.yousuf =
       {
         config,
@@ -347,7 +206,143 @@ in
       };
   };
 
-  virtualisation.podman.defaultNetwork.settings.dns_enabled = true; # Container configuration
+  services = {
+    # App services
+    keyd.enable = true;
+    atuin.enable = true;
+    libinput.enable = true;
+    tailscale.enable = true;
+    espanso = {
+      enable = true;
+      package = pkgs.espanso-wayland;
+    };
+    flatpak = {
+      enable = true;
+      update.auto = {
+        enable = true;
+        onCalendar = "daily";
+      };
+      packages = [
+        "com.github.tchx84.Flatseal"
+        "eu.betterbird.Betterbird"
+        "re.fossplant.songrec"
+        "org.vinegarhq.Sober"
+      ];
+    };
+    syncthing = {
+      enable = true;
+      openDefaultPorts = true;
+      user = "yousuf";
+      dataDir = "/home/yousuf/.config/syncthing";
+      configDir = "/home/yousuf/.config/syncthing/.config";
+    };
+    hardware.openrgb.enable = true;
+    # Desktop Services
+    desktopManager.plasma6.enable = true;
+    displayManager = {
+      # defaultSession = "hyprland-uwsm";
+      # sddm.enable = true;
+      defaultSession = "plasma";
+      plasma-login-manager.enable = true;
+      autoLogin.user = "yousuf";
+    };
+    # System services
+    fwupd.enable = true;
+    pipewire.enable = true;
+    gvfs.enable = true;
+    udisks2.enable = true;
+    automatic-timezoned.enable = true;
+    udev.extraRules = ''
+      ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
+    '';
+    # Filesystem services
+    btrfs.autoScrub = {
+      enable = true;
+      interval = "monthly";
+      fileSystems = [ "/" ];
+    };
+    beesd.filesystems = {
+      root = {
+        spec = "LABEL=root";
+        hashTableSizeMB = 2048;
+        verbosity = "crit";
+        extraOptions = [
+          "--loadavg-target"
+          "5.0"
+        ];
+      };
+    };
+  };
+
+  systemd = {
+    # user.timers."wallpaper" = {
+    #   wantedBy = [ "timers.target" ];
+    #   timerConfig = {
+    #     Unit = "wallpaper.service";
+    #     OnCalendar = "minutely";
+    #     OnBootSec = "1s";
+    #   };
+    # };
+    services = {
+      "mac-mounting" = {
+        serviceConfig = {
+          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
+          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
+          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
+          Type = "oneshot";
+          User = "yousuf";
+          Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "dotfiles" = {
+        script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yousuf";
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "wallpaper" = {
+        wantedBy = lib.mkForce [ ];
+        script = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/wallpaper_cycle.fish";
+        serviceConfig = {
+          Type = "oneshot";
+          User = "yousuf";
+        };
+      };
+    };
+  };
+
+  nix.settings = {
+    download-buffer-size = 524288000;
+    trusted-users = [
+      "@wheel"
+      "yousuf"
+    ];
+    # Cache substitutes
+    substituters = [
+      "https://hyprland.cachix.org"
+      "https://cache.nixos-cuda.org"
+      "https://cache.flox.dev"
+      "https://nix-community.cachix.org"
+      "https://noctalia.cachix.org"
+    ];
+    trusted-substituters = [
+      "https://hyprland.cachix.org"
+      "https://cache.nixos-cuda.org"
+      "https://cache.flox.dev"
+    ];
+    trusted-public-keys = [
+      "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+      "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs"
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+    ];
+  };
+
+  services.hypridle.enable = true;
 
   sops = {
     age.keyFile = "/home/yousuf/Sync/Misc/age-keys.txt";
@@ -420,68 +415,13 @@ in
     '';
   };
 
-  services = {
-    # App services
-    keyd.enable = true;
-    atuin.enable = true;
-    libinput.enable = true;
-    tailscale.enable = true;
-    espanso = {
+  system = {
+    stateVersion = "26.05";
+    autoUpgrade = {
+      # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
       enable = true;
-      package = pkgs.espanso-wayland;
-    };
-    flatpak = {
-      enable = true;
-      update.auto = {
-        enable = true;
-        onCalendar = "daily";
-      };
-      packages = [
-        "com.github.tchx84.Flatseal"
-        "eu.betterbird.Betterbird"
-        "re.fossplant.songrec"
-        "org.vinegarhq.Sober"
-      ];
-    };
-    syncthing = {
-      enable = true;
-      openDefaultPorts = true;
-    };
-    hardware.openrgb.enable = true;
-    # Desktop Services
-    desktopManager.plasma6.enable = true;
-    displayManager = {
-      # defaultSession = "hyprland-uwsm";
-      # sddm.enable = true;
-      defaultSession = "plasma";
-      plasma-login-manager.enable = true;
-      autoLogin.user = "yousuf";
-    };
-    # System services
-    fwupd.enable = true;
-    pipewire.enable = true;
-    gvfs.enable = true;
-    udisks2.enable = true;
-    automatic-timezoned.enable = true;
-    udev.extraRules = ''
-      ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
-    '';
-    # Filesystem services
-    btrfs.autoScrub = {
-      enable = true;
-      interval = "monthly";
-      fileSystems = [ "/" ];
-    };
-    beesd.filesystems = {
-      root = {
-        spec = "LABEL=root";
-        hashTableSizeMB = 2048;
-        verbosity = "crit";
-        extraOptions = [
-          "--loadavg-target"
-          "5.0"
-        ];
-      };
+      flags = [ "--print-build-logs" ];
+      flake = "path:///home/yousuf/.local/share/chezmoi";
     };
   };
 
@@ -492,5 +432,46 @@ in
     }
   ];
 
-  system.stateVersion = "26.05";
+  boot = {
+    supportedFilesystems = {
+      exfat = true;
+      btrfs = true;
+      ntfs = true;
+      nfs = true;
+    };
+    loader = {
+      efi.canTouchEfiVariables = true;
+      systemd-boot.enable = true;
+      timeout = 0;
+    };
+    # Silent boot
+    plymouth.enable = true;
+    consoleLogLevel = 0;
+    initrd.verbose = false;
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelModules = [ "uinput" ];
+    kernelParams = [
+      # Zswap
+      "zswap.enabled=1"
+      "zswap.compressor=zstd"
+      "zswap.zpool=zsmalloc"
+      "zswap.max_pool_percent=200"
+      "zswap.shrinker_enabled=1"
+      # Silent boot parameters
+      "quiet"
+      "splash"
+      "rd.systemd.show_status=false"
+      "rd.udev.log_level=3"
+      "udev.log_priority=3"
+      "boot.shell_on_fail"
+    ];
+  };
+
+  hardware = {
+    bluetooth.enable = true;
+    graphics.enable = true;
+    i2c.enable = true;
+    enableRedistributableFirmware = true;
+    enableAllFirmware = true;
+  };
 }

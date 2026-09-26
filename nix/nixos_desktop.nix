@@ -26,8 +26,8 @@ in
     ./Other/home_assistant.nix
     ./Other/yubal.nix
     ./Other/matter_server.nix
-    ./Other/browsertrix.nix
-    ./Other/sparkyfitness.nix
+    # ./Other/browsertrix.nix
+    # ./Other/sparkyfitness.nix
   ];
 
   services = {
@@ -95,7 +95,6 @@ in
         requires = [ "flake-update.service" ];
       };
       flake-update = {
-        description = "Update flake inputs";
         unitConfig = {
           StartLimitIntervalSec = 300;
           StartLimitBurst = 5;
@@ -123,8 +122,14 @@ in
       };
     };
     user.services = {
-      "copyparty".serviceConfig.ExecStart =
-        "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
+      "copyparty" = {
+        serviceConfig = {
+          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots --daw --dav-mac";
+          Type = "oneshot";
+          User = "yousuf";
+        };
+        wantedBy = [ "default.target" ];
+      };
       "laptop-mounting" = {
         serviceConfig = {
           ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Laptop/";
@@ -134,6 +139,18 @@ in
           User = "yousuf";
           Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
         };
+        wantedBy = [ "default.target" ];
+      };
+      comfyui = {
+        serviceConfig = {
+          ExecStart = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/dot_config/fish/functions/comfyui.fish";
+          Type = "oneshot";
+          User = "yousuf";
+        };
+        path = [
+          pkgs.fish
+          pkgs.uv
+        ];
         wantedBy = [ "default.target" ];
       };
     };

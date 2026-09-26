@@ -75,7 +75,7 @@
   # Launchd Configuration
   launchd.daemons = {
     copyparty = {
-      command = "${pkgs.copyparty-most}/bin/copyparty -v /Users/yousuf::A -v /Volumes/Secondary/:/Secondary:A --see-dots";
+      command = "${pkgs.copyparty-most}/bin/copyparty -v /Users/yousuf::A --see-dots";
       serviceConfig = {
         KeepAlive = true;
         RunAtLoad = true;

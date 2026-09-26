@@ -19,10 +19,6 @@
   # services.geoclue2.enableWifi = false;
   # services.geoclue2.enableDemoAgent = lib.mkForce true;
 
-  environment.systemPackages = with pkgs; [
-    supergfxctl
-  ];
-
   systemd.user.services = {
     "obsidian" = {
       script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/Sync/Obsidian /home/yousuf/.local/share/chezmoi/scripts/obsidian.fish";
@@ -51,15 +47,46 @@
       };
       wantedBy = [ "default.target" ];
     };
+    "copyparty" = {
+      serviceConfig = {
+        ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
+        Type = "oneshot";
+        User = "yousuf";
+      };
+      wantedBy = [ "default.target" ];
+    };
   };
 
   networking.hostName = "NixOS-Laptop";
   system.autoUpgrade.dates = "1:00";
 
-  environment.etc."libinput/local-overrides.quirks".text = pkgs.lib.mkForce ''
-    [Serial Keyboards]
-    MatchUdevType=keyboard
-    MatchName=keyd virtual keyboard
-    AttrKeyboardIntegration=internal
-  '';
+  # environment.etc."libinput/local-overrides.quirks".text = pkgs.lib.mkForce ''
+  #   [Serial Keyboards]
+  #   MatchUdevType=keyboard
+  #   MatchName=keyd virtual keyboard
+  #   AttrKeyboardIntegration=internal
+  # '';
+
+  services.logind.settings.Login = {
+    enable = true;
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    # If you use a dock or external monitor regularly:
+    HandleLidSwitchDocked = "ignore";
+    LidSwitchIgnoreInhibited = "no";
+  };
+
+  services.acpid = {
+    enable = true;
+    handlers.lid = {
+      event = "button/lid.";
+      action = ''
+        if grep -q closed /proc/acpi/button/lid/*/state; then
+        XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 ${pkgs.kdePackages.libkscreen}/bin/kscreen-doctor output.eDP-1.disable
+        else
+         XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 ${pkgs.kdePackages.libkscreen}/bin/kscreen-doctor output.eDP-1.enable
+        fi
+      '';
+    };
+  };
 }

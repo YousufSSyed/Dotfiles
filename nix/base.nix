@@ -21,7 +21,6 @@
     losslesscut-bin
     tableplus
     vesktop
-    mullvad-browser
 
     # Command Line Tools / CLIs
     git
@@ -112,7 +111,7 @@
     stylua
     lua-language-server
     # JS
-    # biome
+    biome
     yarn
     nodejs
     vtsls

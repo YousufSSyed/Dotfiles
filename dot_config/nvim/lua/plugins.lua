@@ -461,7 +461,7 @@ return {
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		enabled = true,
 		lazy = false,
-		ft = { "markdown", "Avante", "codecompanion" },
+		ft = { "markdown", "Avante" },
 		opts = {
 			render_modes = { "n", "c", "t", "i" },
 			file_types = { "markdown", "Avante" },
@@ -511,15 +511,14 @@ return {
 		},
 	},
 	{
-		-- "obsidian-nvim/obsidian.nvim",
-		"MoltenMonster/obsidian.nvim",
+		"obsidian-nvim/obsidian.nvim",
 		ft = "markdown",
 		version = "*",
 		lazy = false,
 		opts = {
 			ui = { enable = false },
 			legacy_commands = false,
-			daily_notes = { date_Format = "YYYY-MM-DD MMMM Do YYYY dddd", folder = "Daily Notes/" },
+			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd", folder = "Daily Notes/" },
 			workspaces = { { path = os.getenv("HOME") .. "/Sync/Obsidian", name = "Obsidian" } },
 			frontmatter = {
 				func = function(note)
@@ -528,9 +527,7 @@ return {
 						local time = vim.uv.fs_stat(note.path.filename)
 						out["Date Created"] = os.date("%Y-%m-%d %H:%M", time and time.birthtime.sec or nil)
 					end
-					if vim.fn.undotree().seq_cur >= vim.fn.undotree().seq_last then
-						out["Date Modified"] = out["Date Created"] and os.date("%Y-%m-%d %H:%M") or nil
-					end
+					out["Date Modified"] = out["Date Created"] and os.date("%Y-%m-%d %H:%M") or nil
 					out["id"] = nil
 					out["aliases"] = nil
 					out["tags"] = nil
@@ -540,6 +537,13 @@ return {
 		},
 		config = function(_, opts)
 			require("obsidian").setup(opts)
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "ObsidianNoteWritePost",
+				callback = function(ev)
+					local note = require("obsidian.note").from_buffer(ev.buf)
+					require("obsidian.builtin").frontmatter.func(note)
+				end,
+			})
 			vim.api.nvim_create_autocmd("User", {
 				pattern = "ObsidianNoteEnter",
 				callback = function()
@@ -874,8 +878,6 @@ return {
 					},
 				},
 			})
-			-- require("lualine").hide({ place = { "statusline" } })
-			vim.opt.laststatus = 0
 		end,
 	},
 	{
@@ -1117,7 +1119,6 @@ return {
 		"yetone/avante.nvim",
 		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		-- ⚠️ must add this setting! ! !
-		enable = false,
 		build = vim.fn.has("win32") ~= 0
 				and "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
 			or "make",
@@ -1151,26 +1152,4 @@ return {
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 		},
 	},
-	{
-		"olimorris/codecompanion.nvim",
-		version = "^19.0.0",
-		opts = {
-			adapters = {
-				acp = {
-					claude_code = function()
-						return require("codecompanion.adapters").extend("claude_code", {
-							env = {
-								CLAUDE_CODE_OAUTH_TOKEN = " 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",
-							},
-						})
-					end,
-				},
-			},
-		},
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-		},
-	},
-	--
 }
