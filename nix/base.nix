@@ -65,6 +65,7 @@
     watchexec
     dua
     gifski
+    fdupes
 
     wordnet
     immich-go

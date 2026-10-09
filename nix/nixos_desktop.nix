@@ -4,21 +4,7 @@
   lib,
   ...
 }:
-let
-  update-containers = pkgs.writeShellScriptBin "update-containers" ''
-    	SUDO=""
-    	if [[ $(id -u) -ne 0 ]]; then
-    		SUDO="sudo"
-    	fi
 
-        images=$($SUDO ${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
-
-        for image in $images
-        do
-          $SUDO ${pkgs.podman}/bin/podman pull $image
-        done
-  '';
-in
 {
   imports = [
     ./nixos.nix
@@ -75,50 +61,26 @@ in
     };
   };
 
-  systemd.timers = {
-    # ...
-    updatecontainers = {
+  systemd = {
+    timers.update-containers = {
       timerConfig = {
-        Unit = "updatecontainers.service";
+        Unit = "update-containers.service";
         OnCalendar = "daily";
       };
       wantedBy = [ "timers.target" ];
     };
-    # ...
-  };
+    services.update-containers = {
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = lib.getExe (
+          pkgs.writeShellScriptBin "update-containers" ''
+            images=$(${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
 
-  systemd = {
-    services = {
-      navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
-      nixos-upgrade = {
-        after = [ "flake-update.service" ];
-        requires = [ "flake-update.service" ];
-      };
-      flake-update = {
-        unitConfig = {
-          StartLimitIntervalSec = 300;
-          StartLimitBurst = 5;
-        };
-        serviceConfig = {
-          ExecStartPre = "${pkgs.networkmanager}/bin/nm-online";
-          ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.local/share/chezmoi";
-          Restart = "on-failure";
-          RestartSec = "30";
-          Type = "oneshot";
-          User = "yousuf";
-        };
-        path = [
-          pkgs.nix
-          pkgs.git
-          pkgs.host
-          pkgs.networkmanager
-        ];
-      };
-      updatecontainers = {
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = update-containers;
-        };
+            for image in $images; do
+              ${pkgs.podman}/bin/podman pull "$image"
+            done
+          ''
+        );
       };
     };
     user.services = {
@@ -158,7 +120,6 @@ in
 
   sops.secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
   networking.hostName = "NixOS-Desktop";
-  system.autoUpgrade.dates = "0:00";
 
   services.xserver = {
     enable = true;
@@ -172,4 +133,5 @@ in
   };
 
   nixpkgs.config.cudaSupport = true;
+  services.hardware.bolt.enable = true;
 }

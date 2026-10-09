@@ -32,7 +32,7 @@
     environment = {
       "PGID" = "1000";
       "PUID" = "1000";
-      "YUBAL_DOWNLOAD_UGC" = "false";
+      "YUBAL_DOWNLOAD_UGC" = "true";
       "YUBAL_SCHEDULER_CRON" = "0 0 * * *";
       "YUBAL_TZ" = "UTC";
     };

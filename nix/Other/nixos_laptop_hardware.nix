@@ -19,6 +19,7 @@
     "thunderbolt"
     "nvme"
     "usb_storage"
+    "usbhid"
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ ];

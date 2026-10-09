@@ -13,6 +13,8 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-13th-gen
   ];
 
+  hardware.enableAllFirmware = false;
+
   # services.avahi.enable = true;
   # services.geoclue2.enable = true;
   # services.geoclue2.submitData = true;
@@ -57,36 +59,47 @@
     };
   };
 
+  services.hardware.bolt.enable = true;
+  services.power-profiles-daemon.enable = false;
+  services.tlp.enable = true;
+  services.tlp.pd.enable = true;
+
   networking.hostName = "NixOS-Laptop";
-  system.autoUpgrade.dates = "1:00";
 
-  # environment.etc."libinput/local-overrides.quirks".text = pkgs.lib.mkForce ''
-  #   [Serial Keyboards]
-  #   MatchUdevType=keyboard
-  #   MatchName=keyd virtual keyboard
-  #   AttrKeyboardIntegration=internal
-  # '';
-
-  services.logind.settings.Login = {
-    enable = true;
-    HandleLidSwitch = "ignore";
-    HandleLidSwitchExternalPower = "ignore";
-    # If you use a dock or external monitor regularly:
-    HandleLidSwitchDocked = "ignore";
-    LidSwitchIgnoreInhibited = "no";
-  };
-
-  services.acpid = {
-    enable = true;
-    handlers.lid = {
-      event = "button/lid.";
-      action = ''
-        if grep -q closed /proc/acpi/button/lid/*/state; then
-        XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 ${pkgs.kdePackages.libkscreen}/bin/kscreen-doctor output.eDP-1.disable
-        else
-         XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0 ${pkgs.kdePackages.libkscreen}/bin/kscreen-doctor output.eDP-1.enable
-        fi
-      '';
+  system = {
+    autoUpgrade = {
+      # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
+      enable = true;
+      flags = [ "--print-build-logs" ];
+      flake = "path:///home/yousuf/.local/share/chezmoi";
     };
   };
+
+  systemd.services = {
+    nixos-upgrade = {
+      after = [ "flake-update.service" ];
+      requires = [ "flake-update.service" ];
+    };
+    flake-update = {
+      unitConfig = {
+        StartLimitIntervalSec = 300;
+        StartLimitBurst = 5;
+      };
+      serviceConfig = {
+        ExecStartPre = "${pkgs.networkmanager}/bin/nm-online";
+        ExecStart = "${pkgs.nix}/bin/nix flake update --flake /home/yousuf/.local/share/chezmoi";
+        Restart = "on-failure";
+        RestartSec = "30";
+        Type = "oneshot";
+        User = "yousuf";
+      };
+      path = [
+        pkgs.nix
+        pkgs.git
+        pkgs.host
+        pkgs.networkmanager
+      ];
+    };
+  };
+
 }

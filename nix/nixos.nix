@@ -43,6 +43,7 @@ in
       proton-vpn
       rmg-wayland
       mullvad-browser
+      powertop
 
       # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
@@ -61,6 +62,7 @@ in
       grim
       quickshell
       compose2nix
+      usbutils
 
       discordchatexporter-desktop
 
@@ -283,7 +285,7 @@ in
     #     OnBootSec = "1s";
     #   };
     # };
-    services = {
+    user.services = {
       "mac-mounting" = {
         serviceConfig = {
           ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
@@ -415,16 +417,6 @@ in
     '';
   };
 
-  system = {
-    stateVersion = "26.05";
-    autoUpgrade = {
-      # in-progress PR for autoupgrade on darwin: https://github.com/nix-darwin/nix-darwin/pull/1682
-      enable = true;
-      flags = [ "--print-build-logs" ];
-      flake = "path:///home/yousuf/.local/share/chezmoi";
-    };
-  };
-
   swapDevices = [
     {
       device = "/swap/swapfile";
@@ -472,6 +464,8 @@ in
     graphics.enable = true;
     i2c.enable = true;
     enableRedistributableFirmware = true;
-    enableAllFirmware = true;
+    enableAllFirmware = lib.mkDefault true;
   };
+
+  system.stateVersion = "26.05";
 }
