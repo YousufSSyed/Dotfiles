@@ -20,7 +20,7 @@ in
       {
         # imports = [ inputs.zen-browser.homeModules.twilight ];
         home = {
-          stateVersion = "26.05";
+          stateVersion = "26.11";
           file.".config/zen/h9ep31cd.default/chrome".source =
             config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
           file."Sync/Obsidian/Immich".source =

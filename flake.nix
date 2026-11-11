@@ -20,6 +20,7 @@
       url = "github:hyprwm/hyprland-plugins";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz";
     awww.url = "git+https://codeberg.org/LGFae/awww";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     hyprfloat.url = "github:yz778/hyprfloat";

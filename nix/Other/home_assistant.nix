@@ -17,7 +17,11 @@
 
   networking.firewall = {
     allowedUDPPorts = [ 5353 ]; # mDNS
-    allowedTCPPorts = [ 8123 ]; # HA
+    allowedTCPPorts = [
+      8123
+      6065
+    ]; # HA
+
     allowedTCPPortRanges = [
       {
         from = 21000;

@@ -41,28 +41,20 @@
     "desktop-mounting" = {
       serviceConfig = {
         ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop/";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /home/yousuf/NixOS-Desktop/";
+        # ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /home/yousuf/NixOS-Desktop/";
+        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop2-dav: /home/yousuf/NixOS-Desktop/";
         ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Desktop/";
-        Type = "oneshot";
+        Type = "notify";
         User = "yousuf";
         Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
       };
       wantedBy = [ "default.target" ];
     };
-    "copyparty" = {
-      serviceConfig = {
-        ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
-        Type = "oneshot";
-        User = "yousuf";
-      };
-      wantedBy = [ "default.target" ];
-    };
   };
 
-  services.hardware.bolt.enable = true;
-  services.power-profiles-daemon.enable = false;
-  services.tlp.enable = true;
-  services.tlp.pd.enable = true;
+  # services.power-profiles-daemon.enable = false;
+  # services.tlp.enable = true;
+  # services.tlp.pd.enable = true;
 
   networking.hostName = "NixOS-Laptop";
 
@@ -100,6 +92,22 @@
         pkgs.networkmanager
       ];
     };
+  };
+
+  services.sunshine = {
+    enable = true;
+    autoStart = true;
+    capSysAdmin = true; # only needed for Wayland -- omit this when using with Xorg
+    openFirewall = true;
+  };
+
+  networking.interfaces = {
+    thunderbolt0.ipv4.addresses = [
+      {
+        address = "169.254.0.1";
+        prefixLength = 16;
+      }
+    ];
   };
 
 }

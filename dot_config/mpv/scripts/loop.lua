@@ -2,9 +2,6 @@ if mp.get_property_native("options/script-opts")["loop"] == "yes" then
 	local msg = require("mp.msg")
 	local utils = require("mp.utils")
 	local JSON_FILE = "/home/yousuf/Assets/Misc/video_info.json"
-	package.path = mp.command_native({ "expand-path", "/home/yousuf/.config/mpv/script-modules/?.lua;" })
-		.. package.path
-	local json = require("dkjson")
 
 	local function read_json()
 		local file = io.open(JSON_FILE, "r")
@@ -23,8 +20,19 @@ if mp.get_property_native("options/script-opts")["loop"] == "yes" then
 	end
 
 	local function write_json(data)
+		local json, err = utils.format_json(data, true)
+		if not json then
+			msg.error("Failed to format JSON: " .. tostring(err))
+			return false
+		end
+
 		local file = io.open(JSON_FILE, "w")
-		file:write(json.encode(data, { indent = true }))
+		if not file then
+			msg.error("Could not open " .. JSON_FILE .. " for writing")
+			return false
+		end
+
+		file:write(json)
 		file:close()
 		return true
 	end

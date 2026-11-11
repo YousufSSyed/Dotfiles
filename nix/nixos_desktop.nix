@@ -75,7 +75,6 @@
         ExecStart = lib.getExe (
           pkgs.writeShellScriptBin "update-containers" ''
             images=$(${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
-
             for image in $images; do
               ${pkgs.podman}/bin/podman pull "$image"
             done
@@ -84,30 +83,22 @@
       };
     };
     user.services = {
-      "copyparty" = {
-        serviceConfig = {
-          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots --daw --dav-mac";
-          Type = "oneshot";
-          User = "yousuf";
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "laptop-mounting" = {
+      laptop-mounting = {
         serviceConfig = {
           ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Laptop/";
           ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosLaptop-dav: /home/yousuf/NixOS-Laptop/";
           ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Laptop/";
-          Type = "oneshot";
+          Type = "notify";
           User = "yousuf";
           Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
         };
         wantedBy = [ "default.target" ];
       };
       comfyui = {
+        script = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/dot_config/fish/functions/comfyui.fish";
         serviceConfig = {
-          ExecStart = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/dot_config/fish/functions/comfyui.fish";
-          Type = "oneshot";
           User = "yousuf";
+          Restart = "on-failure";
         };
         path = [
           pkgs.fish
@@ -115,11 +106,26 @@
         ];
         wantedBy = [ "default.target" ];
       };
+      "rclone" = {
+        serviceConfig = {
+          ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /home/yousuf --addr :8080 --vfs-cache-mode writes";
+          User = "yousuf";
+          Restart = "on-failure";
+        };
+        wantedBy = [ "default.target" ];
+      };
     };
+    services.navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
   };
 
   sops.secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
-  networking.hostName = "NixOS-Desktop";
+
+  networking.interfaces.thunderbolt0.ipv4.addresses = [
+    {
+      address = "169.254.0.3";
+      prefixLength = 16;
+    }
+  ];
 
   services.xserver = {
     enable = true;
@@ -133,5 +139,5 @@
   };
 
   nixpkgs.config.cudaSupport = true;
-  services.hardware.bolt.enable = true;
+  networking.hostName = "NixOS-Desktop";
 }

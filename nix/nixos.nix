@@ -30,7 +30,19 @@ in
       font-manager
       vivaldi
       # birdtray
-      rofi
+      (rofi.override {
+        plugins = [
+          rofi-file-browser
+          webp-pixbuf-loader
+        ];
+      })
+      gdk-pixbuf
+      webp-pixbuf-loader
+      prusa-slicer
+      librepods
+
+      lutris
+
       obsidian
       nvitop
       kdePackages.kde-dev-utils
@@ -47,10 +59,10 @@ in
 
       # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-      rustdesk-flutter
+      # rustdesk-flutter
+      inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.rustdesk-flutter
 
       # Command Line Tools / CLIs
-      keyd
       trashy
       rofimoji
       hyprpicker
@@ -89,6 +101,8 @@ in
       btrfs-progs
       compsize
       gnome-keyring
+
+      libinput
     ];
     etc."keyd/default.conf".text = ''
       [ids]
@@ -102,7 +116,7 @@ in
       leftalt  = leftcontrol
       rightalt = leftshift
       rightcontrol = leftmeta
-      leftshift+leftmeta+f23 =  leftmeta
+      leftshift+leftmeta+f23 = leftmeta
 
       [meta]
       h = left
@@ -239,6 +253,7 @@ in
       configDir = "/home/yousuf/.config/syncthing/.config";
     };
     hardware.openrgb.enable = true;
+    hardware.bolt.enable = true;
     # Desktop Services
     desktopManager.plasma6.enable = true;
     displayManager = {
@@ -255,7 +270,7 @@ in
     udisks2.enable = true;
     automatic-timezoned.enable = true;
     udev.extraRules = ''
-      ACTION=="add", SUBSYSTEM=="usb", DRIVER=="usb", ATTR{power/wakeup}="enabled"
+      ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
     '';
     # Filesystem services
     btrfs.autoScrub = {
@@ -286,12 +301,20 @@ in
     #   };
     # };
     user.services = {
+      "copyparty" = {
+        serviceConfig = {
+          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
+          User = "yousuf";
+          Restart = "on-failure";
+        };
+        wantedBy = [ "default.target" ];
+      };
       "mac-mounting" = {
         serviceConfig = {
           ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
           ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
           ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
-          Type = "oneshot";
+          Type = "notify";
           User = "yousuf";
           Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
         };
@@ -300,8 +323,8 @@ in
       "dotfiles" = {
         script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
         serviceConfig = {
-          Type = "oneshot";
           User = "yousuf";
+          Restart = "on-failure";
         };
         wantedBy = [ "default.target" ];
       };
@@ -309,7 +332,6 @@ in
         wantedBy = lib.mkForce [ ];
         script = "${pkgs.fish}/bin/fish /home/yousuf/.local/share/chezmoi/scripts/wallpaper_cycle.fish";
         serviceConfig = {
-          Type = "oneshot";
           User = "yousuf";
         };
       };
@@ -362,6 +384,29 @@ in
     };
   };
 
+  networking.firewall.enable = false;
+  networking.firewall.trustedInterfaces = [ "thunderbolt0" ];
+  networking.networkmanager.unmanaged = [ "interface-name:thunderbolt0" ];
+
+  # systemd.network = {
+  #   enable = true;
+  #
+  #   # Disable the default systemd link file so our naming rule wins
+  #   links."40-thunderbolt0".enable = false;
+  #
+  #   # Give the NIC a stable name based on its permanent MAC
+  #   links."41-thunderbolt0" = {
+  #     matchConfig.PermanentMACAddress = "02:30:b5:be:6e:b8"; # replace with your real MAC
+  #     linkConfig.Name = "thunderbolt0";
+  #   };
+  #
+  #   # Assign the static IP to that interface
+  #   networks."41-thunderbolt0" = {
+  #     matchConfig.PermanentMACAddress = "02:30:b5:be:6e:b8"; # replace with your real MAC
+  #     networkConfig.Address = "169.254.0.1/16";
+  #   };
+  # };
+
   fonts = {
     enableDefaultPackages = true;
     enableGhostscriptFonts = true;
@@ -399,6 +444,7 @@ in
       "wheel"
       "keyd"
       "input"
+      "uinput"
       "ydotool"
       "i2c"
       "docker"
@@ -439,9 +485,11 @@ in
     # Silent boot
     plymouth.enable = true;
     consoleLogLevel = 0;
-    initrd.verbose = false;
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [ "uinput" ];
+    kernelModules = [
+      "thunderbolt"
+      "thunderbolt_net"
+    ];
     kernelParams = [
       # Zswap
       "zswap.enabled=1"
@@ -460,11 +508,13 @@ in
   };
 
   hardware = {
+    keyboard.qmk.enable = true;
     bluetooth.enable = true;
     graphics.enable = true;
     i2c.enable = true;
     enableRedistributableFirmware = true;
     enableAllFirmware = lib.mkDefault true;
+    graphics.enable32Bit = true;
   };
 
   system.stateVersion = "26.05";

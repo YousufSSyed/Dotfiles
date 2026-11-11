@@ -46,3 +46,12 @@ run = "select_all"
 on   = ["c", "i"]
 run  = "plugin sxiv"
 desc = "Preview images in sxiv"
+
+[[mgr.prepend_keymap]]
+on   = [ "<C-\\>", "|" ]
+run  = [
+  "plugin gallery -- prepare_selection",
+  "shell '/bin/zsh -f ~/.config/yazi/plugins/gallery.yazi/gallery.zsh %h' --block",
+  "plugin gallery -- apply_selection"
+]
+desc = "Gallery"

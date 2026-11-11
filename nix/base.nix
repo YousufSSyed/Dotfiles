@@ -11,7 +11,8 @@
   environment.systemPackages = with pkgs; [
     # Apps
     kitty
-    neovide
+    # neovide
+    inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.neovide
     neovim
     qbittorrent
     megabasterd
@@ -37,11 +38,7 @@
     bottom
     yazi
     sd
-    (ffmpeg-full.override {
-      withUnfree = true;
-      withCudaLLVM = false;
-      withCudaNVCC = false;
-    })
+    ffmpeg-full
     jujutsu
     yt-dlp
     gallery-dl
@@ -78,17 +75,7 @@
         # pkgs.mpvScripts.modernz
         pkgs.mpvScripts.thumbfast
       ];
-      mpv-unwrapped = pkgs.mpv-unwrapped.override {
-        ffmpeg = (
-          ffmpeg-full.override {
-            withUnfree = true;
-            withCudaLLVM = false;
-            withCudaNVCC = false;
-          }
-        );
-      };
     })
-
     lazygit
     diff-so-fancy
     delta
@@ -125,7 +112,7 @@
     cmake
 
     # LLM-related packages
-    opencode
+    # opencode
     claude-code
     claude-agent-acp
 
