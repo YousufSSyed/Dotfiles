@@ -3,18 +3,11 @@
   pkgs,
   inputs,
   lib,
+  vars,
   ...
 }:
-
-let
-  sans-serif-font = "SF Pro Display";
-  monospace-font = "Iosevka Custom";
-  emoji-font = "Apple Color Emoji";
-in
 {
   imports = [
-    ./home.nix
-    ./base.nix
     inputs.home-manager.nixosModules.home-manager
     inputs.nix-flatpak.nixosModules.nix-flatpak
     inputs.sops-nix.nixosModules.sops
@@ -423,9 +416,9 @@ in
     fontconfig = {
       useEmbeddedBitmaps = true;
       defaultFonts = {
-        sansSerif = [ sans-serif-font ];
-        monospace = [ monospace-font ];
-        emoji = [ emoji-font ];
+        sansSerif = [ vars.sans-serif-font ];
+        monospace = [ vars.monospace-font ];
+        emoji = [ vars.emoji-font ];
       };
       localConf = ''
         <?xml version='1.0'?>

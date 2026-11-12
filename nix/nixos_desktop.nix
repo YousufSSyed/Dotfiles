@@ -8,6 +8,7 @@
 {
   imports = [
     ./nixos.nix
+    ./base.nix
     ./Other/nixos_desktop_hardware.nix
     ./Other/home_assistant.nix
     ./Other/yubal.nix
@@ -15,6 +16,8 @@
     # ./Other/browsertrix.nix
     # ./Other/sparkyfitness.nix
   ];
+
+  _module.args.firefoxProfile = "desktop-profile";
 
   services = {
     navidrome = {

@@ -68,20 +68,26 @@
 
   outputs =
     { nixpkgs, ... }@inputs:
+    let
+      vars = {
+        sans-serif-font = "SF Pro Display";
+        monospace-font = "Iosevka Custom";
+        emoji-font = "Apple Color Emoji";
+      };
+    in
     {
       nixosConfigurations = {
         NixOS-Desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs vars; };
           modules = [ ./nix/nixos_desktop.nix ];
         };
         NixOS-Laptop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs vars; };
           modules = [ ./nix/nixos_laptop.nix ];
         };
       };
-
       darwinConfigurations.Mac-Mini = inputs.nix-darwin.lib.darwinSystem {
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs vars; };
         modules = [ ./nix/mac_mini.nix ];
       };
     };

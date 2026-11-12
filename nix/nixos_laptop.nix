@@ -8,10 +8,13 @@
 
 {
   imports = [
+    ./base.nix
     ./nixos.nix
     ./Other/nixos_laptop_hardware.nix
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-13th-gen
   ];
+
+  _module.args.firefoxProfile = "laptop-profile";
 
   hardware.enableAllFirmware = false;
 

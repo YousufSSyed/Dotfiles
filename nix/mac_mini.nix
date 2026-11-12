@@ -4,13 +4,13 @@
   ...
 }:
 {
-
   imports = [
     ./base.nix
-    ./home.nix
     inputs.home-manager.darwinModules.home-manager
     inputs.nix-index-database.darwinModules.nix-index
   ];
+
+  _module.args.firefoxProfile = "mac-profile";
 
   users.users.yousuf.home = "/Users/yousuf";
 
