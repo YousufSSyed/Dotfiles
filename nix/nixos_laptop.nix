@@ -101,13 +101,13 @@
     openFirewall = true;
   };
 
-  networking.interfaces = {
-    thunderbolt0.ipv4.addresses = [
-      {
-        address = "169.254.0.1";
-        prefixLength = 16;
-      }
-    ];
-  };
+  # networking.interfaces.thunderbolt0.ipv4.addresses = [
+  #   {
+  #     address = "169.254.0.1";
+  #     prefixLength = 16;
+  #   }
+  # ];
+
+  systemd.network.networks."40-thunderbolt".networkConfig.Address = "10.0.0.1/24";
 
 }

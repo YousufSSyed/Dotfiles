@@ -376,17 +376,26 @@ in
 
   networking = {
     networkmanager.enable = true;
-    networkmanager.wifi.backend = "iwd";
+    # networkmanager.wifi.backend = "iwd";
     firewall.checkReversePath = false;
-    wireless.iwd = {
-      enable = true;
-      settings.General.EnableNetworkConfiguration = true;
-    };
+    # wireless.iwd = {
+    #   enable = true;
+    #   settings.General.EnableNetworkConfiguration = true;
+    # };
   };
 
   networking.firewall.enable = false;
   networking.firewall.trustedInterfaces = [ "thunderbolt0" ];
   networking.networkmanager.unmanaged = [ "interface-name:thunderbolt0" ];
+
+  systemd.network = {
+    enable = true;
+    wait-online.enable = false; # NetworkManager handles online-ness
+    networks."40-thunderbolt" = {
+      matchConfig.Name = "thunderbolt*";
+      linkConfig.RequiredForOnline = "no";
+    };
+  };
 
   # systemd.network = {
   #   enable = true;

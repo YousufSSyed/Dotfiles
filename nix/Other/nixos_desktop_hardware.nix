@@ -18,6 +18,7 @@
     "nvme"
     "xhci_pci"
     "thunderbolt"
+    "thunderbolt_net"
     "ahci"
     "usbhid"
     "usb_storage"

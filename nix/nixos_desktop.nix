@@ -120,12 +120,14 @@
 
   sops.secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
 
-  networking.interfaces.thunderbolt0.ipv4.addresses = [
-    {
-      address = "169.254.0.3";
-      prefixLength = 16;
-    }
-  ];
+  # networking.interfaces.thunderbolt0.ipv4.addresses = [
+  #   {
+  #     address = "169.254.0.3";
+  #     prefixLength = 16;
+  #   }
+  # ];
+
+  systemd.network.networks."40-thunderbolt".networkConfig.Address = "10.0.0.3/24";
 
   services.xserver = {
     enable = true;
