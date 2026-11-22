@@ -14,7 +14,38 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-x1-13th-gen
   ];
 
-  _module.args.firefoxProfile = "laptop-profile";
+  _module.args = {
+    firefoxProfile = "laptop-profile";
+    hostName = "NixOS-Laptop";
+    thunderboltAddress = "10.0.0.1/24";
+  };
+
+  environment.systemPackages = with pkgs; [
+    # Language Packages
+    # Misc languages
+    pkgs.rust-bin.stable.latest.default
+    rust-analyzer
+    libclang
+    # Golang
+    go
+    gopls
+    # JS
+    biome
+    yarn
+    nodejs
+    vtsls
+
+    # Other Dev Packages
+    pkg-config
+    gnumake
+    gcc
+    cmake
+
+    # LLM-related packages
+    # opencode
+    claude-code
+    claude-agent-acp
+  ];
 
   hardware.enableAllFirmware = false;
 
@@ -44,9 +75,30 @@
     "desktop-mounting" = {
       serviceConfig = {
         ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop/";
-        # ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /home/yousuf/NixOS-Desktop/";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop2-dav: /home/yousuf/NixOS-Desktop/";
+        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /home/yousuf/NixOS-Desktop/";
         ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Desktop/";
+        Type = "notify";
+        User = "yousuf";
+        Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+      };
+      wantedBy = [ "default.target" ];
+    };
+    "desktop-mounting-tb" = {
+      serviceConfig = {
+        ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop-TB/";
+        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktopTB-dav: /home/yousuf/NixOS-Desktop-TB/";
+        ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Desktop-TB/";
+        Type = "notify";
+        User = "yousuf";
+        Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
+      };
+      wantedBy = [ "default.target" ];
+    };
+    "mac-mounting" = {
+      serviceConfig = {
+        ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop/";
+        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
+        ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
         Type = "notify";
         User = "yousuf";
         Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
@@ -55,11 +107,9 @@
     };
   };
 
-  # services.power-profiles-daemon.enable = false;
-  # services.tlp.enable = true;
-  # services.tlp.pd.enable = true;
-
-  networking.hostName = "NixOS-Laptop";
+  services.power-profiles-daemon.enable = false;
+  services.tlp.enable = true;
+  services.tlp.pd.enable = true;
 
   system = {
     autoUpgrade = {
@@ -100,17 +150,7 @@
   services.sunshine = {
     enable = true;
     autoStart = true;
-    capSysAdmin = true; # only needed for Wayland -- omit this when using with Xorg
+    capSysAdmin = true;
     openFirewall = true;
   };
-
-  # networking.interfaces.thunderbolt0.ipv4.addresses = [
-  #   {
-  #     address = "169.254.0.1";
-  #     prefixLength = 16;
-  #   }
-  # ];
-
-  systemd.network.networks."40-thunderbolt".networkConfig.Address = "10.0.0.1/24";
-
 }

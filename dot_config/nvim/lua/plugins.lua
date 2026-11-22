@@ -419,7 +419,7 @@ return {
 				MkdnTableNewRowAbove = { "n", "<leader>mR" },
 				MkdnTableNewColAfter = { "n", "<leader>mc" },
 				MkdnTableNewColBefore = { "n", "<leader>mC" },
-				MkdnTableNextCell = { "i", "<C-tab>" },
+				MkdnTableNextCell = { "i", modifier .. "tab>" },
 				MkdnEnter = false,
 			},
 			modules = { conceal = false },
@@ -515,11 +515,12 @@ return {
 		ft = "markdown",
 		version = "*",
 		lazy = false,
+		enabled = require("jit").os ~= "OSX",
 		opts = {
 			ui = { enable = false },
 			legacy_commands = false,
 			daily_notes = { date_format = "YYYY-MM-DD MMMM Do YYYY dddd", folder = "Daily Notes/" },
-			workspaces = { { path = os.getenv("HOME") .. "/Sync/Obsidian", name = "Obsidian" } },
+			workspaces = { { path = os.getenv("HOME") .. "/Assets/Obsidian", name = "Obsidian" } },
 			frontmatter = {
 				func = function(note)
 					local out = require("obsidian.builtin").frontmatter(note)
@@ -556,7 +557,7 @@ return {
 			vim.keymap.set({ "n" }, "<leader>od", function() obsidian("-") end, keyopts)
 			vim.keymap.set({ "n" }, "<leader>os", "<cmd>Obsidian quick_switch<cr>", keyopts)
 			vim.keymap.set({ "n" }, "<leader>ot", "<cmd>Obsidian today<cr>", keyopts)
-			vim.keymap.set({ "n" }, "<C-p>", function()
+			vim.keymap.set({ "n" }, modifier .. "p>", function()
 				vim.system({
 					os.getenv("HOME") .. "/.local/share/chezmoi/scripts/finish_note.fish",
 					vim.api.nvim_buf_get_name(0),
@@ -581,10 +582,10 @@ return {
 					local toggle = require("markdown-toggle")
 					-- Keymap configurations will be added here for each feature
 					opts.expr = true -- required for dot-repeat in Normal mode
-					vim.keymap.set({ "n", "v" }, "<C-l>", toggle.list_dot, opts)
-					vim.keymap.set("n", "<C-k>", toggle.checkbox_dot, opts)
+					vim.keymap.set({ "n", "v" }, modifier .. "l>", toggle.list_dot, opts)
+					vim.keymap.set("n", modifier .. "k>", toggle.checkbox_dot, opts)
 					opts.expr = false -- required for Visual mode
-					vim.keymap.set("x", "<C-l>", toggle.list, opts)
+					vim.keymap.set("x", modifier .. "l>", toggle.list, opts)
 					vim.keymap.set("x", "<S-l>", toggle.checkbox, opts)
 				end,
 			})
@@ -622,7 +623,7 @@ return {
 	},
 	{
 		"chrisgrieser/nvim-rip-substitute",
-		config = function() vim.keymap.set({ "v", "n" }, "<C-f>", "<cmd>RipSubstitute<cr>", keyopts) end,
+		config = function() vim.keymap.set({ "v", "n" }, modifier .. "f>", "<cmd>RipSubstitute<cr>", keyopts) end,
 	},
 	{
 		"chrisgrieser/nvim-various-textobjs",
@@ -752,10 +753,10 @@ return {
 		-- optional (see options below)
 		opts = { ... },
 		config = function()
-			vim.keymap.set({ "n", "v" }, "<C-k>", "<cmd>Treewalker Up<cr>", { silent = true })
-			vim.keymap.set({ "n", "v" }, "<C-j>", "<cmd>Treewalker Down<cr>", { silent = true })
-			vim.keymap.set({ "n", "v" }, "<C-h>", "<cmd>Treewalker Left<cr>", { silent = true })
-			vim.keymap.set({ "n", "v" }, "<C-l>", "<cmd>Treewalker Right<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, modifier .. "k>", "<cmd>Treewalker Up<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, modifier .. "j>", "<cmd>Treewalker Down<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, modifier .. "h>", "<cmd>Treewalker Left<cr>", { silent = true })
+			vim.keymap.set({ "n", "v" }, modifier .. "l>", "<cmd>Treewalker Right<cr>", { silent = true })
 		end,
 	},
 	{
@@ -818,7 +819,7 @@ return {
 				["no"] = "􀅶  ",
 				["nov"] = "􀅶  ",
 				["noV"] = "􀅶  ",
-				["no�"] = "􀅶  ",
+				["no\22"] = "􀅶  ",
 				["niI"] = "􀉅 ",
 				["niR"] = "􀉅 ",
 				["niV"] = "􀉅 ",
@@ -827,11 +828,11 @@ return {
 				["vs"] = "􀑠 ",
 				["V"] = "􀑠 􀌀 ",
 				["Vs"] = "􀑠 􀌀 ",
-				["�"] = "􀑠 􀂒 ",
-				["�s"] = "􀑠 􀂒 ",
+				["\22"] = "􀑠 􀂒 ",
+				["\22s"] = "􀑠 􀂒 ",
 				["s"] = "SELECT",
 				["S"] = "S-LINE",
-				["�"] = "S-BLOCK",
+				["\19"] = "S-BLOCK",
 				["i"] = "􀦇 ",
 				["ic"] = "􀦇 ",
 				["ix"] = "􀦇 ",

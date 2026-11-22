@@ -4,8 +4,28 @@
   inputs,
   lib,
   vars,
+  thunderboltAddress,
+  excludeFile,
+  hostName,
   ...
 }:
+let
+  splitTunnelDaemon = pkgs.buildFHSEnv {
+    name = "proton-vpn-daemon";
+    targetPkgs = p: [
+      (p.python3.withPackages (ps: [ ps.proton-vpn-daemon ]))
+      p.wireguard-tools
+      p.kmod
+      p.bcc
+      config.boot.kernelPackages.kernel.dev
+    ];
+    profile = ''
+      export KERNEL_VERSION="${config.boot.kernelPackages.kernel.modDirVersion}"
+      export BCC_KERNEL_SOURCE="/lib/modules/${config.boot.kernelPackages.kernel.modDirVersion}/build"
+    '';
+    runScript = "python3 -m proton.vpn.daemon";
+  };
+in
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -33,9 +53,8 @@
       webp-pixbuf-loader
       prusa-slicer
       librepods
-
-      lutris
-
+      nemo
+      dolphin-emu
       obsidian
       nvitop
       kdePackages.kde-dev-utils
@@ -45,15 +64,16 @@
       libreoffice
       qview
       mousai
-      proton-vpn
+      # proton-vpn
+      (proton-vpn.overridePythonAttrs (old: {
+        dependencies = old.dependencies ++ [ pkgs.python3Packages.proton-vpn-daemon ];
+      }))
       rmg-wayland
       mullvad-browser
-      powertop
 
       # inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
 
-      # rustdesk-flutter
-      inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.rustdesk-flutter
+      rustdesk-flutter
 
       # Command Line Tools / CLIs
       trashy
@@ -68,17 +88,19 @@
       quickshell
       compose2nix
       usbutils
+      tesseract
 
       discordchatexporter-desktop
 
       # Misc Packages
-      pkgs.rust-bin.stable.latest.default
+      uv
       apple-cursor
       xdg-desktop-portal-hyprland
       xdg-desktop-portal
       widevine-cdm
       ddcutil
       libnotify
+      dconf
 
       # Flakes
       inputs.hyprland-contrib.packages.${stdenv.hostPlatform.system}.grimblast
@@ -94,8 +116,6 @@
       btrfs-progs
       compsize
       gnome-keyring
-
-      libinput
     ];
     etc."keyd/default.conf".text = ''
       [ids]
@@ -264,6 +284,7 @@
     automatic-timezoned.enable = true;
     udev.extraRules = ''
       ACTION=="add", SUBSYSTEM=="thunderbolt", ATTR{authorized}=="0", ATTR{authorized}="1"
+      # SUBSYSTEM=="net", ACTION=="add", ATTRS{idVendor}=="05ac", ATTRS{idProduct}=="1905", ENV{NM_UNMANAGED}="1"
     '';
     # Filesystem services
     btrfs.autoScrub = {
@@ -302,11 +323,19 @@
         };
         wantedBy = [ "default.target" ];
       };
-      "mac-mounting" = {
+      "rclone" = {
         serviceConfig = {
-          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac/";
-          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
-          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
+          ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /home/yousuf --addr :8080 --vfs-cache-mode writes --transfers 512 --buffer-size 250M --exclude-from ${excludeFile}";
+          User = "yousuf";
+          Restart = "on-failure";
+        };
+        wantedBy = [ "default.target" ];
+      };
+      "mac-mounting-tb" = {
+        serviceConfig = {
+          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac-TB/";
+          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMiniTB-dav: /home/yousuf/Mac-TB/";
+          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac-TB/";
           Type = "notify";
           User = "yousuf";
           Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
@@ -368,46 +397,32 @@
   };
 
   networking = {
+    hostName = hostName;
     networkmanager.enable = true;
-    # networkmanager.wifi.backend = "iwd";
+    networkmanager.wifi.backend = "iwd";
     firewall.checkReversePath = false;
-    # wireless.iwd = {
-    #   enable = true;
-    #   settings.General.EnableNetworkConfiguration = true;
-    # };
+    wireless.iwd = {
+      enable = true;
+      settings.General.EnableNetworkConfiguration = true;
+    };
+    # Thunderbolt networking
+    firewall.trustedInterfaces = [ "thunderbolt0" ];
+    networkmanager.unmanaged = [
+      "interface-name:thunderbolt0"
+      "interface-name:enp*u*"
+    ];
   };
-
-  networking.firewall.enable = false;
-  networking.firewall.trustedInterfaces = [ "thunderbolt0" ];
-  networking.networkmanager.unmanaged = [ "interface-name:thunderbolt0" ];
 
   systemd.network = {
     enable = true;
-    wait-online.enable = false; # NetworkManager handles online-ness
+    wait-online.enable = false;
     networks."40-thunderbolt" = {
       matchConfig.Name = "thunderbolt*";
       linkConfig.RequiredForOnline = "no";
+      linkConfig.MTUBytes = "65518";
+      networkConfig.Address = thunderboltAddress;
     };
   };
-
-  # systemd.network = {
-  #   enable = true;
-  #
-  #   # Disable the default systemd link file so our naming rule wins
-  #   links."40-thunderbolt0".enable = false;
-  #
-  #   # Give the NIC a stable name based on its permanent MAC
-  #   links."41-thunderbolt0" = {
-  #     matchConfig.PermanentMACAddress = "02:30:b5:be:6e:b8"; # replace with your real MAC
-  #     linkConfig.Name = "thunderbolt0";
-  #   };
-  #
-  #   # Assign the static IP to that interface
-  #   networks."41-thunderbolt0" = {
-  #     matchConfig.PermanentMACAddress = "02:30:b5:be:6e:b8"; # replace with your real MAC
-  #     networkConfig.Address = "169.254.0.1/16";
-  #   };
-  # };
 
   fonts = {
     enableDefaultPackages = true;
@@ -442,6 +457,7 @@
     home = "/home/yousuf";
     hashedPasswordFile = config.sops.secrets.YOUSUFS_PASSWORD.path;
     extraGroups = [
+      "samba"
       "networkmanager"
       "wheel"
       "keyd"
@@ -488,10 +504,6 @@
     plymouth.enable = true;
     consoleLogLevel = 0;
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = [
-      "thunderbolt"
-      "thunderbolt_net"
-    ];
     kernelParams = [
       # Zswap
       "zswap.enabled=1"

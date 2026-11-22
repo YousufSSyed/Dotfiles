@@ -2,6 +2,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 rainbowgroup = { "Rainbow1", "Rainbow2", "Rainbow3", "Rainbow4", "Rainbow5", "Rainbow6" }
 fresh = function() return not (next(vim.fn.argv()) or vim.o.filetype == "man" or vim.env.KITTY_SCROLLBACK_NVIM) end
+modifier = "<C-"
+if require("jit").os == "OSX" then modifier = "<D-" end
+keyopts = { noremap = true, silent = true }
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim" -- LazyNvim Setup
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -63,7 +66,6 @@ vim.opt.shell = "/run/current-system/sw/bin/fish"
 vim.opt.grepprg = "rg --vimgrep"
 vim.opt.grepformat = "%f:%l:%c:%m"
 vim.opt.shortmess:append("I")
--- vim.opt.shortmess:append("u")
 vim.g.markdown_recommended_style = 0 -- vim.g & vim.env
 vim.g.have_nerd_font = true
 vim.env.PATH = vim.env.PATH .. "/run/current-system/sw/bin/"
@@ -84,7 +86,6 @@ if vim.g.neovide then
 	vim.g.neovide_floating_shadow = false
 	vim.g.neovide_floating_blur_amount_x = 30
 	vim.g.neovide_floating_blur_amount_y = 30
-	-- if require("jit").os ~= "OSX" then vim.g.neovide_opacity = 0.8 end
 	vim.g.neovide_cursor_vfx_mode = "railgun"
 	vim.g.neovide_cursor_vfx_particle_lifetime = 0.5
 	vim.g.neovide_cursor_vfx_opacity = 500
@@ -99,6 +100,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 })
 
 -- vim.lsp.inlay_hint.enable(true) vim.lsp.codelens.enable(true)
-vim.lsp.enable({ "lua_ls", "gopls", "rust_analyzer", "markdown_oxide", "nixd", "vtsls" })
+vim.lsp.enable({ "lua_ls", "markdown_oxide", "nixd" })
+if vim.uv.os_gethostname() == "NixOS-Laptop" then vim.lsp.enable({ "gopls", "rust_analyzer", "vtsls" }) end
 require("vim._core.ui2").enable({ enable = true })
 vim.schedule(function() vim.opt.cmdheight = 0 end)

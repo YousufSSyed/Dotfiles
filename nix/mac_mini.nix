@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  hostName,
   ...
 }:
 {
@@ -10,7 +11,10 @@
     inputs.nix-index-database.darwinModules.nix-index
   ];
 
-  _module.args.firefoxProfile = "mac-profile";
+  _module.args = {
+    firefoxProfile = "mac-profile";
+    hostName = "Mac-Mini";
+  };
 
   users.users.yousuf.home = "/Users/yousuf";
 
@@ -74,14 +78,6 @@
 
   # Launchd Configuration
   launchd.user.agents = {
-    copyparty = {
-      command = "${pkgs.copyparty-most}/bin/copyparty -v /Users/yousuf::A --see-dots";
-      serviceConfig = {
-        KeepAlive = true;
-        RunAtLoad = true;
-        StandardErrorPath = "/Users/yousuf/Library/Logs/copyparty.error.log";
-      };
-    };
     watchexec = {
       command = "${pkgs.watchexec}/bin/watchexec -w /Users/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
       serviceConfig = {
@@ -93,24 +89,28 @@
         };
       };
     };
-    desktop-mounting = {
-      command = "${pkgs.rclone}/bin/rclone mount --config /Users/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /Users/yousuf/NixOS-Desktop/";
-      serviceConfig = {
-        KeepAlive = true;
-        RunAtLoad = true;
-        StandardOutPath = "/Users/yousuf/Library/Logs/desktop-mounting.log";
-        StandardErrorPath = "/Users/yousuf/Library/Logs/desktop-mounting.out";
-      };
-    };
-    #     laptop-mounting = {
-    #       command = "${pkgs.rclone}/bin/rclone mount --config /Users/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosLaptop-dav: /Users/yousuf/NixOS-Laptop/";
-    #       serviceConfig = {
-    #         KeepAlive = true;
-    #         RunAtLoad = true;
-    #         StandardOutPath = "/Users/yousuf/Library/Logs/desktop-mounting.log";
-    #       };
-    #     };
   };
+
+  environment.etc."nsmb.conf".text = ''
+    [default]
+    streams=yes
+    soft=yes
+    mc_on=yes
+    mc_prefer_wired=yes
+    signing_required=no 
+    comp_io_threshold=5242880
+    mc_max_channels=64
+    smb_neg=smb3_only
+    port445=no_netbios
+  '';
+
+  environment.etc."nfs.conf".text = ''
+    nfs.client.mount.options = vers=4.0
+    nfs.client.allow_async = 1
+    nfs.client.iosize = 268435456
+    nfs.client.nfsiod_thread_max = 64
+    nfs.client.access_cache_timeout = 120
+  '';
 
   home-manager.users.yousuf.programs.firefox.profiles.default.settings = {
     "layout.css.devPixelsPerPx" = 2.15;
@@ -121,6 +121,5 @@
   # Misc device settings
   system.stateVersion = 6;
   nixpkgs.hostPlatform = "aarch64-darwin";
-  networking.computerName = "Mac-Mini";
-  networking.hostName = "Mac-Mini";
+  networking.computerName = hostName;
 }

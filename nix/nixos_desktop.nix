@@ -17,7 +17,11 @@
     # ./Other/sparkyfitness.nix
   ];
 
-  _module.args.firefoxProfile = "desktop-profile";
+  _module.args = {
+    firefoxProfile = "desktop-profile";
+    hostName = "NixOS-Desktop";
+    thunderboltAddress = "10.0.0.3/24";
+  };
 
   services = {
     navidrome = {
@@ -72,18 +76,21 @@
       };
       wantedBy = [ "timers.target" ];
     };
-    services.update-containers = {
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = lib.getExe (
-          pkgs.writeShellScriptBin "update-containers" ''
-            images=$(${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
-            for image in $images; do
-              ${pkgs.podman}/bin/podman pull "$image"
-            done
-          ''
-        );
+    services = {
+      update-containers = {
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = lib.getExe (
+            pkgs.writeShellScriptBin "update-containers" ''
+              images=$(${pkgs.podman}/bin/podman ps -a --format="{{.Image}}" | sort -u)
+              for image in $images; do
+                ${pkgs.podman}/bin/podman pull "$image"
+              done
+            ''
+          );
+        };
       };
+      navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
     };
     user.services = {
       laptop-mounting = {
@@ -109,28 +116,10 @@
         ];
         wantedBy = [ "default.target" ];
       };
-      "rclone" = {
-        serviceConfig = {
-          ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /home/yousuf --addr :8080 --vfs-cache-mode writes";
-          User = "yousuf";
-          Restart = "on-failure";
-        };
-        wantedBy = [ "default.target" ];
-      };
     };
-    services.navidrome.serviceConfig.ProtectHome = lib.mkForce "tmpfs";
   };
 
   sops.secrets.NEXTAUTH_SECRET.owner = config.services.linkwarden.user;
-
-  # networking.interfaces.thunderbolt0.ipv4.addresses = [
-  #   {
-  #     address = "169.254.0.3";
-  #     prefixLength = 16;
-  #   }
-  # ];
-
-  systemd.network.networks."40-thunderbolt".networkConfig.Address = "10.0.0.3/24";
 
   services.xserver = {
     enable = true;
@@ -144,5 +133,79 @@
   };
 
   nixpkgs.config.cudaSupport = true;
-  networking.hostName = "NixOS-Desktop";
+
+  services.samba = {
+    package = pkgs.samba4Full;
+    usershares.enable = true;
+    enable = true;
+    openFirewall = true;
+    settings = {
+      homes = {
+        comment = "Homes Directories";
+        "valid users" = "%S";
+        "read only" = "no";
+        "create mask" = "0700";
+        "directory mask" = "0700";
+      };
+      global = {
+        "server signing" = "disabled";
+        "write cache size" = 2097152;
+        "min receivefile size" = 16384;
+        "getwd cache" = true;
+        "vfs objects" = "fruit streams_xattr";
+        "fruit:metadata" = "stream";
+        "fruit:model" = "MacSamba";
+        "fruit:veto_appledouble" = "no";
+        "fruit:nfs_aces" = "no";
+        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
+        "fruit:delete_empty_adfiles" = "yes";
+        "fruit:posix_rename" = "yes";
+      };
+    };
+  };
+
+  services.nfs = {
+    server = {
+      enable = true;
+      # fixed rpc.statd port; for firewall
+      lockdPort = 4001;
+      mountdPort = 4002;
+      statdPort = 4000;
+      extraNfsdConfig = "";
+      nproc = 64;
+      exports = ''
+        /home/yousuf *(rw,async,nohide,no_subtree_check,insecure,crossmnt,all_squash,anonuid=1000,anongid=100)
+      '';
+      createMountPoints = true;
+    };
+    settings = {
+      nfsd.udp = false;
+      nfsd.vers3 = false;
+      nfsd.vers4 = true;
+      nfsd."vers4.0" = true;
+      nfsd."vers4.1" = false;
+      nfsd."vers4.2" = false;
+    };
+  };
+  networking.firewall = {
+    enable = true;
+    # for NFSv3; view with `rpcinfo -p`
+    allowedTCPPorts = [
+      111
+      2049
+      4000
+      4001
+      4002
+      20048
+    ];
+    allowedUDPPorts = [
+      111
+      2049
+      4000
+      4001
+      4002
+      20048
+    ];
+  };
+
 }

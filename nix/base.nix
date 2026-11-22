@@ -1,11 +1,28 @@
 {
+  lib,
   pkgs,
   inputs,
   vars,
   firefoxProfile,
+  hostName,
   ...
 }:
+let
+  excludedDirs = [
+    "NixOS-Laptop"
+    "NixOS-desktop"
+    "NixOS-desktop-TB"
+    "Mac"
+    "Mac-TB"
+  ];
+in
 {
+  _module.args = {
+    excludeFile = pkgs.writeText "rclone-webdav-excludes" (
+      lib.concatMapStringsSep "\n" (d: "/${d}/**") excludedDirs
+    );
+  };
+
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
   ];
@@ -13,14 +30,13 @@
   environment.systemPackages = with pkgs; [
     # Apps
     kitty
-    # neovide
-    inputs.nixpkgs-stable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.neovide
+    neovide
     neovim
     qbittorrent
     megabasterd
-    dolphin-emu
     ruffle
     copyparty-most
+    # copyparty-full-buggy
     losslesscut-bin
     tableplus
     vesktop
@@ -28,7 +44,6 @@
     # Command Line Tools / CLIs
     git
     uutils-coreutils-noprefix
-    coreutils-prefixed
     fd
     fzf
     eza
@@ -47,14 +62,12 @@
     exiftool
     unrar
     imagemagick
-    tesseract
     socat
     age
     sops
     yq-go
     jq
     p7zip
-    git-filter-repo
     tig
     atuin
     pastel
@@ -63,15 +76,12 @@
     rclone
     watchexec
     dua
-    # gifski
+    gifski
     fdupes
-
     wordnet
-    immich-go
     spotdl
     libjxl
     fish
-    sqlite
     (pkgs.mpv.override {
       scripts = [
         # pkgs.mpvScripts.modernz
@@ -84,43 +94,19 @@
 
     # Nix tools
     nix-init
-    nh_module.args
+    nh
 
     # Language Packages
-    # Misc languages
-    rust-analyzer
     markdown-oxide
     nixfmt
     nixd
-    uv
-    libclang
-    # Golang
-    go
-    gopls
+    tree-sitter
     # Lua
     stylua
     lua-language-server
-    # JS
-    biome
-    yarn
-    nodejs
-    vtsls
-
-    # Other Dev Packages
-    tree-sitter
-    pkg-config
-    gnumake
-    gcc
-    cmake
-
-    # LLM-related packages
-    # opencode
-    claude-code
-    claude-agent-acp
 
     # Misc Packages
     nerd-fonts.iosevka
-    dconf
   ];
 
   security.sudo.extraConfig = "Defaults pwfeedback";
@@ -148,8 +134,6 @@
         home = {
           stateVersion = "26.11";
           file.".config/zen/h9ep31cd.default/chrome".source =
-            config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
-          file."Sync/Obsidian/Immich".source =
             config.lib.file.mkOutOfStoreSymlink "/home/yousuf/.local/share/chezmoi/Firefox/";
         };
         programs.firefox = {
@@ -244,4 +228,6 @@
         };
       };
   };
+
+  networking.hostName = hostName;
 }

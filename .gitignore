@@ -1,4 +1,5 @@
 .stfolder
+repro.lua
 .DS_Store
 *.sync-conflict-*
 .stfolder/
