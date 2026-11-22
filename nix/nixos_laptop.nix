@@ -72,39 +72,6 @@
       ];
       wantedBy = [ "default.target" ];
     };
-    "desktop-mounting" = {
-      serviceConfig = {
-        ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop/";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktop-dav: /home/yousuf/NixOS-Desktop/";
-        ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Desktop/";
-        Type = "notify";
-        User = "yousuf";
-        Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      };
-      wantedBy = [ "default.target" ];
-    };
-    "desktop-mounting-tb" = {
-      serviceConfig = {
-        ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop-TB/";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s NixosDesktopTB-dav: /home/yousuf/NixOS-Desktop-TB/";
-        ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/NixOS-Desktop-TB/";
-        Type = "notify";
-        User = "yousuf";
-        Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      };
-      wantedBy = [ "default.target" ];
-    };
-    "mac-mounting" = {
-      serviceConfig = {
-        ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/NixOS-Desktop/";
-        ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMini-dav: /home/yousuf/Mac/";
-        ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac/";
-        Type = "notify";
-        User = "yousuf";
-        Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-      };
-      wantedBy = [ "default.target" ];
-    };
   };
 
   services.power-profiles-daemon.enable = false;

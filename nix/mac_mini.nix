@@ -104,12 +104,8 @@
     port445=no_netbios
   '';
 
-  environment.etc."nfs.conf".text = ''
-    nfs.client.mount.options = vers=4.0
-    nfs.client.allow_async = 1
-    nfs.client.iosize = 268435456
-    nfs.client.nfsiod_thread_max = 64
-    nfs.client.access_cache_timeout = 120
+  environment.etc."exports".text = ''
+    /Users/yousuf -alldirs -mapall=nobody:nobody 100.93.104.25 100.112.147.11 100.83.23.28 100.67.111.78 10.0.0.1 10.0.0.2 10.0.0.3
   '';
 
   home-manager.users.yousuf.programs.firefox.profiles.default.settings = {

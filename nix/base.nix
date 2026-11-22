@@ -7,22 +7,7 @@
   hostName,
   ...
 }:
-let
-  excludedDirs = [
-    "NixOS-Laptop"
-    "NixOS-desktop"
-    "NixOS-desktop-TB"
-    "Mac"
-    "Mac-TB"
-  ];
-in
 {
-  _module.args = {
-    excludeFile = pkgs.writeText "rclone-webdav-excludes" (
-      lib.concatMapStringsSep "\n" (d: "/${d}/**") excludedDirs
-    );
-  };
-
   nixpkgs.overlays = [
     inputs.rust-overlay.overlays.default
   ];
@@ -35,8 +20,6 @@ in
     qbittorrent
     megabasterd
     ruffle
-    copyparty-most
-    # copyparty-full-buggy
     losslesscut-bin
     tableplus
     vesktop
@@ -73,7 +56,6 @@ in
     pastel
     wget
     chezmoi
-    rclone
     watchexec
     dua
     gifski

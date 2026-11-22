@@ -5,7 +5,6 @@
   lib,
   vars,
   thunderboltAddress,
-  excludeFile,
   hostName,
   ...
 }:
@@ -315,33 +314,6 @@ in
     #   };
     # };
     user.services = {
-      "copyparty" = {
-        serviceConfig = {
-          ExecStart = "${pkgs.copyparty-most}/bin/copyparty -v /home/yousuf::A --see-dots";
-          User = "yousuf";
-          Restart = "on-failure";
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "rclone" = {
-        serviceConfig = {
-          ExecStart = "${pkgs.rclone}/bin/rclone serve webdav /home/yousuf --addr :8080 --vfs-cache-mode writes --transfers 512 --buffer-size 250M --exclude-from ${excludeFile}";
-          User = "yousuf";
-          Restart = "on-failure";
-        };
-        wantedBy = [ "default.target" ];
-      };
-      "mac-mounting-tb" = {
-        serviceConfig = {
-          ExecStartPre = "${pkgs.uutils-coreutils-noprefix}/bin/mkdir -p /home/yousuf/Mac-TB/";
-          ExecStart = "${pkgs.rclone}/bin/rclone mount --config /home/yousuf/.config/rclone/rclone.conf --vfs-cache-mode writes --dir-cache-time 5s MacMiniTB-dav: /home/yousuf/Mac-TB/";
-          ExecStop = "${pkgs.fuse}/bin/fusermount -uz /home/yousuf/Mac-TB/";
-          Type = "notify";
-          User = "yousuf";
-          Environment = [ "PATH=/run/wrappers/bin/:$PATH" ];
-        };
-        wantedBy = [ "default.target" ];
-      };
       "dotfiles" = {
         script = "${pkgs.watchexec}/bin/watchexec -w /home/yousuf/.local/share/chezmoi/ ${pkgs.chezmoi}/bin/chezmoi apply --force";
         serviceConfig = {
@@ -356,6 +328,34 @@ in
         serviceConfig = {
           User = "yousuf";
         };
+      };
+    };
+  };
+
+  services.samba = {
+    package = pkgs.samba4Full;
+    usershares.enable = true;
+    enable = true;
+    openFirewall = true;
+    settings = {
+      homes = {
+        comment = "Homes Directories";
+        "valid users" = "%S";
+        "read only" = "no";
+        "create mask" = "0700";
+        "directory mask" = "0700";
+      };
+      global = {
+        "server signing" = "disabled";
+        "min receivefile size" = 16384;
+        "vfs objects" = "fruit streams_xattr";
+        "fruit:metadata" = "stream";
+        "fruit:model" = "MacSamba";
+        "fruit:veto_appledouble" = "no";
+        "fruit:nfs_aces" = "no";
+        "fruit:wipe_intentionally_left_blank_rfork" = "yes";
+        "fruit:delete_empty_adfiles" = "yes";
+        "fruit:posix_rename" = "yes";
       };
     };
   };
